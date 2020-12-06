@@ -13,6 +13,7 @@
     "fix:prettier": "prettier --write \"src/**/*.js\""
   },
   "dependencies": {
+    "@headlessui/react": "^0.2.0",
     "@zeit/next-css": "^1.0.1",
     "next": "^9.5.4",
     "react": "^16.12.0",

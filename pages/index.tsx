@@ -1,12 +1,11 @@
 import React from "react";
-import { Hello } from "@/components/Hello";
+import { Login } from "@/components/Login";
+import Layout from "@/components/ui/Layout";
 
-function IndexPage(): JSX.Element {
-  return (
-    <div className="flex h-screen">
-      <Hello who="world" />
-    </div>
-  );
-}
+const index = (): JSX.Element => (
+    <Layout>
+      <Login />
+    </Layout>
+)
 
-export default IndexPage;
+export default index;
