@@ -7,10 +7,10 @@
     "build": "next build",
     "start": "next start",
     "type-check": "tsc",
-    "lint:eslint": "eslint 'src/**/*.{js,ts,tsx}'",
-    "fix:eslint": "eslint 'src/**/*.{js,ts,tsx}' --fix",
-    "lint:prettier": "prettier --check src/**/*.js",
-    "fix:prettier": "prettier --write \"src/**/*.js\""
+    "lint:eslint": "eslint 'components/**/*.{js,ts,tsx}'",
+    "fix:eslint": "eslint 'components/**/*.{js,ts,tsx}' --fix",
+    "lint:prettier": "prettier --check components/**/*.{js,ts,tsx}",
+    "fix:prettier": "prettier --write \"components/**/*.{js,ts,tsx}\""
   },
   "dependencies": {
     "@headlessui/react": "^0.2.0",
@@ -43,6 +43,7 @@
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": [
+      "fix:prettier",
       "eslint --fix --max-warnings=0 --cache"
     ]
   },
