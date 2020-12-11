@@ -9,7 +9,6 @@ const Signin = (): JSX.Element => {
     console.log(data)
     try {
       const result = await axios.post('http://localhost:3001/api/signIn', data);
-      // const result = await axios.get('http://localhost:3001/api/like');
       console.log(result)
     } catch (e) {
       console.log('error', e.message)

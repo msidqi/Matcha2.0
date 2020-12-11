@@ -2,6 +2,7 @@ import React from "react";
 import { Transition } from "@headlessui/react";
 import Logo from "@/components/ui/Icons/Logo";
 import LogoSm from "@/components/ui/Icons/LogoSm";
+import { UserProvider, user } from "@/components/auth";
 
 function Navbar() {
   const [showMenu, setShowMenu] = React.useState<boolean>(false);
@@ -14,6 +15,7 @@ function Navbar() {
   const toggleMenu = () => setShowMenu(!showMenu);
   const toggleNotifications = () => setShowNotifications(!showNotifications);
   return (
+    <UserProvider value={user}>
     <nav className="bg-gray-800">
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         <div className="relative flex items-center justify-between h-16">
@@ -204,6 +206,7 @@ function Navbar() {
         </div>
       </div>
     </nav>
+    </UserProvider>
   );
 }
 
