@@ -29,15 +29,13 @@ export const UserProvider: FC = ({ children }): JSX.Element => {
                     }
                     dispatch({ type: 'login', payload: { user } })
                 }
-                if (loading)
-                    setLoading(false);
             } catch (e) {
-                if (loading)
-                    setLoading(false);
                 console.error(e)
             }
+            loading && setLoading(false);
         }
         fetchUserData()
+        // return cancel request
     }, [])
 
     const login: LoginAction = async (userData): Promise<void> => {
@@ -54,11 +52,10 @@ export const UserProvider: FC = ({ children }): JSX.Element => {
                 }
                 dispatch({ type: 'login', payload: { user: newUserValue } })
             }
-            loading && setLoading(false);
         } catch (e) {
-            loading && setLoading(false);
             console.error(e)
         }
+        loading && setLoading(false);
     }
 
     const logout: LogoutAction = async (): Promise<void> => {
@@ -67,12 +64,14 @@ export const UserProvider: FC = ({ children }): JSX.Element => {
             const result = await axios.post<{ message: string }>('http://localhost:3001/api/logout');
             if (result.status === 200)
                 dispatch({ type: 'logout' })
-            loading && setLoading(false);
         } catch (e) {
-            loading && setLoading(false);
             console.error(e)
         }
+        loading && setLoading(false);
     }
 
-    return (<userContext.Provider value={[{ ...state }, { login, logout, loading }]}> {children} </ userContext.Provider>)
+    return (
+        <userContext.Provider value={[{ ...state }, { login, logout, loading }]}>
+            {children}
+        </ userContext.Provider>)
 }

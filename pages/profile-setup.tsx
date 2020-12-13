@@ -1,11 +1,11 @@
 import React from "react";
-import Signup from "@/components/Signup";
+import ProfileSetup from "@/components/ProfileSetup";
 import Layout from "@/components/ui/Layout";
 
 const index = (): JSX.Element => (
-    <Layout>
-      <Signup />
-    </Layout>
+  <Layout>
+    <ProfileSetup />
+  </Layout>
 )
 
 export default index;

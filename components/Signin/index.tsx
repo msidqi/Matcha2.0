@@ -9,16 +9,14 @@ const Signin = (): JSX.Element => {
   const router = useRouter()
   const [, { login, loading }] = useUser()
 
-  const onSubmit = async (data: { userName: string; password: string; }) => {
+  const onSubmit = async (data: { userName: string; password: string; }, e) => {
+    e.preventDefault()
     try {
       await login(data)
       router.push('/')
     } catch (e) {
       console.error(e)
     }
-  }
-  if (loading) {
-    return <Loading />
   }
   return <div className="bg-white border rounded  max shadow-lg p-10 max-w-xl m-auto">
     <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">Sign in</h3>
