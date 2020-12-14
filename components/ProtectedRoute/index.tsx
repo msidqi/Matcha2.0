@@ -8,7 +8,8 @@ export const ProtectRoute: FC = ({ children }): JSX.Element => {
     const pathname = router.pathname
     const [{ loggedIn }, { loading }] = useUser();
     if (loading) {
-        return <Loading />;
+        console.log('loading...')
+        // return <Loading />;
     }
     // if (!loggedIn && pathname !== '/signin' && pathname !== '/signup') {
     //     router.push('/signin')

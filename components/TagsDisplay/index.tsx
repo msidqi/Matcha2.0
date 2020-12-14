@@ -4,8 +4,9 @@ import Tag from "@/components/Tag";
 const TagsDisplay = ({ initialTags }: { initialTags: string[] }) => {
     const set = new Set<string>()
     initialTags.forEach(tagValue => set.add(tagValue))
-    const [tags, setTags] = useState<Set<string>>(set)
+    const [tagsSet, setTagsSet] = useState<Set<string>>(set)
     const [tagName, setTagName] = useState<string>('')
+    // const [renderedTags, setRenderedTags] = useState < ReactNode[]]> (<></>)
 
     const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e) {
@@ -17,8 +18,10 @@ const TagsDisplay = ({ initialTags }: { initialTags: string[] }) => {
                 // prevent any outer forms from receiving the event too
                 e.stopPropagation();
             }
-            if (e.which === 13) {
-                console.log('add tag')
+            const trimmedTag = tagName.trim()
+            if (e.which === 13 && trimmedTag.length > 2) {
+                tagsSet.add(trimmedTag);
+                setTagName('');
             }
         }
     }
@@ -26,13 +29,15 @@ const TagsDisplay = ({ initialTags }: { initialTags: string[] }) => {
     let renderedTags: ReactNode[] = []
 
     let i = 0;
-    for (const uniqueTag of tags.values()) {
-        renderedTags.push(<Tag key={`tag-${i++}`} tagName={uniqueTag} onClose={() => tags.delete(uniqueTag)} />)
+    for (const uniqueTag of tagsSet.values()) {
+        renderedTags.push(<Tag key={`tag-${i++}`} tagName={uniqueTag} onClose={() => { tagsSet.delete(uniqueTag); setTagsSet((prevState) => new Set(prevState)) }} />)
     }
     return (
-        <div className="m-auto">
-            <input name="userName" value={tagName} onChange={(e) => setTagName(e.target.value)} onKeyUp={addTag} className="form-input block" />
-            {renderedTags}
+        <div className="block w-full">
+            <input name="userName" value={tagName} onChange={(e) => setTagName(e.target.value)} onKeyUp={addTag} className="form-input block w-full" />
+            <div className="flex justify-center p-2">
+                {renderedTags}
+            </div>
         </div>
     )
 }
