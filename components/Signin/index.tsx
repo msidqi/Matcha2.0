@@ -13,7 +13,7 @@ const Signin = (): JSX.Element => {
     e.preventDefault()
     try {
       await login(data)
-      router.push('/')
+      // router.push('/')
     } catch (e) {
       console.error(e)
     }

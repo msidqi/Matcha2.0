@@ -41,7 +41,7 @@ export const UserProvider: FC = ({ children }): JSX.Element => {
     const login: LoginAction = async (userData): Promise<void> => {
         try {
             setLoading(true);
-            const result = await axios.post<{ accessToken: string, message: string }>('http://localhost:3001/api/signIn', userData);
+            const result = await axios.post<{ accessToken: string, message: string }>('/api/signIn', userData, { withCredentials: true });
             if (result.status === 200) {
                 const newUserValue: User = {
                     username: userData.userName,
@@ -52,6 +52,7 @@ export const UserProvider: FC = ({ children }): JSX.Element => {
                 }
                 dispatch({ type: 'login', payload: { user: newUserValue } })
             }
+            console.log(result)
         } catch (e) {
             console.error(e)
         }
