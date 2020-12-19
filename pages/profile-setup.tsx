@@ -6,7 +6,7 @@ import ImageUpload from "@/components/ImageUpload";
 const index = (): JSX.Element => (
   <Layout>
     {/* <ProfileSetup /> */}
-    <ImageUpload />
+    <ImageUpload limit={5} />
   </Layout>
 )
 

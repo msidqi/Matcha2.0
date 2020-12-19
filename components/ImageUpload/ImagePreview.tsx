@@ -1,12 +1,11 @@
 
-interface Props {
-    id: string;
+export interface ImagePreviewProps {
     src: string;
     title?: string;
-    onClickDelete: (index: number) => void;
+    onClickDelete: () => void;
     size?: string;
 };
-const ImagePreview = ({ onClickDelete, title, size, src = "https://www.drupal.org/files/styles/grid-3/public/datadog-logo-purple.png?itok=cY6xuEyW" }: Props) => {
+const ImagePreview = ({ onClickDelete, title, size, src }: ImagePreviewProps) => {
     return (
         <>
             {/*id="image-template"*/}
