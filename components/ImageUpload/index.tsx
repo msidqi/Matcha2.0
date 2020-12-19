@@ -1,5 +1,5 @@
 import React from 'react'
-import ImagePreview from './imagePreview'
+import ImagePreview from './ImagePreview'
 
 type ImagePreviewProps = {
     title: string;
@@ -9,20 +9,15 @@ type ImagePreviewProps = {
     size: string;
 }
 
+// let counter = 0
+
 const ImageUpload = () => {
     const [FILES, setFILES] = React.useState({})
-    // const [counter, setCounter] = React.useState(0)
+    const [counter, setCounter] = React.useState(0)
     const [showDropFileAction, setDropFileAction] = React.useState(false)
-    const [isEmpty, setIsEmpty] = React.useState(false)
+    const [isEmpty, setIsEmpty] = React.useState(true)
     const [isDraggedover, setIsDraggedover] = React.useState(false)
     const [imagePreviews, setImagePreviews] = React.useState<ImagePreviewProps[]>([])
-
-    const fileTemplRef = React.createRef()
-    const imageTemplRef = React.createRef()
-    const emptyRef = React.createRef()
-    const fileTempl = fileTemplRef.current,//document.getElementById("file-template"),
-        imageTempl = imageTemplRef.current,//document.getElementById("image-template"),
-        empty = emptyRef.current;//document.getElementById("empty");
 
     const handleImagePrevewDelete = (indexToDelete: number) => {
         const elem = imagePreviews[indexToDelete]
@@ -31,6 +26,8 @@ const ImageUpload = () => {
             URL.revokeObjectURL(elem.objectURL)
             setImagePreviews(imagePreviews.filter((_, i) => i !== indexToDelete))
         }
+        if (imagePreviews.length <= 1)
+            setIsEmpty(true);
     }
     // check if file is of type image and prepend the initialied
     // template to the target element
@@ -72,7 +69,7 @@ const ImageUpload = () => {
         //     });
 
         // empty.classList.add("hidden");
-        setIsEmpty(true)
+        setIsEmpty(false)
         // target.prepend(clone);
         setImagePreviews([...imagePreviews, cloneProps])
 
@@ -80,9 +77,7 @@ const ImageUpload = () => {
     }
     console.log('FILES', FILES)
     const galleryRef = React.createRef()
-    const overlayRef = React.createRef()
-    const gallery = galleryRef.current, //document.getElementById("gallery"),
-        overlay = overlayRef.current;//document.getElementById("overlay");
+    const gallery = galleryRef.current; //document.getElementById("gallery"),
 
     const hiddenRef = React.createRef()
     // click the hidden input of type file if the visible button is clicked
@@ -95,46 +90,33 @@ const ImageUpload = () => {
         }
     };
 
-    // use to check if a file is being dragged
-    // const hasFiles = ({ dataTransfer: { types = [] } }) =>
-    //     types.indexOf("Files") > -1;
-    const hasFiles = () => imagePreviews.length > 0;
-
-
-
     // reset counter and append file to gallery when file is dropped
     function dropHandler(ev) {
         ev.preventDefault();
         for (const file of ev.dataTransfer.files) {
             addFile(gallery, file);
-            // setIsDraggedover(false)
-            // setCounter(0);
         }
+        setIsDraggedover(false)
+        setCounter(0)
     }
 
-    // only react to actual files being dragged
     function dragEnterHandler(e) {
-        e.preventDefault();
-        if (!hasFiles(e)) {
-            return;
-        }
-        console.log('hasFiles', imagePreviews.length > 0)
-        // setCounter((prevCounter) => prevCounter + 1);
-        // if (counter + 1)
-        //     setIsDraggedover(true)
+        // is being draged
+        if (counter + 1 && !isDraggedover)
+            setIsDraggedover(true)
+        setCounter(counter + 1)
     }
 
     function dragLeaveHandler(e) {
-        // setCounter((prevCounter) => prevCounter - 1)
-        // if (1 > counter - 1)
-        //     setIsDraggedover(false)
-        // console.log('counter', counter)
+        // only set isDraggedOver to false if  this is the last dragLeave event to activate (to avoid children leave events)
+        (counter - 1) < 1 && setIsDraggedover(false)
+        setCounter(counter - 1)
     }
 
     function dragOverHandler(e) {
-        // if (hasFiles(e)) {
+        !isDraggedover && setIsDraggedover(true)
+        // disable browser display image aciton
         e.preventDefault();
-        // }
     }
 
     // event delegation to caputre delete events
@@ -163,7 +145,7 @@ const ImageUpload = () => {
         // setFILES({})
         setImagePreviews([])
         // empty.classList.remove("hidden");
-        setIsEmpty(false)
+        setIsEmpty(true)
         // gallery.append(empty);
     };
 
@@ -174,14 +156,16 @@ const ImageUpload = () => {
                     {/* file upload modal */}
                     <article aria-label="File Upload Modal" className="relative h-full flex flex-col bg-white shadow-xl rounded-none sm:rounded-md" onDrop={dropHandler} onDragOver={dragOverHandler} onDragLeave={dragLeaveHandler} onDragEnter={dragEnterHandler}>
                         {/* overlay */}
-                        <div id="overlay" ref={overlayRef} className={`w-full h-full absolute top-0 left-0 pointer-events-none z-50 flex flex-col items-center justify-center rounded-md ${isDraggedover && ' bg-gray-100 bg-opacity-50'}`}>
-                            <i>
-                                <svg className="fill-current w-12 h-12 mb-3 text-blue-700" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                    <path d="M19.479 10.092c-.212-3.951-3.473-7.092-7.479-7.092-4.005 0-7.267 3.141-7.479 7.092-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h13c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408zm-7.479-1.092l4 4h-3v4h-2v-4h-3l4-4z" />
-                                </svg>
-                            </i>
-                            <p className="text-lg text-blue-700">Drop files to upload</p>
-                        </div>
+                        {isDraggedover &&
+                            <div id="overlay" className={`w-full h-full absolute top-0 left-0 pointer-events-none z-50 flex flex-col items-center justify-center rounded-md bg-gray-100 bg-opacity-50`}>
+                                <i>
+                                    <svg className="fill-current w-12 h-12 mb-3 text-blue-700" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                        <path d="M19.479 10.092c-.212-3.951-3.473-7.092-7.479-7.092-4.005 0-7.267 3.141-7.479 7.092-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h13c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408zm-7.479-1.092l4 4h-3v4h-2v-4h-3l4-4z" />
+                                    </svg>
+                                </i>
+                                <p className="text-lg text-blue-700">Drop files to upload</p>
+                            </div>
+                        }
 
                         {/* scroll area */}
                         <section className="overflow-auto p-8 w-full h-full flex flex-col">
@@ -203,7 +187,7 @@ const ImageUpload = () => {
                                 {imagePreviews.map((elem, index) => (
                                     <ImagePreview key={index} {...elem} onClickDelete={() => handleImagePrevewDelete(index)} />
                                 ))}
-                                <li id="empty" className={`h-full w-full text-center flex flex-col justify-center items-center ${isEmpty && 'hidden'}`}>
+                                <li id="empty" className={`h-full w-full text-center flex flex-col justify-center items-center ${!isEmpty && 'hidden'}`}>
                                     <img className="mx-auto w-32" src="https://user-images.githubusercontent.com/507615/54591670-ac0a0180-4a65-11e9-846c-e55ffce0fe7b.png" alt="no data" />
                                     <span className="text-small text-gray-500">No files selected</span>
                                 </li>
