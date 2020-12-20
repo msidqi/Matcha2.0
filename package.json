@@ -15,8 +15,10 @@
   "dependencies": {
     "@headlessui/react": "^0.2.0",
     "@tailwindcss/custom-forms": "^0.2.1",
+    "@types/color-hash": "^1.0.0",
     "@zeit/next-css": "^1.0.1",
     "axios": "^0.21.0",
+    "color-hash": "^1.0.3",
     "http-proxy-middleware": "^1.0.6",
     "next": "^10.0.3",
     "react": "^16.12.0",
