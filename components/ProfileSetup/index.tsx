@@ -2,12 +2,14 @@ import { useForm } from "react-hook-form";
 import axios from 'axios'
 import Select from "@/components/Select";
 import TagsDisplay from "../TagsDisplay";
-import { SyntheticEvent } from "react";
+import React from "react";
+import ImageUpload, { ImagePreviewProps } from "@/components/ImageUpload";
 
 const ProfileSetup = () => {
     const { register, handleSubmit } = useForm()
+    const [imagePreviews, setImagePreviews] = React.useState<ImagePreviewProps[]>([])
 
-    const onSubmit = async (data: { userName: string; password: string; firstName: string; lastName: string; email: string; }, e: SyntheticEvent) => {
+    const onSubmit = async (data: { userName: string; password: string; firstName: string; lastName: string; email: string; }, e: React.SyntheticEvent) => {
         console.log(data)
         try {
             const result = await axios.post('http://localhost:3001/api/updateProfile', data);
@@ -36,9 +38,12 @@ const ProfileSetup = () => {
         <form onSubmit={handleSubmit(onSubmit)} onKeyDown={(e) => checkKeyDown(e)} className="flex flex-col space-y-5">
             <Select name="gender" register={register} placeholder="Select your gender" label="Gender" options={genders} />
             <Select name="orientation" register={register} placeholder="Select your orientation" label="Sexual Preference" options={orientation} />
-            <label htmlFor="tags" className="block text-gray-700 font-semibold">Tags</label>
-            <TagsDisplay initialTags={['hello', 'world', '1337', '42']} />
-            <input className="bg-blue-500 hover:bg-gray-800 text-white p-2 rounded" type="submit" value="Complete Profile" />
+            <label htmlFor="tags" className="block text-gray-700 font-semibold">Interest</label>
+            <TagsDisplay initialTags={['Hello', 'World', '1337', '42']} />
+            <ImageUpload limit={5} imagePreviews={imagePreviews} setImagePreviews={setImagePreviews} />
+            <div className="pt-6">
+                <input className="w-full bg-blue-500 hover:bg-gray-800 text-white p-2 rounded" type="submit" value="Complete Profile" />
+            </div>
         </form>
     </div >
 }
