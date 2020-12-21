@@ -1,3 +1,5 @@
+import React from "react";
+
 interface LogoProps {
   height?: string;
   width?: string;
@@ -8,7 +10,7 @@ const Logo = ({
   height = "1.5rem",
   width = "7rem",
   variant = "primary",
-}: LogoProps) => (
+}: LogoProps): JSX.Element => (
   <svg
     key="Logo"
     xmlns="http://www.w3.org/2000/svg"

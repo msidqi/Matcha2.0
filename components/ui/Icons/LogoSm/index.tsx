@@ -1,9 +1,14 @@
+import React from "react";
+
 interface LogoSmProps {
   height?: string;
   width?: string;
 }
 
-const LogoSm = ({ height = "1.75rem", width = "1.75rem" }: LogoSmProps) => (
+const LogoSm = ({
+  height = "1.75rem",
+  width = "1.75rem",
+}: LogoSmProps): JSX.Element => (
   <svg
     key="LogoSm"
     xmlns="http://www.w3.org/2000/svg"

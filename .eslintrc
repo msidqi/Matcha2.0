@@ -13,6 +13,16 @@
     "plugin:prettier/recommended"
   ],
   "rules": {
-    "prettier/prettier": ["warn", {}, { "usePrettierrc": true }]
+    "prettier/prettier": ["warn", {}, { "usePrettierrc": true }],
+    "react/prop-types": 0,
+    // to reapply
+    "@typescript-eslint/no-explicit-any": 0,
+    // to reapply
+    "@typescript-eslint/no-unused-vars": 0
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }

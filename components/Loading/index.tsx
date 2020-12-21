@@ -1,4 +1,5 @@
+import React from "react";
 
-const Loading = () => <p>loading...</p>
+const Loading = (): JSX.Element => <p>loading...</p>;
 
-export default Loading
+export default Loading;

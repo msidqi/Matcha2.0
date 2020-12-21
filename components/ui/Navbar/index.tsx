@@ -5,7 +5,7 @@ import Logo from "@/components/ui/Icons/Logo";
 import LogoSm from "@/components/ui/Icons/LogoSm";
 import { useUser } from "@/components/auth";
 
-function Navbar() {
+function Navbar(): JSX.Element {
   const [showMenu, setShowMenu] = React.useState<boolean>(false);
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
   const [showNotifications, setShowNotifications] = React.useState<boolean>(
@@ -17,12 +17,12 @@ function Navbar() {
   const toggleMenu = () => setShowMenu(!showMenu);
   const toggleNotifications = () => setShowNotifications(!showNotifications);
 
-  const [{ loggedIn }, { logout }] = useUser()
+  const [{ loggedIn }, { logout }] = useUser();
 
   const handleLogout = () => {
-    logout()
-    router.push('/')
-  }
+    logout();
+    router.push("/");
+  };
 
   return (
     <nav className="bg-gray-800">
@@ -108,7 +108,7 @@ function Navbar() {
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            {loggedIn &&
+            {loggedIn && (
               <button className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                 <span className="sr-only">View notifications</span>
                 <svg
@@ -127,9 +127,9 @@ function Navbar() {
                   />
                 </svg>
               </button>
-            }
+            )}
             <div className="ml-3 relative">
-              {loggedIn &&
+              {loggedIn && (
                 <div>
                   <button
                     onClick={toggleDropDown}
@@ -145,7 +145,7 @@ function Navbar() {
                     />
                   </button>
                 </div>
-              }
+              )}
               <Transition
                 show={showDropDown}
                 enter="transition ease-out duration-100"
@@ -161,7 +161,7 @@ function Navbar() {
                   aria-orientation="vertical"
                   aria-labelledby="user-menu"
                 >
-                  {loggedIn ?
+                  {loggedIn ? (
                     <>
                       <a
                         href="#"
@@ -169,14 +169,14 @@ function Navbar() {
                         role="menuitem"
                       >
                         Profile
-                    </a>
+                      </a>
                       <a
                         href="#"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                       >
                         Settings
-                    </a>
+                      </a>
                       <a
                         onClick={handleLogout}
                         href="/"
@@ -184,17 +184,17 @@ function Navbar() {
                         role="menuitem"
                       >
                         Sign out
-                    </a>
+                      </a>
                     </>
-                    :
+                  ) : (
                     <a
                       href="/signin"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       role="menuitem"
                     >
                       Sign in
-                  </a>
-                  }
+                    </a>
+                  )}
                 </div>
               </Transition>
             </div>
