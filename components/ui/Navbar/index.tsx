@@ -8,14 +8,14 @@ import { useUser } from "@/components/auth";
 function Navbar(): JSX.Element {
   const [showMenu, setShowMenu] = React.useState<boolean>(false);
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
-  const [showNotifications, setShowNotifications] = React.useState<boolean>(
-    false
-  );
+  // const [showNotifications, setShowNotifications] = React.useState<boolean>(
+  //   false
+  // );
   const router = useRouter();
 
   const toggleDropDown = () => setShowDropDown(!showDropDown);
   const toggleMenu = () => setShowMenu(!showMenu);
-  const toggleNotifications = () => setShowNotifications(!showNotifications);
+  // const toggleNotifications = () => setShowNotifications(!showNotifications);
 
   const [{ loggedIn }, { logout }] = useUser();
 
@@ -140,7 +140,7 @@ function Navbar(): JSX.Element {
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="h-8 w-8 rounded-full"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                      src="/profile.jpg"
                       alt=""
                     />
                   </button>

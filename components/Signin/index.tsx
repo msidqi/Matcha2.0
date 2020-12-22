@@ -20,7 +20,7 @@ const Signin = (): JSX.Element => {
     }
   };
   return (
-    <div className="bg-white border rounded  max shadow-lg p-10 max-w-xl m-auto">
+    <div className="bg-white border rounded  max shadow-lg p-10 max-w-xl m-auto sm:mt-8 mb-8">
       <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">
         Sign in
       </h3>

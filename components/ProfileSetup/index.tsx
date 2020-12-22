@@ -58,7 +58,7 @@ const ProfileSetup = (): JSX.Element => {
   const orientation = [...genders, { label: "Both", value: "both" }];
   console.log("errors", errors);
   return (
-    <div className="bg-white sm:border rounded  max shadow-lg p-4 sm:p-10 max-w-3xl m-auto">
+    <div className="bg-white sm:border rounded  max shadow-lg p-4 sm:p-10 max-w-3xl m-auto sm:mt-8 mb-8">
       <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">
         Complete your profile
       </h3>
