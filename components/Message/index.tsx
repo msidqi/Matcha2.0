@@ -1,9 +1,7 @@
-const Message = () => {
-    return (
-        <div>
-            
-        </div>
-    )
-}
+import React from "react";
 
-export default Message
+const Message = (): JSX.Element => {
+  return <div></div>;
+};
+
+export default Message;
