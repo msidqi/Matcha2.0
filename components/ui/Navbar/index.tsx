@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { Transition } from "@headlessui/react";
 import Logo from "@/components/ui/Icons/Logo";
 import LogoSm from "@/components/ui/Icons/LogoSm";
@@ -24,6 +25,12 @@ function Navbar(): JSX.Element {
     router.push("/");
   };
 
+  const pathname = router.pathname;
+  const links: { href: string; label: string }[] = [
+    { label: "Dashboard", href: "/dashboard" },
+    { label: "Messages", href: "/messages" },
+    { label: "Settings", href: "#" },
+  ];
   return (
     <nav className="bg-gray-800 fixed top-0 w-full z-10">
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
@@ -80,30 +87,22 @@ function Navbar(): JSX.Element {
             </div>
             <div className="hidden sm:block sm:ml-6">
               <div className="flex space-x-4">
-                <a
-                  href="#"
-                  className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Dashboard
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Team
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Projects
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Calendar
-                </a>
+                {links.map((link, index) => {
+                  const isCurrentLink = link.href === pathname;
+                  return (
+                    <Link href={link.href} key={`l-${index}`}>
+                      <a
+                        className={`${
+                          isCurrentLink
+                            ? "bg-gray-900 text-white"
+                            : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                        }  text-white px-3 py-2 rounded-md text-sm font-medium`}
+                      >
+                        {link.label}
+                      </a>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -204,30 +203,22 @@ function Navbar(): JSX.Element {
 
       <div className={`${showMenu ? "block" : "hidden"} sm:hidden`}>
         <div className="px-2 pt-2 pb-3 space-y-1">
-          <a
-            href="#"
-            className={`bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium`}
-          >
-            Dashboard
-          </a>
-          <a
-            href="#"
-            className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-          >
-            Team
-          </a>
-          <a
-            href="#"
-            className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-          >
-            Projects
-          </a>
-          <a
-            href="#"
-            className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-          >
-            Calendar
-          </a>
+          {links.map((link, index) => {
+            const isCurrentLink = link.href === pathname;
+            return (
+              <Link href={link.href} key={`l-${index}`}>
+                <a
+                  className={`${
+                    isCurrentLink
+                      ? "bg-gray-900 text-white"
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                  }  block px-3 py-2 rounded-md text-base font-medium`}
+                >
+                  {link.label}
+                </a>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </nav>

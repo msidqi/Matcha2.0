@@ -1,6 +1,5 @@
 // import axios from "axios";
 import React from "react";
-import TextBuble from "@/components/ChatTextBuble";
 import { formatDate } from "@/utils/formatDate";
 
 interface ChatPreview {
@@ -11,7 +10,6 @@ interface ChatPreview {
 }
 
 const ChatList = (): JSX.Element => {
-  const currentUser = { name: "Mouad", lastConnected: "" };
   const chatpreview: ChatPreview[] = [
     {
       preview: "some preview text",

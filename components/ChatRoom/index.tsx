@@ -1,7 +1,7 @@
 // import axios from "axios";
 import React from "react";
 import TextBuble from "@/components/ChatTextBuble";
-import ArrowBack from "@/components/ui/Icons/ArrowBack";
+// import ArrowBack from "@/components/ui/Icons/ArrowBack";
 
 interface TextMessage {
   date: Date;
@@ -58,7 +58,7 @@ const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
         </div>
       </header>
       {/* chat bubbles section --start-- */}
-      <div className="w-full overflow-hidden mb-2">
+      <div className="w-full overflow-hidden mb-2 px-2">
         {textMessages.map(({ me, text }, index) => (
           <div key={index} className="block w-full my-0.5">
             <TextBuble text={text} me={me} />
