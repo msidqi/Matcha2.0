@@ -5,9 +5,7 @@ const Layout: FC = ({ children }) => (
   <>
     <Navbar />
     <main>
-      <div className="max-w-7xl mx-auto">
-        {children}
-      </div>
+      <div className="max-w-7xl mx-auto pt-16">{children}</div>
     </main>
   </>
 );

@@ -10,9 +10,6 @@ module.exports = {
   purge: ["./components/**/*.tsx", "./pages/**/*.tsx"],
   theme: {
     extend: {},
-    boxShadow: {
-      innerRadius: 'inset 0 0 0 .5em #e4e4e4',
-    },
     maxWidth: {
       '1/4': '25%',
       '1/2': '50%',

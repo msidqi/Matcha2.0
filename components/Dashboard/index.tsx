@@ -10,7 +10,7 @@ const Dashboard = (): JSX.Element => {
       <section className="bg-white border-r-2 border-gray-300 p-2">
         <DashboardProfile />
       </section>
-      <section className="bg-white flex flex-wrap flex-1 items-center justify-center items-center p-2 w-full">
+      <section className="bg-white flex flex-wrap flex-1 justify-center items-center p-2 w-full">
         {users.map((_, index) => (
           <Fragment key={`u-${index}`}>
             <ProfileListing />

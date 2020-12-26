@@ -15,7 +15,7 @@ const Tag = ({ onClose, tagName }: TagProps): JSX.Element => {
     >
       <div>
         <p className="text-white pr-1">{tagName}</p>
-        <div className="absolute" style={{ top: "4px", right: "6px" }}>
+        <div className="absolute top-4 right-6">
           <img onClick={onClose} width={20} src="/close.svg" className="w-2" />
         </div>
       </div>

@@ -6,6 +6,7 @@ import TagsDisplay from "../TagsDisplay";
 import React from "react";
 import ImageUpload, { ImagePreviewProps } from "@/components/ImageUpload";
 import DateInput from "@/components/DateInput";
+import getPosition from "@/utils/getPosition";
 
 type DataType = {
   userName: string;
@@ -29,6 +30,9 @@ const ProfileSetup = (): JSX.Element => {
       for (const key in data) {
         formdata.append(key, data[key]);
       }
+      const pos = (await getPosition()).coords;
+      formdata.append('position', pos.longitude.toString());
+      formdata.append('position', pos.latitude.toString())
       console.log("formdata", formdata);
       const result = await axios.post(
         "http://localhost:3001/api/updateProfile",
