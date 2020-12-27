@@ -36,10 +36,17 @@ const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
     { me: true, text: "user6", date: new Date() },
     { me: true, text: "user6", date: new Date() },
     { me: true, text: "user6", date: new Date() },
+    { me: true, text: "user6", date: new Date() },
+    { me: true, text: "user6", date: new Date() },
+    { me: true, text: "user6", date: new Date() },
+    { me: true, text: "user6", date: new Date() },
+    { me: true, text: "user6", date: new Date() },
+    { me: true, text: "user6", date: new Date() },
+    { me: true, text: "user6", date: new Date() },
   ];
   return (
-    <div className="bg-white p-2 pb-14 min-h-screen sm:min-h-0 relative w-full sm:w-7/12">
-      <header className="flex justify-start items-center w-full mb-6">
+    <div className="bg-white p-2 pb-14 h-full  relative w-full sm:w-7/12 sm:border-r sm:border-gray-200">
+      <header className="flex justify-start items-center w-full mb-5">
         {/* <button
           className="rounded-full bg-gray-200 w-8 h-8 flex items-center justify-center"
           onClick={onClickBack}
@@ -58,7 +65,11 @@ const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
         </div>
       </header>
       {/* chat bubbles section --start-- */}
-      <div className="w-full overflow-hidden mb-2 px-2">
+      <div
+        id="chatbox"
+        className="w-full pb-2 px-2 h-full overflow-y-scroll "
+        style={{ height: "calc(100% - 4.75rem)" }}
+      >
         {textMessages.map(({ me, text }, index) => (
           <div key={index} className="block w-full my-0.5">
             <TextBuble text={text} me={me} />
@@ -76,6 +87,17 @@ const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
           placeholder="type something"
         />
       </div>
+      <style jsx>{`
+        @media (max-width: 640px) {
+          #chatbox::-webkit-scrollbar {
+            display: none;
+          }
+          #chatbox {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+          }
+        }
+      `}</style>
     </div>
   );
 };

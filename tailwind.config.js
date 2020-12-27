@@ -9,15 +9,14 @@ module.exports = {
   },
   purge: ["./components/**/*.tsx", "./pages/**/*.tsx"],
   theme: {
-    extend: {},
-    maxWidth: {
-      '1/4': '25%',
-      '1/2': '50%',
-      '3/4': '75%',
-     }
+    extend: {
+      maxWidth: {
+        "1/4": "25%",
+        "1/2": "50%",
+        "3/4": "75%",
+      },
+    },
   },
   variants: {},
-  plugins: [
-    require('@tailwindcss/forms')
-  ],
+  plugins: [require("@tailwindcss/forms")],
 };

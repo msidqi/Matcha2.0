@@ -5,7 +5,7 @@ import CharList from "@/components/CharList";
 const Messages = (): JSX.Element => {
   return (
     <Layout>
-      <div className="flex ">
+      <div className="flex h-full">
         <CharList />
         <ChatRoom />
       </div>
