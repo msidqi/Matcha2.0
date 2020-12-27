@@ -43,10 +43,26 @@ const Chat = (_: ChatProps): JSX.Element => {
     { me: true, text: "user6", date: new Date() },
     { me: true, text: "user6", date: new Date() },
     { me: true, text: "user6", date: new Date() },
+    { me: true, text: "user6", date: new Date() },
+    { me: true, text: "user6", date: new Date() },
+    { me: true, text: "user6", date: new Date() },
+    { me: true, text: "user6", date: new Date() },
   ];
+
+  const handleGroup = (index: number) => {
+    const context = [
+      textMessages[index - 1]?.me,
+      textMessages[index]?.me,
+      textMessages[index + 1]?.me,
+    ];
+    if (context[0] !== context[1] && context[1] === context[2]) return "top";
+    if (context[0] === context[1] && context[1] !== context[2]) return "bottom";
+    if (context[0] === context[1] && context[1] === context[2]) return "middle";
+    return "single";
+  };
   return (
     <div className="bg-white p-2 pb-14 h-full  relative w-full sm:w-7/12 sm:border-r sm:border-gray-200">
-      <header className="flex justify-start items-center w-full mb-5">
+      <header className="p-2 pb-0 flex justify-start items-center w-full mb-5">
         {/* <button
           className="rounded-full bg-gray-200 w-8 h-8 flex items-center justify-center"
           onClick={onClickBack}
@@ -67,18 +83,18 @@ const Chat = (_: ChatProps): JSX.Element => {
       {/* chat bubbles section --start-- */}
       <div
         id="chatbox"
-        className="w-full pb-2 px-2 h-full overflow-y-scroll "
-        style={{ height: "calc(100% - 4.75rem)" }}
+        className="w-full pb-2 px-4 h-full overflow-y-auto"
+        style={{ height: "calc(100% - 5.3rem)" }}
       >
         {textMessages.map(({ me, text }, index) => (
           <div key={index} className="block w-full my-0.5">
-            <TextBuble text={text} me={me} />
+            <TextBuble text={text} me={me} group={handleGroup(index)} />
           </div>
         ))}
       </div>
       {/* chat input section --start-- */}
       <div
-        className={`bg-white absolute bottom-0 left-0 w-full pt-1 pb-3 p-2  ${
+        className={`bg-white absolute bottom-0 left-0 w-full pt-1 pb-3 px-4  ${
           hasScrolled ? "shadow " : ""
         }`}
       >

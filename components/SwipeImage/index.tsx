@@ -7,8 +7,11 @@
 //   };
 //   const onCardLeftScreen = (direction: string, id: string) =>
 //     console.log(`${id} left the screen from ${direction} direction`);
-
+//   if (global.window === undefined) {
+//     return <div>no window</div>;
+//   }
 //   return (
+//     // <div>tmp</div>
 //     <TinderCard
 //       onSwipe={onSwipe}
 //       onCardLeftScreen={(direction) => onCardLeftScreen(direction, "fooBar")}
@@ -51,25 +54,12 @@ function Simple() {
 
   return (
     <div>
-      <link
-        href="https://fonts.googleapis.com/css?family=Damion&display=swap"
-        rel="stylesheet"
-      />
-      <link
-        href="https://fonts.googleapis.com/css?family=Alatsi&display=swap"
-        rel="stylesheet"
-      />
-      <h1>React Tinder Card</h1>
       <div className="cardContainer">
         <TinderCard
           key={character.name}
           onSwipe={(dir) => swiped(dir, character.name)}
           onCardLeftScreen={() => outOfFrame(character.name)}
         >
-          {/* <div
-            style={{ backgroundImage: `url(${character.url})` }}
-            className="rounded-md w-40 h-40 bg-red-100"
-          ></div> */}
           <div className="rounded-lg h-96 w-96 overflow-hidden">
             <img
               alt="content"
@@ -79,11 +69,11 @@ function Simple() {
           </div>
         </TinderCard>
       </div>
-      {lastDirection ? (
+      {/* {lastDirection ? (
         <h2 className="infoText">You swiped {lastDirection}</h2>
       ) : (
         <h2 className="infoText" />
-      )}
+      )} */}
     </div>
   );
 }

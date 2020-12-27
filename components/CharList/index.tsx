@@ -97,7 +97,7 @@ const ChatList = (): JSX.Element => {
     },
   ];
   return (
-    <div className="bg-white h-full overflow-y-scroll hidden sm:block sm:border-r sm:border-l sm:border-gray-200 sm:w-5/12">
+    <div className="bg-white h-full overflow-y-auto hidden sm:block sm:border-r sm:border-l sm:border-gray-200 sm:w-5/12">
       {chatpreview.map((elem, index) => (
         <div
           key={index}
