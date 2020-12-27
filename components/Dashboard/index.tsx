@@ -1,13 +1,13 @@
 // import axios from "axios";
-import React, { Fragment } from "react";
+import React from "react";
 import ProfileListing from "@/components/ProfileListing";
 import DashboardProfile from "@/components/DashboardProfile";
 
 const Dashboard = (): JSX.Element => {
-  const users = ["user1", "user2", "user3", "user4", "user5", "user6"];
+  // const users = ["user1", "user2", "user3", "user4", "user5", "user6"];
   return (
-    <div className="flex">
-      <section className="bg-white border-r-2 border-gray-300 p-2 hidden sm:block">
+    <div className="flex h-full">
+      <section className="bg-white border-r border-gray-300 p-2 hidden sm:block relative">
         <DashboardProfile />
       </section>
       <section className="bg-white flex flex-wrap flex-1 justify-center items-center p-2 w-full">

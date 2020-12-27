@@ -28,11 +28,11 @@ const ProfileSetup = (): JSX.Element => {
     try {
       const formdata = new FormData();
       for (const key in data) {
-        formdata.append(key, data[key]);
+        formdata.append(key, (data as any)[key]);
       }
       const pos = (await getPosition()).coords;
-      formdata.append('position', pos.longitude.toString());
-      formdata.append('position', pos.latitude.toString())
+      formdata.append("position", pos.longitude.toString());
+      formdata.append("position", pos.latitude.toString());
       console.log("formdata", formdata);
       const result = await axios.post(
         "http://localhost:3001/api/updateProfile",
@@ -49,11 +49,11 @@ const ProfileSetup = (): JSX.Element => {
     if (e.code === "Enter") e.preventDefault();
   };
 
-  const mySubmitHandler = (e) => {
+  /*const mySubmitHandler = (e) => {
     console.log("checkKeyDown", e.code);
     e.preventDefault();
     handleSubmit(onSubmit)();
-  };
+  };*/
 
   const genders = [
     { label: "Male", value: "male" },

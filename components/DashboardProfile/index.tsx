@@ -3,7 +3,7 @@ import React from "react";
 const DashboardProfile = () => {
   return (
     <div className="w-60 mb-10 px-4 text-center">
-      <div className="m-auto rounded-full h-20 w-20 overflow-hidden border-2 border-gray-300">
+      <div className="m-auto rounded-full h-20 w-20 overflow-hidden border border-gray-300">
         <img
           alt="content"
           className="object-cover object-center h-full w-full"

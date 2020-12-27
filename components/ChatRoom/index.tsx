@@ -13,8 +13,8 @@ interface ChatProps {
   onClickBack?: () => void;
 }
 
-const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
-  const [hasScrolled, setHasScrolled] = React.useState<boolean>(true);
+const Chat = (_: ChatProps): JSX.Element => {
+  const [hasScrolled] = React.useState<boolean>(true);
   const currentUser = { name: "Mouad", lastConnected: "connected 2h ago" };
   const textMessages: TextMessage[] = [
     {

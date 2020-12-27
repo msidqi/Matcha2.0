@@ -114,7 +114,7 @@ const ImageUpload = ({
   }
 
   // print all selected files
-  const handleSubmit = () => {
+  /*const handleSubmit = () => {
     alert(`Submitted Files:\n${JSON.stringify(imagePreviews)}`);
   };
 
@@ -122,7 +122,7 @@ const ImageUpload = ({
   const clearSelection = () => {
     setImagePreviews([]);
     setIsEmpty(true);
-  };
+  };*/
 
   return (
     // <div className="bg-gray-500 h-screen w-screen sm:px-8 md:px-16 sm:py-8">
@@ -202,7 +202,7 @@ const ImageUpload = ({
               >
                 <article
                   tabIndex={0}
-                  style={{boxShadow: 'inset 0 0 0 .5em #e4e4e4'}}
+                  style={{ boxShadow: "inset 0 0 0 .5em #e4e4e4" }}
                   className="flex justify-center items-center group hasImage w-full h-full rounded-2xl focus:outline-none focus:shadow-outline  cursor-pointer relative text-transparent hover:text-white hover:shadow-sm "
                 >
                   <img

@@ -1,4 +1,4 @@
-import { UserState, UserDispatchActions } from "./index";
+import type { UserState, UserDispatchActions } from "./index";
 
 export const userReducer = (
   state: UserState,

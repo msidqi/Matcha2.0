@@ -1,6 +1,12 @@
-import React from 'react'
+import React from "react";
+import SwipeImage from "@/components/SwipeImage";
 
 const ProfileListing = () => {
+  return <SwipeImage />;
+};
+
+export default ProfileListing;
+/*
     return (
       <div className="sm:w-1/2 mb-10 px-4">
         <div className="rounded-lg h-96 overflow-hidden">
@@ -11,6 +17,4 @@ const ProfileListing = () => {
         <button className="flex mx-auto mt-6 text-white bg-indigo-500 border-0 py-2 px-5 focus:outline-none hover:bg-indigo-600 rounded">Button</button>
       </div>
     )
-}
-
-export default ProfileListing
+    */
