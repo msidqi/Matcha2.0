@@ -91,7 +91,7 @@ const ChatList = (): JSX.Element => {
     },
     {
       preview: "some preview text",
-      username: "user6",
+      username: "user42",
       image: "/profile.jpg",
       date: new Date(2020, 12, 24).toJSON(),
     },

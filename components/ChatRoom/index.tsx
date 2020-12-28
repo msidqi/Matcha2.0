@@ -31,32 +31,43 @@ const Chat = (_: ChatProps): JSX.Element => {
     },
     { me: false, text: "user2", date: new Date() },
     { me: true, text: "user3", date: new Date() },
-    { me: false, text: "user4", date: new Date() },
-    { me: true, text: "user5", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
-    { me: true, text: "user6", date: new Date() },
+    {
+      me: false,
+      text: "Lorem ipsum dolor sit, amet ",
+      date: new Date(),
+    },
+    {
+      me: false,
+      text: "consectetur adipisicing elit",
+      date: new Date(),
+    },
+    {
+      me: false,
+      text: "Distinctio inventore esse odio omnis repellendus autem est",
+      date: new Date(),
+    },
+    { me: true, text: "Hey, How are you doing!", date: new Date() },
+    { me: true, text: "beatae nostrum accusamus, laborum", date: new Date() },
+    { me: true, text: "totam sit accusantium tenetur", date: new Date() },
+    { me: true, text: "quidem corporis veniam", date: new Date() },
+    { me: false, text: "another text", date: new Date() },
+    { me: true, text: "some text", date: new Date() },
+    { me: false, text: "another text", date: new Date() },
+    { me: true, text: "some text", date: new Date() },
+    { me: false, text: "another text", date: new Date() },
+    { me: true, text: "some text", date: new Date() },
+    { me: false, text: "another text", date: new Date() },
+    { me: true, text: "some text", date: new Date() },
+    { me: false, text: "another text", date: new Date() },
+    { me: true, text: "some text", date: new Date() },
+    { me: false, text: "another text", date: new Date() },
+    { me: true, text: "some text", date: new Date() },
+    { me: false, text: "another text", date: new Date() },
+    { me: true, text: "some text", date: new Date() },
+    { me: false, text: "another text", date: new Date() },
   ];
 
-  const handleGroup = (index: number) => {
+  const groupPosition = (index: number) => {
     const context = [
       textMessages[index - 1]?.me,
       textMessages[index]?.me,
@@ -95,7 +106,11 @@ const Chat = (_: ChatProps): JSX.Element => {
       >
         {textMessages.map(({ me, text }, index) => (
           <div key={index} className="block w-full my-0.5">
-            <TextBuble text={text} me={me} group={handleGroup(index)} />
+            <TextBuble
+              text={text}
+              isCurrentUser={me}
+              group={groupPosition(index)}
+            />
           </div>
         ))}
       </div>
