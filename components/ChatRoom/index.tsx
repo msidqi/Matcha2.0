@@ -1,6 +1,7 @@
 // import axios from "axios";
 import React from "react";
 import TextBuble from "@/components/ChatTextBuble";
+import { io } from "socket.io-client";
 // import ArrowBack from "@/components/ui/Icons/ArrowBack";
 
 interface TextMessage {
@@ -15,6 +16,12 @@ interface ChatProps {
 
 const Chat = (_: ChatProps): JSX.Element => {
   const [hasScrolled] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    const socket = io("http://localhost:3001");
+    console.log(socket);
+  }, [io]);
+
   const currentUser = { name: "Mouad", lastConnected: "connected 2h ago" };
   const textMessages: TextMessage[] = [
     {
