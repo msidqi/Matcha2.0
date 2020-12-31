@@ -24,36 +24,36 @@ const db = [
   },
 ];
 
-const alreadyRemoved = [];
+const alreadyRemoved: string[] = [];
 let charactersState = db; // This fixes issues with updating characters state forcing it to use the current state and not the state that was active when the card was created.
 
 function Advanced() {
   const [characters, setCharacters] = useState(db);
-  const [lastDirection, setLastDirection] = useState();
+  const [lastDirection, setLastDirection] = useState<string>("");
 
   const childRefs = useMemo(
     () =>
       Array(db.length)
         .fill(0)
-        .map((i) => React.createRef()),
+        .map(() => React.createRef<any>()),
     []
   );
 
-  const swiped = (direction, nameToDelete) => {
-    console.log("removing: " + nameToDelete);
+  const swiped = (direction: string, nameToDelete: string) => {
+    console.log("removing: " + nameToDelete, `direction ${direction}`);
     setLastDirection(direction);
     alreadyRemoved.push(nameToDelete);
   };
 
-  const outOfFrame = (name) => {
-    console.log(name + " left the screen!");
+  const outOfFrame = (name: string, direction: string) => {
+    console.log(name + " left the screen!", `direction ${direction}`);
     charactersState = charactersState.filter(
       (character) => character.name !== name
     );
     setCharacters(charactersState);
   };
 
-  const swipe = (dir) => {
+  const swipe = (dir: string) => {
     const cardsLeft = characters.filter(
       (person) => !alreadyRemoved.includes(person.name)
     );
@@ -68,34 +68,27 @@ function Advanced() {
   return (
     <>
       <div>
-        <link
-          href="https://fonts.googleapis.com/css?family=Damion&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css?family=Alatsi&display=swap"
-          rel="stylesheet"
-        />
-        <h1>React Tinder Card</h1>
         <div className="cardContainer">
           {characters.map((character, index) => (
             <TinderCard
               ref={childRefs[index]}
-              className="swipe"
+              // className="swipe"
               key={character.name}
               onSwipe={(dir) => swiped(dir, character.name)}
-              onCardLeftScreen={() => outOfFrame(character.name)}
+              onCardLeftScreen={(direction) =>
+                outOfFrame(character.name, direction)
+              }
             >
               {/* <div className="card rounded-lg h-96 w-96 overflow-hidden">
-					<img
-					alt="content"
-					className="object-cover object-center h-full w-full"
-					src={character.url}
-					/>
-				</div> */}
+                <img
+                  alt="content"
+                  className="object-cover object-center h-full w-full"
+                  src={character.url}
+                />
+              </div> */}
               <div
                 style={{ backgroundImage: "url(" + character.url + ")" }}
-                className="card shadow-2xl"
+                className="card"
               >
                 <h3>{character.name}</h3>
               </div>
@@ -124,7 +117,6 @@ function Advanced() {
           width: 100vw;
           min-height: 100vh;
           overflow: hidden;
-          /* background: linear-gradient(#fff, #999); */
           background: linear-gradient(#e66465, #9198e5);
         }
 
@@ -165,18 +157,21 @@ function Advanced() {
         }
 
         .cardContainer {
-          width: 90vw;
-          max-width: 260px;
-          height: 300px;
           position: relative;
+        }
+
+        .cardContainer card {
+          --tw-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+            var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
         }
 
         .card {
           position: absolute;
           background-color: #fff;
           width: 80vw;
-          max-width: 260px;
-          height: 300px;
+          max-width: 360px;
+          height: 500px;
           border-radius: 20px;
           background-size: cover;
           background-position: center;
