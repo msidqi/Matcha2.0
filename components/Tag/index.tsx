@@ -15,9 +15,16 @@ const Tag = ({ onClose, tagName }: TagProps): JSX.Element => {
     >
       <div>
         <p className="text-white pr-1">{tagName}</p>
-        <div className="absolute top-4 right-6">
-          <img onClick={onClose} width={20} src="/close.svg" className="w-2" />
-        </div>
+        {onClose && (
+          <div className="absolute top-2 right-2">
+            <img
+              onClick={onClose}
+              width={20}
+              src="/close.svg"
+              className="w-2"
+            />
+          </div>
+        )}
       </div>
     </div>
   );

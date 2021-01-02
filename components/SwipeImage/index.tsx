@@ -1,26 +1,37 @@
 import React, { useState, useMemo } from "react";
 import TinderCard from "react-tinder-card";
+import SwipeImageProfile from "@/components/SwipeImageProfile";
 
 const db = [
   {
     name: "Richard Hendricks",
     url: "/profile.jpg",
+    distance: 0.3,
+    age: 42,
   },
   {
     name: "Erlich Bachman",
     url: "/profile.jpg",
+    distance: 0.8,
+    age: 42,
   },
   {
     name: "Monica Hall",
     url: "/profile.jpg",
+    distance: 0.6,
+    age: 42,
   },
   {
     name: "Jared Dunn",
     url: "/profile.jpg",
+    distance: 0.2,
+    age: 42,
   },
   {
-    name: "Dinesh Chugtai",
+    name: "Mouad",
     url: "/profile.jpg",
+    distance: 1.1,
+    age: 42,
   },
 ];
 
@@ -67,33 +78,22 @@ function Advanced() {
 
   return (
     <>
-      <div>
-        <div className="cardContainer">
+      <div className="">
+        <div className="relative">
           {characters.map((character, index) => (
             <TinderCard
               ref={childRefs[index]}
-              // className="swipe"
+              // className="absolute"
               key={character.name}
               onSwipe={(dir) => swiped(dir, character.name)}
               onCardLeftScreen={(direction) =>
                 outOfFrame(character.name, direction)
               }
             >
-              {/* <div className="card rounded-lg h-96 w-96 overflow-hidden">
-                <img
-                  alt="content"
-                  className="object-cover object-center h-full w-full"
-                  src={character.url}
-                />
-              </div> */}
-              <div
-                style={{ backgroundImage: "url(" + character.url + ")" }}
-                className="card"
-              >
-                <h3>{character.name}</h3>
-              </div>
+              <SwipeImageProfile profile={character} />
             </TinderCard>
           ))}
+          {/* cardContent w-full h-full */}
         </div>
         <div className="buttons">
           <button onClick={() => swipe("left")}>Swipe left!</button>
@@ -149,46 +149,6 @@ function Advanced() {
         }
 
         h2 {
-          color: #fff;
-        }
-
-        .swipe {
-          position: absolute;
-        }
-
-        .cardContainer {
-          position: relative;
-        }
-
-        .cardContainer card {
-          --tw-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-          box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-            var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-        }
-
-        .card {
-          position: absolute;
-          background-color: #fff;
-          width: 80vw;
-          max-width: 360px;
-          height: 500px;
-          border-radius: 20px;
-          background-size: cover;
-          background-position: center;
-        }
-
-        .cardContent {
-          width: 100%;
-          height: 100%;
-        }
-
-        .swipe:last-of-type {
-        }
-
-        .card h3 {
-          position: absolute;
-          bottom: 0;
-          margin: 10px;
           color: #fff;
         }
 
