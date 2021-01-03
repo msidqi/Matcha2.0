@@ -2,36 +2,72 @@ import React, { useState, useMemo } from "react";
 import TinderCard from "react-tinder-card";
 import SwipeImageProfile from "@/components/SwipeImageProfile";
 
-const db = [
+type Profile = {
+  name: string;
+  url: string;
+  distance: number;
+  age: number;
+  gender: "male" | "female";
+  orientation: "male" | "female" | "both";
+  bio: string;
+  tags: string[];
+};
+
+const db: Profile[] = [
   {
     name: "Richard Hendricks",
     url: "/profile.jpg",
     distance: 0.3,
     age: 42,
+    gender: "male",
+    orientation: "both",
+    tags: ["Hello", "World", "1337", "42"],
+    bio:
+      "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
   },
   {
     name: "Erlich Bachman",
     url: "/profile.jpg",
     distance: 0.8,
     age: 42,
+    gender: "male",
+    orientation: "female",
+    tags: ["Hello", "World", "1337", "42"],
+    bio:
+      "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
   },
   {
     name: "Monica Hall",
     url: "/profile.jpg",
     distance: 0.6,
-    age: 42,
+    age: 19,
+    gender: "female",
+    orientation: "male",
+    tags: ["Hello", "World", "1337", "42"],
+    bio:
+      "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
   },
   {
     name: "Jared Dunn",
     url: "/profile.jpg",
     distance: 0.2,
-    age: 42,
+    age: 1337,
+    gender: "female",
+    orientation: "male",
+    tags: ["Hello", "World", "1337", "42"],
+    bio:
+      "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
   },
   {
-    name: "Mouad",
+    name: "vmod",
     url: "/profile.jpg",
     distance: 1.1,
     age: 42,
+    gender: "male",
+    orientation: "female",
+    tags: ["Hello", "World", "1337", "42"],
+    bio:
+      "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
   },
 ];
 
@@ -39,7 +75,7 @@ const alreadyRemoved: string[] = [];
 let charactersState = db; // This fixes issues with updating characters state forcing it to use the current state and not the state that was active when the card was created.
 
 function Advanced() {
-  const [characters, setCharacters] = useState(db);
+  const [characters, setCharacters] = useState<Profile[]>(db);
   const [lastDirection, setLastDirection] = useState<string>("");
 
   const childRefs = useMemo(
