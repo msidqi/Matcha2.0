@@ -16,16 +16,27 @@ interface Props {
     bio: string;
     tags: string[];
   };
+  isCurrentlyShown?: boolean;
 }
 
 const SwipeImageProfile = ({
   profile: { url, name, age, distance, gender, orientation, bio, tags },
+  isCurrentlyShown,
 }: Props) => {
-  const [expand, setExpand] = React.useState<boolean>(false);
-  const handleExpand = () => setExpand(!expand);
+  const [state, setExpand] = React.useState<{
+    expand: boolean;
+    doExpand: boolean;
+  }>({ expand: false, doExpand: true });
+  const handleExpand = () => {
+    console.log("clicked");
+    state.doExpand && setExpand({ ...state, expand: !state.expand });
+  };
 
   const mainDetails = (
-    <div onClick={!expand ? handleExpand : undefined}>
+    <div
+      onClick={!state.expand ? handleExpand : undefined}
+      className="cursor-pointer"
+    >
       <h4 className="text-gray-600 text-base">
         <span className="3">{name}</span> {age}
       </h4>
@@ -42,18 +53,23 @@ const SwipeImageProfile = ({
     </div>
   );
   return (
-    <div className="absolute bottom-0 bg-white shadow w-screen max-w-sm h-96 rounded-2xl p-0.5">
+    <article
+      style={{ height: "34rem" }}
+      className={`${
+        isCurrentlyShown ? "shadow-xl bg-red-500" : "bg-white"
+      } absolute top-0 w-full sm:rounded-2xl`}
+    >
       <div
         style={{ backgroundImage: `url(${url})` }}
-        className=" relative max-w-sm h-full w-full rounded-2xl bg-cover bg-center"
+        className=" relative max-w-sm h-full w-full sm:rounded-2xl bg-cover bg-center"
       >
         <div
-          onClick={expand ? handleExpand : undefined}
+          onClick={state.expand ? handleExpand : undefined}
           className="bg-white px-2 py-2 border-gray-200 border-2 rounded-2xl  m-auto mb-0 cursor-pointer w-11/12 absolute bottom-2 left-2/4 transform -translate-x-1/2"
         >
           {mainDetails}
           <Transition
-            show={expand}
+            show={state.expand}
             enter="transition ease-out duration-100"
             enterFrom="transform scale-y-50"
             enterTo="transform scale-y-100"
@@ -74,7 +90,7 @@ const SwipeImageProfile = ({
           </Transition>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

@@ -75,10 +75,10 @@ const db: Profile[] = [
 ];
 
 const alreadyRemoved: string[] = [];
-let charactersState = db; // This fixes issues with updating characters state forcing it to use the current state and not the state that was active when the card was created.
+let profilesState = db; // This fixes issues with updating profiles state forcing it to use the current state and not the state that was active when the card was created.
 
 function Advanced() {
-  const [characters, setCharacters] = useState<Profile[]>(db);
+  const [profiles, setProfiles] = useState<Profile[]>(db);
   const [lastDirection, setLastDirection] = useState<string>("");
 
   const childRefs = useMemo(
@@ -97,14 +97,14 @@ function Advanced() {
 
   const outOfFrame = (name: string, direction: string) => {
     console.log(name + " left the screen!", `direction ${direction}`);
-    charactersState = charactersState.filter(
+    profilesState = profilesState.filter(
       (character) => character.name !== name
     );
-    setCharacters(charactersState);
+    setProfiles(profilesState);
   };
 
   const swipe = (dir: string) => {
-    const cardsLeft = characters.filter(
+    const cardsLeft = profiles.filter(
       (person) => !alreadyRemoved.includes(person.name)
     );
     if (cardsLeft.length) {
@@ -117,44 +117,50 @@ function Advanced() {
 
   return (
     <>
-      <div className="">
-        <div className="relative">
-          {characters.map((character, index) => (
+      <div className="h-full w-screen max-w-sm overflow-y-scroll overflow-x-hidden sm:overflow-visible">
+        <section className="relative h-" style={{ height: "34rem" }}>
+          {profiles.map((profile, index) => (
             <TinderCard
+              preventSwipe={["down", "up"]}
               ref={childRefs[index]}
-              // className="absolute"
-              key={character.name}
-              onSwipe={(dir) => swiped(dir, character.name)}
+              key={profile.name}
+              onSwipe={(dir) => swiped(dir, profile.name)}
               onCardLeftScreen={(direction) =>
-                outOfFrame(character.name, direction)
+                outOfFrame(profile.name, direction)
               }
             >
-              <SwipeImageProfile profile={character} />
+              <SwipeImageProfile
+                profile={profile}
+                // isCurrentlyShown={index === profiles.length - 1}
+              />
             </TinderCard>
           ))}
-          {/* cardContent w-full h-full */}
-        </div>
-        <section className="flex justify-evenly items-center my-2">
-          <div className="transform transition duration-300 hover:scale-110  bg-white rounded-full shadow-md h-20 w-20 flex justify-center items-center relative cursor-pointer">
-            <DislikeIcon className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-          </div>
-          <div className="transform transition duration-300 hover:scale-110  mt-10 bg-white rounded-full shadow-md h-20 w-20 flex justify-center items-center relative cursor-pointer">
-            <AvatarIcon
-              height="41"
-              width="41"
-              color="#F3C245"
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        </section>
+        <section className="flex justify-evenly items-center pb-2 sm:mt-2 w-screen max-w-sm">
+          <div
+            onClick={() => swipe("left")}
+            className="transform transition duration-300 hover:scale-110 bg-white rounded-full shadow-md h-16 w-16 sm:h-20 sm:w-20 flex justify-center items-center relative cursor-pointer"
+          >
+            <DislikeIcon
+              // height="28"
+              // width="28"
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-6 w-6 sm:h-10 sm:w-10"
             />
           </div>
-          <div className="transform transition duration-300 hover:scale-110  bg-white rounded-full shadow-md h-20 w-20 flex justify-center items-center relative cursor-pointer">
-            <LikeIcon className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+          <div className="transform transition duration-300 hover:scale-110 mt-12 bg-white rounded-full shadow-md h-12 w-12 sm:h-16 sm:w-16 flex justify-center items-center relative cursor-pointer">
+            <AvatarIcon
+              color="#F3C245"
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-6 w-6 sm:h-10 sm:w-10"
+            />
+          </div>
+          <div
+            onClick={() => swipe("right")}
+            className="transform transition duration-300 hover:scale-110 bg-white rounded-full shadow-md h-16 sm:h-20 w-16 sm:w-20 flex justify-center items-center relative cursor-pointer"
+          >
+            <LikeIcon className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-8 w-8 sm:h-12 sm:w-12" />
           </div>
         </section>
-        <div className="buttons">
-          <button onClick={() => swipe("left")}>Swipe left!</button>
-          <button onClick={() => swipe("right")}>Swipe right!</button>
-        </div>
-        {lastDirection ? (
+        {/* {lastDirection ? (
           <h2 key={lastDirection} className="infoText">
             You swiped {lastDirection}
           </h2>
@@ -162,62 +168,9 @@ function Advanced() {
           <h2 className="infoText">
             Swipe a card or press a button to get started!
           </h2>
-        )}
+        )} */}
       </div>
-      <style jsx>{`
-        root {
-          text-align: center;
-          display: flex;
-          justify-content: center;
-          width: 100vw;
-          min-height: 100vh;
-          overflow: hidden;
-          background: linear-gradient(#e66465, #9198e5);
-        }
-
-        #root > div {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        .app > div {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        .row {
-          flex-direction: row !important;
-        }
-
-        .row > * {
-          margin: 5px;
-        }
-
-        h1 {
-          font-family: "Damion", cursive;
-          color: #fff;
-          text-shadow: 0px 0px 60px 0px rgba(0, 0, 0, 0.3);
-        }
-
-        h2 {
-          color: #fff;
-        }
-
-        .infoText {
-          width: 100%;
-          height: 28px;
-          justify-content: center;
-          display: flex;
-          color: #fff;
-          animation-name: popup;
-          animation-duration: 800ms;
-        }
-
-        .buttons {
+      {/* .buttons {
           margin: 20px;
           display: flex;
         }
@@ -238,6 +191,27 @@ function Advanced() {
 
         .buttons button:hover {
           transform: scale(1.05);
+        } */}
+
+      <style jsx>{`
+        h1 {
+          font-family: "Damion", cursive;
+          color: #fff;
+          text-shadow: 0px 0px 60px 0px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+          color: #fff;
+        }
+
+        .infoText {
+          width: 100%;
+          height: 28px;
+          justify-content: center;
+          display: flex;
+          color: #000;
+          animation-name: popup;
+          animation-duration: 800ms;
         }
 
         @keyframes popup {

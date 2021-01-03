@@ -14,8 +14,8 @@ const DislikeIcon = ({
   className,
 }: DislikeIconProps): JSX.Element => (
   <svg
-    width={width}
-    height={height}
+    // width={width}
+    // height={height}
     className={className}
     viewBox="0 0 41 41"
     fill="none"
