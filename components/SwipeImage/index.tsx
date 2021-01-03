@@ -1,6 +1,9 @@
 import React, { useState, useMemo } from "react";
 import TinderCard from "react-tinder-card";
 import SwipeImageProfile from "@/components/SwipeImageProfile";
+import LikeIcon from "@/components/ui/Icons/LikeIcon";
+import DislikeIcon from "@/components/ui/Icons/DislikeIcon";
+import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 
 type Profile = {
   name: string;
@@ -131,6 +134,22 @@ function Advanced() {
           ))}
           {/* cardContent w-full h-full */}
         </div>
+        <section className="flex justify-evenly items-center my-2">
+          <div className="transform transition duration-300 hover:scale-110  bg-white rounded-full shadow-md h-20 w-20 flex justify-center items-center relative cursor-pointer">
+            <DislikeIcon className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          <div className="transform transition duration-300 hover:scale-110  mt-10 bg-white rounded-full shadow-md h-20 w-20 flex justify-center items-center relative cursor-pointer">
+            <AvatarIcon
+              height="41"
+              width="41"
+              color="#F3C245"
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            />
+          </div>
+          <div className="transform transition duration-300 hover:scale-110  bg-white rounded-full shadow-md h-20 w-20 flex justify-center items-center relative cursor-pointer">
+            <LikeIcon className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+          </div>
+        </section>
         <div className="buttons">
           <button onClick={() => swipe("left")}>Swipe left!</button>
           <button onClick={() => swipe("right")}>Swipe right!</button>
