@@ -61,7 +61,7 @@ const SwipeImageProfile = ({
     >
       <div
         style={{ backgroundImage: `url(${url})` }}
-        className=" relative max-w-sm h-full w-full sm:rounded-2xl bg-cover bg-center"
+        className="relative sm:max-w-sm h-full w-full sm:rounded-2xl bg-cover bg-center"
       >
         <div
           onClick={state.expand ? handleExpand : undefined}

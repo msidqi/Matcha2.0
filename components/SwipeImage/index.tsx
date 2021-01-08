@@ -117,8 +117,8 @@ function Advanced() {
 
   return (
     <>
-      <div className="h-full w-screen max-w-sm overflow-y-scroll overflow-x-hidden sm:overflow-visible">
-        <section className="relative h-" style={{ height: "34rem" }}>
+      <div className="h-full w-full sm:w-screen sm:max-w-sm overflow-y-scroll overflow-x-hidden sm:overflow-visible">
+        <section className="cardContainer relative">
           {profiles.map((profile, index) => (
             <TinderCard
               preventSwipe={["down", "up"]}
@@ -136,7 +136,7 @@ function Advanced() {
             </TinderCard>
           ))}
         </section>
-        <section className="flex justify-evenly items-center pb-2 sm:mt-2 w-screen max-w-sm">
+        <section className="flex justify-evenly items-center pb-2 sm:mt-2 w-full sm:w-screen sm:max-w-sm">
           <div
             onClick={() => swipe("left")}
             className="transform transition duration-300 hover:scale-110 bg-white rounded-full shadow-md h-16 w-16 sm:h-20 sm:w-20 flex justify-center items-center relative cursor-pointer"
@@ -160,40 +160,19 @@ function Advanced() {
             <LikeIcon className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-8 w-8 sm:h-12 sm:w-12" />
           </div>
         </section>
-        {/* {lastDirection ? (
-          <h2 key={lastDirection} className="infoText">
-            You swiped {lastDirection}
-          </h2>
-        ) : (
-          <h2 className="infoText">
-            Swipe a card or press a button to get started!
-          </h2>
-        )} */}
       </div>
-      {/* .buttons {
-          margin: 20px;
-          display: flex;
-        }
-
-        .buttons button {
-          flex-shrink: 0;
-          padding: 10px;
-          border-radius: 5px;
-          border: none;
-          color: #fff;
-          font-size: 18px;
-          background-color: #9198e5;
-          transition: 200ms;
-          margin: 0 10px;
-          font-weight: bolder;
-          width: 160px;
-        }
-
-        .buttons button:hover {
-          transform: scale(1.05);
-        } */}
 
       <style jsx>{`
+        cardContainer {
+          height: 34rem;
+        }
+
+        @media (max-width: 640px) {
+          cardContainer {
+            height: 27rem;
+          }
+        }
+
         h1 {
           font-family: "Damion", cursive;
           color: #fff;
