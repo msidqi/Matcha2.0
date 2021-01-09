@@ -9,14 +9,7 @@ import { useUser } from "@/components/auth";
 function Navbar(): JSX.Element {
   const [showMenu, setShowMenu] = React.useState<boolean>(false);
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
-  // const [showNotifications, setShowNotifications] = React.useState<boolean>(
-  //   false
-  // );
   const router = useRouter();
-
-  const toggleDropDown = () => setShowDropDown(!showDropDown);
-  const toggleMenu = () => setShowMenu(!showMenu);
-  // const toggleNotifications = () => setShowNotifications(!showNotifications);
 
   const [{ loggedIn }, { logout }] = useUser();
 
@@ -32,12 +25,13 @@ function Navbar(): JSX.Element {
     { label: "Settings", href: "#" },
   ];
   return (
-    <nav className="bg-gray-800 fixed top-0 w-full z-10">
+    <nav className="bg-gray-800 fixed top-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         <div className="relative flex items-center justify-between h-16">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <button
-              onClick={toggleMenu}
+              onClick={() => setShowMenu(!showMenu)}
+              onBlur={() => setShowMenu(false)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
               aria-expanded="false"
             >
@@ -131,7 +125,8 @@ function Navbar(): JSX.Element {
               {loggedIn && (
                 <div>
                   <button
-                    onClick={toggleDropDown}
+                    onClick={() => setShowDropDown(!showDropDown)}
+                    onBlur={() => setShowDropDown(false)}
                     className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
                     id="user-menu"
                     aria-haspopup="true"

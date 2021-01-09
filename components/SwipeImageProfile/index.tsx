@@ -65,7 +65,7 @@ const SwipeImageProfile = ({
       >
         <div
           onClick={state.expand ? handleExpand : undefined}
-          className="bg-white px-2 py-2 border-gray-200 border-2 rounded-2xl  m-auto mb-0 cursor-pointer w-11/12 absolute bottom-2 left-2/4 transform -translate-x-1/2"
+          className="bg-white px-2 py-2 border-gray-200 border-2 rounded-xl  m-auto mb-0 cursor-pointer w-11/12 absolute bottom-2 left-2/4 transform -translate-x-1/2"
         >
           {mainDetails}
           <Transition
