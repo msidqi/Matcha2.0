@@ -118,7 +118,7 @@ function Advanced() {
   return (
     <>
       <div className="h-full w-full sm:w-screen sm:max-w-sm overflow-y-scroll overflow-x-hidden sm:overflow-visible">
-        <section className="cardContainer relative">
+        <section className="relative" style={{ height: "34rem" }}>
           {profiles.map((profile, index) => (
             <TinderCard
               preventSwipe={["down", "up"]}

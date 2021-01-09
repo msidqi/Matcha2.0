@@ -2,6 +2,8 @@
 import React from "react";
 import TextBuble from "@/components/ChatTextBuble";
 import { io } from "socket.io-client";
+import ArrowBack from "../ui/Icons/ArrowBack";
+import { debounce } from "@/utils/debounce";
 // import ArrowBack from "@/components/ui/Icons/ArrowBack";
 
 interface TextMessage {
@@ -14,8 +16,29 @@ interface ChatProps {
   onClickBack?: () => void;
 }
 
-const Chat = (_: ChatProps): JSX.Element => {
-  const [hasScrolled] = React.useState<boolean>(true);
+const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
+  const [isAtBottom, setIsAtBottom] = React.useState<boolean>(true);
+  const chatContainerRef = React.useRef<HTMLDivElement>(null);
+
+  /* -- scroll to bottom && set onscroll event -- */
+  React.useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.onscroll = debounce(() => {
+        if (
+          chatContainerRef.current &&
+          chatContainerRef.current.scrollTop +
+            chatContainerRef.current.clientHeight ===
+            chatContainerRef.current.scrollHeight
+        ) {
+          setIsAtBottom(true);
+        } else if (isAtBottom) {
+          setIsAtBottom(false);
+        }
+      }, 100);
+    }
+  }, []);
 
   React.useEffect(() => {
     const socket = io("http://localhost:3001");
@@ -81,12 +104,14 @@ const Chat = (_: ChatProps): JSX.Element => {
   return (
     <div className="bg-white p-2 pb-14 h-full  relative w-full sm:w-7/12 sm:border-r sm:border-gray-200">
       <header className="p-2 pb-0 flex justify-start items-center w-full mb-5">
-        {/* <button
-          className="rounded-full bg-gray-200 w-8 h-8 flex items-center justify-center"
-          onClick={onClickBack}
-        >
-          <ArrowBack color="#fff" />
-        </button> */}
+        {onClickBack && (
+          <button
+            className="sm:hidden rounded-full bg-gray-200 w-8 h-8 flex items-center justify-center"
+            onClick={onClickBack}
+          >
+            <ArrowBack color="#fff" />
+          </button>
+        )}
         <div className="rounded-full h-14 w-14 overflow-hidden mx-2">
           <img
             src="/profile.jpg"
@@ -99,7 +124,8 @@ const Chat = (_: ChatProps): JSX.Element => {
         </div>
       </header>
       {/* chat bubbles section --start-- */}
-      <div
+      <section
+        ref={chatContainerRef}
         id="chatbox"
         className="w-full pb-2 px-4 h-full overflow-y-auto"
         style={{ height: "calc(100% - 5.3rem)" }}
@@ -113,18 +139,18 @@ const Chat = (_: ChatProps): JSX.Element => {
             />
           </div>
         ))}
-      </div>
+      </section>
       {/* chat input section --start-- */}
-      <div
+      <section
         className={`bg-white absolute bottom-0 left-0 w-full pt-1 pb-3 px-4  ${
-          hasScrolled ? "shadow " : ""
+          isAtBottom ? "" : "shadow"
         }`}
       >
         <input
           className="bg-gray-100 rounded-3xl py-2 px-3 w-full placeholder-gray-400 focus:outline-none sm:focus:ring focus:border-blue-300"
           placeholder="type something"
         />
-      </div>
+      </section>
       <style jsx>{`
         @media (max-width: 640px) {
           #chatbox::-webkit-scrollbar {
