@@ -3,8 +3,10 @@ import Tag from "@/components/Tag";
 
 const TagsDisplay = ({
   initialTags,
+  variant,
 }: {
   initialTags: string[];
+  variant?: string;
 }): JSX.Element => {
   const set = new Set<string>();
   initialTags.forEach((tagValue) => set.add(tagValue));
@@ -55,7 +57,11 @@ const TagsDisplay = ({
     );
   }
   return (
-    <div className="block w-full border-gray-200 rounded-md border-2 p-4">
+    <div
+      className={`block w-full border-gray-200 border-2 p-4 ${
+        variant === "secondary" ? "rounded-2xl" : "rounded-md"
+      }`}
+    >
       <div className="flex flex-wrap justify-center pb-2">{renderedTags}</div>
       <div className="relative">
         <input

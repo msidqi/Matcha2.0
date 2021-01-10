@@ -12,7 +12,6 @@ const AvatarIcon = ({
   width = "12",
   height = "13",
   color = "#383333",
-  // insideColor = "#f00",
   className,
 }: AvatarIconProps): JSX.Element => (
   <svg

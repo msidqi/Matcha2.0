@@ -1,41 +1,51 @@
 import * as React from "react";
 import { Range as ReactRange, getTrackBackground } from "react-range";
 
-const MIN = 18;
-const MAX = 60;
+const MIN_DEFAULT = 18;
+const MAX_DEFAULT = 60;
 
 interface RangeProps {
-  initialState?: [number] | [number, number];
   onColor?: string;
   offColor?: string;
   onRangeChange: (currentRange: [number] | [number, number]) => void;
   unit?: string;
   rangeLabelClass?: string;
   label?: string;
+  step?: number;
+  max?: number;
+  min?: number;
+  range: [number] | [number, number];
+  setRange:
+    | React.Dispatch<React.SetStateAction<[number]>>
+    | React.Dispatch<React.SetStateAction<[number, number]>>;
 }
 
 export const Range = ({
-  initialState,
   onColor: activeColor,
   offColor: inactive,
   onRangeChange,
   unit,
   rangeLabelClass,
   label,
+  step,
+  max,
+  min,
+  range,
+  setRange,
 }: RangeProps) => {
-  const [range, setRange] = React.useState(initialState ?? [18, 30]);
-
   const onColor = activeColor ?? "#33d398";
   const offColor = inactive ?? "#e6e7eb";
   const colors: string[] =
-    range.length === 2 ? [offColor, onColor, offColor] : [offColor, onColor];
+    range.length === 2 ? [offColor, onColor, offColor] : [onColor, offColor];
 
+  const MIN = min ?? MIN_DEFAULT;
+  const MAX = max ?? MAX_DEFAULT;
   return (
-    <div className="pb-5 pt-2 px-2 rounded-2xl border-2 border-gray-100">
+    <div className="pb-5 pt-2 px-2 rounded-2xl border-2 border-gray-200">
       <div className={`${!label ? "mb-10" : "mb-4"} flex justify-between`}>
         {label && (
           <>
-            <label className="block text-gray-700 font-semibold">label</label>
+            <label className="block text-gray-700 font-semibold">{label}</label>
             <p className={rangeLabelClass ?? `text-gray-500`}>
               {`${range[0]}${range.length === 2 ? `-${range[1]}` : ""}${
                 unit ? unit : ""
@@ -46,7 +56,7 @@ export const Range = ({
       </div>
       <div className="mx-8">
         <ReactRange
-          step={1}
+          step={step || 1}
           min={MIN}
           max={MAX}
           values={range}
