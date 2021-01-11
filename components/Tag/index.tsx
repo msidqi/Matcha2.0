@@ -12,7 +12,7 @@ const Tag = ({ onClose, tagName }: TagProps): JSX.Element => {
   return (
     <div
       style={{ backgroundColor: colorHash.hex(tagName) }}
-      className="relative rounded-xl  inline-block px-4 py-1  mx-1 cursor-pointer transform transition duration-300 hover:scale-110 hover:shadow"
+      className="relative rounded-xl  inline-block px-4 py-1 mb-1 mx-1 cursor-pointer transform transition duration-300 hover:scale-110 hover:shadow"
     >
       <div>
         <p className="text-white pr-1">{tagName}</p>

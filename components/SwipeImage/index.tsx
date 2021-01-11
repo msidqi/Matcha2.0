@@ -4,19 +4,9 @@ import SwipeImageProfile from "@/components/SwipeImageProfile";
 import LikeIcon from "@/components/ui/Icons/LikeIcon";
 import DislikeIcon from "@/components/ui/Icons/DislikeIcon";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
+import { ProfileType } from "@/interfaces";
 
-type Profile = {
-  name: string;
-  url: string;
-  distance: number;
-  age: number;
-  gender: "male" | "female";
-  orientation: "male" | "female" | "both";
-  bio: string;
-  tags: string[];
-};
-
-const db: Profile[] = [
+const db: ProfileType[] = [
   {
     name: "Richard Hendricks",
     url: "/profile.jpg",
@@ -78,7 +68,7 @@ const alreadyRemoved: string[] = [];
 let profilesState = db; // This fixes issues with updating profiles state forcing it to use the current state and not the state that was active when the card was created.
 
 function Advanced() {
-  const [profiles, setProfiles] = useState<Profile[]>(db);
+  const [profiles, setProfiles] = useState<ProfileType[]>(db);
   const [lastDirection, setLastDirection] = useState<string>("");
 
   const childRefs = useMemo(
@@ -141,11 +131,7 @@ function Advanced() {
             onClick={() => swipe("left")}
             className="transform transition duration-300 hover:scale-110 bg-white rounded-full shadow-md h-16 w-16 sm:h-20 sm:w-20 flex justify-center items-center relative cursor-pointer"
           >
-            <DislikeIcon
-              // height="28"
-              // width="28"
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-6 w-6 sm:h-10 sm:w-10"
-            />
+            <DislikeIcon className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-6 w-6 sm:h-10 sm:w-10" />
           </div>
           <div className="transform transition duration-300 hover:scale-110 mt-12 bg-white rounded-full shadow-md h-12 w-12 sm:h-16 sm:w-16 flex justify-center items-center relative cursor-pointer">
             <AvatarIcon

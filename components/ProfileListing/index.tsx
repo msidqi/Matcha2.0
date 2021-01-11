@@ -7,12 +7,14 @@ import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
 
 interface FilterContainerProps {
   disableFiltersDisplay: () => void;
+  applyFilter: () => void;
   style?: CSSProperties;
 }
 
 const FiltersContainer: React.FC<FilterContainerProps> = ({
   children,
   disableFiltersDisplay,
+  applyFilter,
   style,
 }): JSX.Element => {
   const handleBodyClick = (event: React.MouseEvent) => {
@@ -21,7 +23,10 @@ const FiltersContainer: React.FC<FilterContainerProps> = ({
 
   React.useEffect(() => {
     window.addEventListener("click", disableFiltersDisplay);
-    return () => window.removeEventListener("click", disableFiltersDisplay);
+    return () => {
+      window.removeEventListener("click", disableFiltersDisplay);
+      // applyFilter();
+    };
   }, []);
 
   return (
@@ -40,6 +45,7 @@ const ProfileListing = () => {
     false
   );
   const [showFilters, setShowFilters] = React.useState<boolean>(false);
+  const [tagsFilter, setTagsFilter] = React.useState<string[]>([]);
   const [ageRange, setAgeRange] = React.useState<[number, number]>([18, 22]);
   const [popularityRange, setPopularityRange] = React.useState<
     [number, number]
@@ -58,6 +64,23 @@ const ProfileListing = () => {
     setShowFilters(false);
     window.removeEventListener("click", disableFiltersDisplay);
   };
+
+  const applyFilter = () => {
+    if (isEnabledFilters) {
+      console.log(
+        "apply filter with these settings\n",
+        "tags",
+        tagsFilter,
+        "age",
+        ageRange,
+        "popularity",
+        popularityRange,
+        "distance",
+        distanceRange
+      );
+    }
+  };
+  console.log("isEnabledFilters", isEnabledFilters);
 
   return (
     <>
@@ -78,6 +101,7 @@ const ProfileListing = () => {
           leaveTo="transform opacity-0 scale-20"
         >
           <FiltersContainer
+            applyFilter={applyFilter}
             disableFiltersDisplay={disableFiltersDisplay}
             style={!isEnabledFilters ? { filter: "grayscale(80%)" } : {}}
           >
@@ -144,6 +168,7 @@ const ProfileListing = () => {
             </div>
             <div className="mb-2">
               <TagsDisplay
+                onTagChange={(_, all) => setTagsFilter(all)}
                 initialTags={["Hello", "World", "1337", "42"]}
                 variant="secondary"
               />
