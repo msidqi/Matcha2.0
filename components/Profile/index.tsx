@@ -1,9 +1,12 @@
 import React from "react";
 import { ProfileType } from "@/interfaces";
-import Tag from "../Tag";
-import AvatarIcon from "../ui/Icons/AvatarIcon";
-import PositionIcon from "../ui/Icons/PositionIcon";
+import Tag from "@/components/Tag";
+import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
+import DropDownIcon from "@/components/ui/Icons/DropDownIcon";
+import PositionIcon from "@/components/ui/Icons/PositionIcon";
 import { getSexePreference } from "@/utils/getSexePreference";
+import { indexOf } from "@/utils/indexOf";
+import Link from "next/link";
 
 interface ProfileProps {
   profile: ProfileType;
@@ -14,53 +17,66 @@ type ImageType = { src: string; isProfilePicture: boolean };
 const ProfileDisplay = ({ profile }: ProfileProps) => {
   const { name, tags, distance, gender, bio, orientation, age } = profile;
   const images: ImageType[] = [
-    { src: "/profile.jpg", isProfilePicture: true },
-    { src: "/profile_jap.jpg", isProfilePicture: false },
+    { src: "/profile.jpg", isProfilePicture: false },
+    { src: "/profile_jap.jpg", isProfilePicture: true },
     { src: "/profile_liz.jpg", isProfilePicture: false },
     { src: "/profile_saf.jpg", isProfilePicture: false },
     { src: "/profile_eva.jpg", isProfilePicture: false },
   ];
-  const [mainPic, setMainPic] = React.useState<ImageType>(
-    images.find((img) => img.isProfilePicture) || images[0]
+  const isConnected = true;
+  const lastConnected = "2h ago";
+  const [mainPicIndex, setMainPicIndex] = React.useState<number>(
+    indexOf<ImageType>(images, (img) => img.isProfilePicture) ?? 0
   );
   return (
     <>
-      <article className="w-full flex flex-col sm:flex-row justify-center min-h-screen pt-10 pb-5 bg-white shadow-lg p-4 sm:p-10 sm:border rounded m-auto sm:mt-8 mb-8">
-        <section className="min-w-1/4">
+      <article className="w-full flex flex-col sm:flex-row justify-center bg-white sm:shadow-lg p-0 sm:px-6 sm:py-4 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
+        <section className="min-w-1/4 relative">
           {/* ------ main picture ------ */}
           <div
             className="sm:max-w-sm sm:w-80 w-full"
             style={{ height: "30rem" }}
           >
             <picture>
-              <source media="(min-width:650px)" srcSet={mainPic.src} />
+              <source
+                media="(min-width:650px)"
+                srcSet={images[mainPicIndex].src}
+              />
               <img
-                src={mainPic.src}
+                src={images[mainPicIndex].src}
                 alt="profile picture"
-                className="h-full w-full object-cover sm:rounded-2xl"
+                className="h-full w-full object-cover "
               />
             </picture>
+          </div>
+          <div className="absolute top-4 left-2 cursor-pointer">
+            <DropDownIcon className="shadow rounded-xl" />
           </div>
         </section>
         <section className="sm:flex">
           {/* ------ other images container ------ */}
-          <div className=" sm:w-20 flex justify-evenly sm:block">
+          <div className="sm:w-24 flex justify-evenly sm:block sm:py-0 py-2">
             {images.map((img, index) => (
               <li
                 key={index}
-                className="block p-1 w-16 sm:w-20 h-24"
-                onClick={() => setMainPic(img)}
+                className="block p-0.5 w-16 sm:w-20 h-24 mx-auto "
+                onClick={() => setMainPicIndex(index)}
               >
                 <article
                   tabIndex={0}
-                  className={`${
-                    img === mainPic ? "shadow-lg" : ""
-                  } w-full h-full rounded focus:outline-none focus:shadow-outline`}
+                  className="w-full h-full rounded outline-none"
                 >
                   <img
                     alt="upload preview"
                     src={img.src}
-                    className="w-full h-full sticky object-cover rounded"
+                    className={`${
+                      index === mainPicIndex ? "ring ring-green-400" : ""
+                    } w-full h-full object-cover rounded`}
+                    style={
+                      index === mainPicIndex
+                        ? {}
+                        : { filter: "brightness(60%)" }
+                    }
                   />
                 </article>
               </li>
@@ -68,38 +84,60 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
           </div>
           {/* ------ profile information ------ */}
           <div className="">
-            <div className="px-2 py-2 w-full">
-              <div>
-                <h4 className="text-gray-600 text-base">
-                  <span className="3">{name}</span> {age}
-                </h4>
-                <div className="absolute right-2 top-2">
-                  <PositionIcon
-                    width="18"
-                    height="18"
-                    className="inline-block mr-1"
-                  />
-                  <p className="text-sm inline-block text-gray-500">{`${distance} km`}</p>
+            <div className="px-2 py-2 w-full sm:border-b sm:border-gray-200 divide-y sm:divide-y-0 divide-gray-200 divide-solide">
+              <div className="mb-4 sm:mb-6">
+                <div className="flex justify-between items-center">
+                  <h4 className="text-gray-600 text-base ">
+                    <span className="text-xl font-bold">{name}</span> {age}
+                  </h4>
+                  <Link href="/messages">
+                    <a className="bg-green-400 uppercase font-bold hover:shadow-md text-white rounded text-xs px-4 py-2 outline-none focus:outline-none sm:mr-2">
+                      Message
+                    </a>
+                  </Link>
                 </div>
-                <div>
-                  <AvatarIcon className="inline-block mr-1" />{" "}
+                <div className="flex justify-start items-center">
+                  <div
+                    className={`rounded-full mr-1 ${
+                      isConnected
+                        ? "bg-green-400 w-2.5 h-2.5"
+                        : "border-gray-200 border w-2.5 h-2.5"
+                    }`}
+                  />
+                  <p className="text-gray-500 text-xs">
+                    {isConnected ? "connected" : lastConnected}
+                  </p>
+                </div>
+                <div className="">
+                  <AvatarIcon className="inline-block" />{" "}
                   <p className="text-sm inline-block text-gray-400">
                     {gender}, {getSexePreference(gender, orientation)}
                   </p>
                 </div>
+                <div className="">
+                  <PositionIcon
+                    width="12"
+                    height="12"
+                    className="inline-block mr-1"
+                  />
+                  <p className="text-sm inline-block text-gray-400">{`${distance} km`}</p>
+                </div>
               </div>
-
-              <h4 className="text-gray-600 text-base font-medium mt-2">
-                About:
-              </h4>
-              <p className="text-gray-500 text-sm">{bio}</p>
-              <h4 className="text-gray-600 text-base font-medium mt-2">
-                Interests:
-              </h4>
-              <div className="mt-1">
-                {tags.map((name: string, i) => (
-                  <Tag key={`tag-${i}`} tagName={name} />
-                ))}
+              <div className="mb-4 sm:mx-4">
+                <h4 className="text-gray-600 text-base font-medium my-2">
+                  About:
+                </h4>
+                <p className="text-gray-500 text-sm">{bio}</p>
+              </div>
+              <div className="sm:mx-4">
+                <h4 className="text-gray-600 text-base font-medium my-2">
+                  Interests:
+                </h4>
+                <div className="mt-1">
+                  {tags.map((name: string, i) => (
+                    <Tag key={`tag-${i}`} tagName={name} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
