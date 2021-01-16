@@ -1,12 +1,12 @@
-import { useForm } from "react-hook-form";
+import React from "react";
 import axios from "axios";
+import { useForm } from "react-hook-form";
 import Select from "@/components/Select";
 import Bio from "@/components/Bio";
 import TagsDisplay from "@/components/TagsDisplay";
-import React from "react";
+import DateInput from "@/components/DateInput";
 import ImageUpload from "@/components/ImageUpload";
 import type { ImagePreviewProps } from "@/components/ImageUpload";
-import DateInput from "@/components/DateInput";
 import getPosition from "@/utils/getPosition";
 
 type DataType = {
@@ -17,7 +17,7 @@ type DataType = {
   email: string;
 };
 
-const ProfileSetup = (): JSX.Element => {
+const ProfileEdit = () => {
   const { register, handleSubmit, errors } = useForm();
   const [imagePreviews, setImagePreviews] = React.useState<ImagePreviewProps[]>(
     []
@@ -46,27 +46,16 @@ const ProfileSetup = (): JSX.Element => {
   };
 
   const checkKeyDown = (e: any) => {
-    // console.log('checkKeyDown', e.code)
     if (e.code === "Enter") e.preventDefault();
   };
-
-  /*const mySubmitHandler = (e) => {
-    console.log("checkKeyDown", e.code);
-    e.preventDefault();
-    handleSubmit(onSubmit)();
-  };*/
 
   const genders = [
     { label: "Male", value: "male" },
     { label: "Female", value: "female" },
   ];
   const orientation = [...genders, { label: "Both", value: "both" }];
-  console.log("errors", errors);
   return (
-    <div className="bg-white sm:border rounded  max shadow-lg p-4 sm:p-10 max-w-3xl m-auto sm:mt-8 mb-8">
-      <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">
-        Complete your profile
-      </h3>
+    <article className="w-full flex flex-col sm:flex-row justify-center bg-white sm:shadow-lg p-0 sm:px-6 sm:py-4 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
       <form
         onSubmit={handleSubmit(onSubmit)}
         onKeyDown={(e) => checkKeyDown(e)}
@@ -110,8 +99,8 @@ const ProfileSetup = (): JSX.Element => {
           />
         </div>
       </form>
-    </div>
+    </article>
   );
 };
 
-export default ProfileSetup;
+export default ProfileEdit;
