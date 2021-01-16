@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface SelectProps {
   label?: string;
@@ -6,6 +6,7 @@ interface SelectProps {
   placeholder: string;
   options: { value: string; label: string }[];
   register?: any;
+  initialValue?: string;
 }
 
 const Select = ({
@@ -14,10 +15,15 @@ const Select = ({
   name,
   placeholder,
   options,
+  initialValue,
 }: SelectProps): JSX.Element => {
-  const [isDefault, setIsDefault] = useState<boolean>(true);
+  const hasDefaultValue = Boolean(initialValue);
+  const [isDefault, setIsDefault] = React.useState<boolean>(!hasDefaultValue);
+
+  const defaultValue = hasDefaultValue ? initialValue : "default";
+
   return (
-    <>
+    <div>
       {label && (
         <label htmlFor={name} className="block text-gray-700 font-semibold">
           {label}
@@ -30,7 +36,7 @@ const Select = ({
           isDefault && "text-gray-500"
         }`}
         placeholder={placeholder}
-        defaultValue="default"
+        defaultValue={defaultValue}
         onChange={() => isDefault && setIsDefault(false)}
       >
         <option value="default" disabled>
@@ -42,7 +48,7 @@ const Select = ({
           </option>
         ))}
       </select>
-    </>
+    </div>
   );
 };
 

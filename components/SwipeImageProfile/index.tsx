@@ -4,23 +4,26 @@ import { Transition } from "@headlessui/react";
 import Tag from "@/components/Tag";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import { getSexePreference } from "@/utils/getSexePreference";
+import { ProfileType } from "@/interfaces";
 
 interface Props {
-  profile: {
-    url: string;
-    name: string;
-    age: number;
-    distance: number;
-    gender: "male" | "female";
-    orientation: "male" | "female" | "both";
-    bio: string;
-    tags: string[];
-  };
+  profile: ProfileType;
   isCurrentlyShown?: boolean;
 }
 
 const SwipeImageProfile = ({
-  profile: { url, name, age, distance, gender, orientation, bio, tags },
+  profile: {
+    url,
+    userName,
+    firstName,
+    lastName,
+    age,
+    distance,
+    gender,
+    orientation,
+    bio,
+    tags,
+  },
   isCurrentlyShown,
 }: Props) => {
   const [state, setExpand] = React.useState<{
@@ -38,7 +41,7 @@ const SwipeImageProfile = ({
       className="cursor-pointer"
     >
       <h4 className="text-gray-600 text-base">
-        <span className="3">{name}</span> {age}
+        <span className="3">{userName}</span> {age}
       </h4>
       <div className="absolute right-2 top-2">
         <PositionIcon width="18" height="18" className="inline-block mr-1" />
@@ -83,8 +86,8 @@ const SwipeImageProfile = ({
               Interests:
             </h4>
             <div className="mt-1">
-              {tags.map((name: string, i) => (
-                <Tag key={`tag-${i}`} tagName={name} />
+              {tags.map((tagName: string, i) => (
+                <Tag key={`tag-${i}`} tagName={tagName} />
               ))}
             </div>
           </Transition>

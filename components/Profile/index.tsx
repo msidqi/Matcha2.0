@@ -7,15 +7,16 @@ import PositionIcon from "@/components/ui/Icons/PositionIcon";
 import { getSexePreference } from "@/utils/getSexePreference";
 import { indexOf } from "@/utils/indexOf";
 import Link from "next/link";
+// import Modal from "../Modal";
 
 interface ProfileProps {
   profile: ProfileType;
 }
 
-type ImageType = { src: string; isProfilePicture: boolean };
+export type ImageType = { src: string; isProfilePicture: boolean };
 
 const ProfileDisplay = ({ profile }: ProfileProps) => {
-  const { name, tags, distance, gender, bio, orientation, age } = profile;
+  const { userName, tags, distance, gender, bio, orientation, age } = profile;
   const images: ImageType[] = [
     { src: "/profile.jpg", isProfilePicture: false },
     { src: "/profile_jap.jpg", isProfilePicture: true },
@@ -134,8 +135,8 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
                   Interests:
                 </h4>
                 <div className="mt-1">
-                  {tags.map((name: string, i) => (
-                    <Tag key={`tag-${i}`} tagName={name} />
+                  {tags.map((tagName: string, i) => (
+                    <Tag key={`tag-${i}`} tagName={tagName} />
                   ))}
                 </div>
               </div>

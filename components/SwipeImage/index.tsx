@@ -8,7 +8,9 @@ import { ProfileType } from "@/interfaces";
 
 const db: ProfileType[] = [
   {
-    name: "Richard Hendricks",
+    firstName: "Richard Hendricks",
+    lastName: "Richard Hendricks",
+    userName: "Richard Hendricks",
     url: "/profile.jpg",
     distance: 0.3,
     age: 42,
@@ -19,7 +21,9 @@ const db: ProfileType[] = [
       "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
   },
   {
-    name: "Erlich Bachman",
+    firstName: "Erlich Bachman",
+    lastName: "Erlich Bachman",
+    userName: "Erlich Bachman",
     url: "/profile.jpg",
     distance: 0.8,
     age: 42,
@@ -30,7 +34,9 @@ const db: ProfileType[] = [
       "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
   },
   {
-    name: "Monica Hall",
+    firstName: "Monica Hall",
+    lastName: "Monica Hall",
+    userName: "Monica Hall",
     url: "/profile.jpg",
     distance: 0.6,
     age: 19,
@@ -41,7 +47,9 @@ const db: ProfileType[] = [
       "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
   },
   {
-    name: "Jared Dunn",
+    firstName: "Jared Dunn",
+    lastName: "Jared Dunn",
+    userName: "Jared Dunn",
     url: "/profile.jpg",
     distance: 0.2,
     age: 1337,
@@ -52,7 +60,9 @@ const db: ProfileType[] = [
       "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
   },
   {
-    name: "vmod",
+    firstName: "vmod",
+    lastName: "vmod",
+    userName: "vmod",
     url: "/profile.jpg",
     distance: 1.1,
     age: 42,
@@ -88,18 +98,18 @@ function Advanced() {
   const outOfFrame = (name: string, direction: string) => {
     console.log(name + " left the screen!", `direction ${direction}`);
     profilesState = profilesState.filter(
-      (character) => character.name !== name
+      (character) => character.userName !== name
     );
     setProfiles(profilesState);
   };
 
   const swipe = (dir: string) => {
     const cardsLeft = profiles.filter(
-      (person) => !alreadyRemoved.includes(person.name)
+      (person) => !alreadyRemoved.includes(person.userName)
     );
     if (cardsLeft.length) {
-      const toBeRemoved = cardsLeft[cardsLeft.length - 1].name; // Find the card object to be removed
-      const index = db.map((person) => person.name).indexOf(toBeRemoved); // Find the index of which to make the reference to
+      const toBeRemoved = cardsLeft[cardsLeft.length - 1].userName; // Find the card object to be removed
+      const index = db.map((person) => person.userName).indexOf(toBeRemoved); // Find the index of which to make the reference to
       alreadyRemoved.push(toBeRemoved); // Make sure the next card gets removed next time if this card do not have time to exit the screen
       childRefs[index].current.swipe(dir); // Swipe the card!
     }
@@ -113,10 +123,10 @@ function Advanced() {
             <TinderCard
               preventSwipe={["down", "up"]}
               ref={childRefs[index]}
-              key={profile.name}
-              onSwipe={(dir) => swiped(dir, profile.name)}
+              key={profile.userName}
+              onSwipe={(dir) => swiped(dir, profile.userName)}
               onCardLeftScreen={(direction) =>
-                outOfFrame(profile.name, direction)
+                outOfFrame(profile.userName, direction)
               }
             >
               <SwipeImageProfile

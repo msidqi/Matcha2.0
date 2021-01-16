@@ -8,6 +8,7 @@ import ImageUpload from "@/components/ImageUpload";
 import type { ImagePreviewProps } from "@/components/ImageUpload";
 import DateInput from "@/components/DateInput";
 import getPosition from "@/utils/getPosition";
+import { genders, orientation } from "@/components/data/constants.json";
 
 type DataType = {
   userName: string;
@@ -56,11 +57,6 @@ const ProfileSetup = (): JSX.Element => {
     handleSubmit(onSubmit)();
   };*/
 
-  const genders = [
-    { label: "Male", value: "male" },
-    { label: "Female", value: "female" },
-  ];
-  const orientation = [...genders, { label: "Both", value: "both" }];
   console.log("errors", errors);
   return (
     <div className="bg-white sm:border rounded  max shadow-lg p-4 sm:p-10 max-w-3xl m-auto sm:mt-8 mb-8">
