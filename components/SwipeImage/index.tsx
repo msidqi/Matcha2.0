@@ -5,74 +5,9 @@ import LikeIcon from "@/components/ui/Icons/LikeIcon";
 import DislikeIcon from "@/components/ui/Icons/DislikeIcon";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import { ProfileType } from "@/interfaces";
+import dbData from "./db.json";
 
-const db: ProfileType[] = [
-  {
-    firstName: "Richard Hendricks",
-    lastName: "Richard Hendricks",
-    userName: "Richard Hendricks",
-    url: "/profile.jpg",
-    distance: 0.3,
-    age: 42,
-    gender: "male",
-    orientation: "both",
-    tags: ["Hello", "World", "1337", "42"],
-    bio:
-      "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
-  },
-  {
-    firstName: "Erlich Bachman",
-    lastName: "Erlich Bachman",
-    userName: "Erlich Bachman",
-    url: "/profile.jpg",
-    distance: 0.8,
-    age: 42,
-    gender: "male",
-    orientation: "female",
-    tags: ["Hello", "World", "1337", "42"],
-    bio:
-      "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
-  },
-  {
-    firstName: "Monica Hall",
-    lastName: "Monica Hall",
-    userName: "Monica Hall",
-    url: "/profile.jpg",
-    distance: 0.6,
-    age: 19,
-    gender: "female",
-    orientation: "male",
-    tags: ["Hello", "World", "1337", "42"],
-    bio:
-      "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
-  },
-  {
-    firstName: "Jared Dunn",
-    lastName: "Jared Dunn",
-    userName: "Jared Dunn",
-    url: "/profile.jpg",
-    distance: 0.2,
-    age: 1337,
-    gender: "female",
-    orientation: "male",
-    tags: ["Hello", "World", "1337", "42"],
-    bio:
-      "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
-  },
-  {
-    firstName: "vmod",
-    lastName: "vmod",
-    userName: "vmod",
-    url: "/profile.jpg",
-    distance: 1.1,
-    age: 42,
-    gender: "male",
-    orientation: "female",
-    tags: ["Hello", "World", "1337", "42"],
-    bio:
-      "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
-  },
-];
+const db: ProfileType[] = dbData as ProfileType[];
 
 const alreadyRemoved: string[] = [];
 let profilesState = db; // This fixes issues with updating profiles state forcing it to use the current state and not the state that was active when the card was created.

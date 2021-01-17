@@ -5,8 +5,8 @@ import Select from "@/components/Select";
 import Bio from "@/components/Bio";
 import TagsDisplay from "@/components/TagsDisplay";
 import DateInput from "@/components/DateInput";
-import ImageUpload from "@/components/ImageUpload";
-import type { ImagePreviewProps } from "@/components/ImageUpload";
+// import ImageUpload from "@/components/ImageUpload";
+// import type { ImagePreviewProps } from "@/components/ImageUpload";
 import getPosition from "@/utils/getPosition";
 import Input from "../Input";
 import { profile } from "@/pages/profile";
@@ -44,21 +44,18 @@ const ProfileEdit = () => {
     password: string;
     confirmPassword: string;
   }) => {
+    // make password put request
     console.log(data);
   };
-  console.log("passwordErrors", passwordErrors);
 
   const onSubmit = async (data: DataType) => {
-    console.log("submit errors", errors);
     // console.log({ ...data, images: imagePreviews });
     try {
       const formdata = new FormData();
       for (const key in data) {
         formdata.append(key, (data as any)[key]);
       }
-      const pos = (await getPosition()).coords;
-      formdata.append("position", pos.longitude.toString());
-      formdata.append("position", pos.latitude.toString());
+      console.log("data", data);
       console.log("formdata", formdata);
       const result = await axios.post(
         "http://localhost:3001/api/updateProfile",
@@ -69,6 +66,7 @@ const ProfileEdit = () => {
       console.error("post error", e);
     }
   };
+  console.log("submit errors", errors);
 
   const checkKeyDown = (e: any) => {
     if (e.code === "Enter") e.preventDefault();
@@ -86,8 +84,8 @@ const ProfileEdit = () => {
   );
   return (
     <article className="w-full flex justify-between flex-wrap bg-white sm:shadow-lg px-6 pb-8 sm:py-8 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
-      <section className="sm:w-1/2">
-        <section className="flex flex-center">
+      <section className="md:w-5/12 w-full mb-10">
+        <section className="flex justify-center">
           {/* ------ main picture ------ */}
           <div className="w-80" style={{ height: "30rem" }}>
             <picture>
@@ -107,7 +105,7 @@ const ProfileEdit = () => {
             {images.map((img, index) => (
               <li
                 key={index}
-                className="block p-0.5 w-20 h-24 mx-auto "
+                className="block p-0.5 w-20 h-24 mx-auto"
                 onClick={() => setMainPicIndex(index)}
               >
                 <article
@@ -138,7 +136,7 @@ const ProfileEdit = () => {
           setImagePreviews={setImagePreviews}
         /> */}
       </section>
-      <section className="sm:w-1/2 w-full flex flex-col space-y-10 ">
+      <section className="md:w-7/12 w-full flex flex-col space-y-10 ">
         <div>
           <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">
             Change your password

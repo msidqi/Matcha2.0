@@ -7,7 +7,8 @@ import PositionIcon from "@/components/ui/Icons/PositionIcon";
 import { getSexePreference } from "@/utils/getSexePreference";
 import { indexOf } from "@/utils/indexOf";
 import Link from "next/link";
-// import Modal from "../Modal";
+import { Transition } from "@headlessui/react";
+import Modal from "@/components/ui/Modal";
 
 interface ProfileProps {
   profile: ProfileType;
@@ -16,6 +17,7 @@ interface ProfileProps {
 export type ImageType = { src: string; isProfilePicture: boolean };
 
 const ProfileDisplay = ({ profile }: ProfileProps) => {
+  const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
   const { userName, tags, distance, gender, bio, orientation, age } = profile;
   const images: ImageType[] = [
     { src: "/profile.jpg", isProfilePicture: false },
@@ -29,9 +31,12 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
   const [mainPicIndex, setMainPicIndex] = React.useState<number>(
     indexOf<ImageType>(images, (img) => img.isProfilePicture) ?? 0
   );
+
+  const blockUser = () => {};
+  const reportUser = () => {};
   return (
     <>
-      <article className="w-full flex flex-col sm:flex-row justify-center bg-white sm:shadow-lg p-0 sm:px-6 sm:py-4 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
+      <article className="w-full max-w-4xl flex flex-col sm:flex-row justify-center bg-white sm:shadow-lg p-0 sm:px-6 sm:py-4 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
         <section className="min-w-1/4 relative">
           {/* ------ main picture ------ */}
           <div
@@ -46,12 +51,50 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
               <img
                 src={images[mainPicIndex].src}
                 alt="profile picture"
-                className="h-full w-full object-cover "
+                className="h-full w-full object-cover sm:rounded-2xl "
               />
             </picture>
           </div>
-          <div className="absolute top-4 left-2 cursor-pointer">
-            <DropDownIcon className="shadow rounded-xl" />
+          <div className="absolute top-4 left-2">
+            <div
+              className="cursor-pointer inline"
+              onClick={() => setShowDropDown(!showDropDown)}
+            >
+              <DropDownIcon className="shadow rounded-xl" />
+            </div>
+            <Transition
+              show={showDropDown}
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0 scale-20"
+              enterTo="transform opacity-100 scale-100"
+              leave="transition ease-in duration-100"
+              leaveFrom="transform opacity-100 scale-100"
+              leaveTo="transform opacity-0 scale-20"
+            >
+              <div className=" w-64 bg-white rounded-xl text-center divide-y divide-gray-400 shadow-lg border border-gray-400">
+                <div className="block w-full rounded-t py-2.5 px-4">
+                  {userName} did something bad ?
+                </div>
+                <Modal
+                  onAccept={reportUser}
+                  title="Report"
+                  buttonText="Report"
+                  acceptText="Report"
+                  denyText="Cancel"
+                  classNameButton="block w-full text-gray-400 py-2.5 uppercase hover:bg-gray-50"
+                  description={`are you sure you want to report ${userName} ?`}
+                />
+                <Modal
+                  onAccept={blockUser}
+                  title="Block"
+                  buttonText="Block"
+                  acceptText="Block"
+                  denyText="Cancel"
+                  classNameButton="block w-full text-gray-400 py-2.5 uppercase rounded-xl hover:bg-gray-50"
+                  description={`you and ${userName} wont be able to see each other profile, are you sure ?`}
+                />
+              </div>
+            </Transition>
           </div>
         </section>
         <section className="sm:flex">
@@ -60,7 +103,7 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
             {images.map((img, index) => (
               <li
                 key={index}
-                className="block p-0.5 w-16 sm:w-20 h-24 mx-auto "
+                className="block p-0.5 w-16 sm:w-20 h-24 mx-auto"
                 onClick={() => setMainPicIndex(index)}
               >
                 <article
@@ -84,15 +127,18 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
             ))}
           </div>
           {/* ------ profile information ------ */}
-          <div className="">
+          <div>
             <div className="px-2 py-2 w-full sm:border-b sm:border-gray-200 divide-y sm:divide-y-0 divide-gray-200 divide-solide">
-              <div className="mb-4 sm:mb-6">
+              <div className="text-center mb-4 sm:mb-6 px-2 sm:px-0">
                 <div className="flex justify-between items-center">
                   <h4 className="text-gray-600 text-base ">
-                    <span className="text-xl font-bold">{name}</span> {age}
+                    <span className="text-xl font-bold">{userName}</span> {age}
                   </h4>
                   <Link href="/messages">
-                    <a className="bg-green-400 uppercase font-bold hover:shadow-md text-white rounded text-xs px-4 py-2 outline-none focus:outline-none sm:mr-2">
+                    <a
+                      style={{ transition: "all .15s ease" }}
+                      className="bg-green-400 uppercase font-bold hover:shadow-md text-white rounded text-xs px-4 py-2 outline-none focus:outline-none"
+                    >
                       Message
                     </a>
                   </Link>
@@ -109,7 +155,7 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
                     {isConnected ? "connected" : lastConnected}
                   </p>
                 </div>
-                <div className="">
+                <div className="mt-4 sm:mt-0">
                   <AvatarIcon className="inline-block" />{" "}
                   <p className="text-sm inline-block text-gray-400">
                     {gender}, {getSexePreference(gender, orientation)}
@@ -124,13 +170,13 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
                   <p className="text-sm inline-block text-gray-400">{`${distance} km`}</p>
                 </div>
               </div>
-              <div className="mb-4 sm:mx-4">
+              <div className="text-center mb-4 sm:mx-4">
                 <h4 className="text-gray-600 text-base font-medium my-2">
                   About:
                 </h4>
-                <p className="text-gray-500 text-sm">{bio}</p>
+                <p className="text-gray-500 text-sm max-w-md">{bio}</p>
               </div>
-              <div className="sm:mx-4">
+              <div className="text-center  sm:mx-4">
                 <h4 className="text-gray-600 text-base font-medium my-2">
                   Interests:
                 </h4>

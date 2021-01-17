@@ -9,13 +9,18 @@ interface TagProps {
 
 const Tag = ({ onClose, tagName }: TagProps): JSX.Element => {
   const colorHash = new ColorHash();
+  const color = colorHash.hex(tagName);
   return (
     <div
-      style={{ backgroundColor: colorHash.hex(tagName) }}
-      className="relative rounded-xl  inline-block px-4 py-1 mb-1 mx-1 cursor-pointer transform transition duration-300 hover:scale-110 hover:shadow"
+      // style={{ backgroundColor: colorHash.hex(tagName) }}
+      // className="relative rounded-xl  inline-block px-4 py-1 mb-1 mx-1 cursor-pointer transform transition duration-300 hover:scale-110 hover:shadow"
+      style={{ border: `solid 1px ${color}` }}
+      className="relative rounded  inline-block px-4 py-1 mb-1 mx-1 cursor-pointer transform transition duration-150 hover:shadow"
     >
       <div>
-        <p className="text-white pr-1">{tagName}</p>
+        <p style={{ color }} className="pr-1">
+          {tagName}
+        </p>
         {onClose && (
           <div className="absolute top-2 right-2">
             <CloseIcon onClick={onClose} className="w-2" />

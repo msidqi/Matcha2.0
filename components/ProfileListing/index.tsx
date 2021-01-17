@@ -32,8 +32,8 @@ const FiltersContainer: React.FC<FilterContainerProps> = ({
   return (
     <div
       onClick={handleBodyClick}
-      style={style}
-      className="absolute top-0 left-1/2 transform -translate-x-1/2 rounded-2xl w-screen sm:w-96 px-4 py-2 bg-white border-2 border-gray-100 z-10"
+      style={{ ...style, maxWidth: "44rem" }}
+      className="absolute top-0 left-1/2 transform -translate-x-1/2 sm:rounded-md w-screen px-4 py-2 bg-white border-2 border-gray-100 z-10"
     >
       {children}
     </div>
