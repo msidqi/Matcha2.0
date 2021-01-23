@@ -8,6 +8,9 @@ import { useUser } from "@/components/auth";
 
 function Navbar(): JSX.Element {
   const [showMenu, setShowMenu] = React.useState<boolean>(false);
+  const [showNotifications, setShowNotifications] = React.useState<boolean>(
+    false
+  );
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
   const router = useRouter();
 
@@ -22,7 +25,7 @@ function Navbar(): JSX.Element {
   const links: { href: string; label: string }[] = [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Messages", href: "/messages" },
-    { label: "Settings", href: "#" },
+    { label: "Settings", href: "/settings" },
   ];
   return (
     <nav className="bg-gray-800 fixed top-0 w-full z-50">
@@ -102,7 +105,11 @@ function Navbar(): JSX.Element {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             {loggedIn && (
-              <button className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                onBlur={() => setShowNotifications(false)}
+                className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+              >
                 <span className="sr-only">View notifications</span>
                 <svg
                   className="h-6 w-6"
@@ -121,6 +128,32 @@ function Navbar(): JSX.Element {
                 </svg>
               </button>
             )}
+            <Transition
+              show={showNotifications}
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0 scale-95"
+              enterTo="transform opacity-100 scale-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="transform opacity-100 scale-100"
+              leaveTo="transform opacity-0 scale-95"
+            >
+              <div
+                className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="user-menu"
+              >
+                <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <p>Notification number 0</p>
+                </div>
+                <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <p>Notification number 1</p>
+                </div>
+                <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <p>Notification number 2</p>
+                </div>
+              </div>
+            </Transition>
             <div className="ml-3 relative">
               {loggedIn && (
                 <div>
@@ -158,14 +191,14 @@ function Navbar(): JSX.Element {
                   {loggedIn ? (
                     <>
                       <a
-                        href="#"
+                        href="/profile-edit"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                       >
                         Profile
                       </a>
                       <a
-                        href="#"
+                        href="/settings"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                       >

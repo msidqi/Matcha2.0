@@ -4,6 +4,9 @@ import { Transition, Switch } from "@headlessui/react";
 import { Range } from "@/components/Range";
 import TagsDisplay from "@/components/TagsDisplay";
 import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
+import { useQuery } from "react-query";
+import axios from "axios";
+import { useUser } from "../auth";
 
 interface FilterContainerProps {
   disableFiltersDisplay: () => void;
@@ -32,8 +35,8 @@ const FiltersContainer: React.FC<FilterContainerProps> = ({
   return (
     <div
       onClick={handleBodyClick}
-      style={style}
-      className="absolute top-0 left-1/2 transform -translate-x-1/2 rounded-2xl w-screen sm:w-96 px-4 py-2 bg-white border-2 border-gray-100 z-10"
+      style={{ ...style, maxWidth: "36rem" }}
+      className="absolute top-0 left-1/2 transform -translate-x-1/2 shadow-lg rounded-md px-4 py-2 w-screen bg-white border-2 border-gray-100 z-10"
     >
       {children}
     </div>
@@ -51,7 +54,24 @@ const ProfileListing = () => {
     [number, number]
   >([0, 30]);
   const [distanceRange, setDistanceRange] = React.useState<[number]>([1]);
+  const [{ user, loggedIn }] = useUser();
+  console.log("user?.getAuthorization()", user?.getAuthorization?.());
+  const { isLoading, error, data } = useQuery(
+    "suggestions",
+    () =>
+      axios.post(
+        "/api/suggestions",
+        { offset: 0, row_count: 2 },
+        {
+          headers: {
+            Authorization: user?.getAuthorization?.(),
+          },
+        }
+      ),
+    { enabled: loggedIn }
+  );
 
+  console.log(isLoading, error, data);
   const toggleFilters = (event: React.MouseEvent) => {
     setShowFilters(!showFilters);
     event.stopPropagation();

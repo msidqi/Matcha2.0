@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import React from "react";
 import Select from "@/components/Select";
 import Bio from "@/components/Bio";
-import TagsDisplay from "../TagsDisplay";
-import React from "react";
+import TagsDisplay from "@/components/TagsDisplay";
 import ImageUpload, { ImagePreviewProps } from "@/components/ImageUpload";
 import DateInput from "@/components/DateInput";
 import getPosition from "@/utils/getPosition";
@@ -34,10 +34,7 @@ const ProfileSetup = (): JSX.Element => {
       formdata.append("position", pos.longitude.toString());
       formdata.append("position", pos.latitude.toString());
       console.log("formdata", formdata);
-      const result = await axios.post(
-        "http://localhost:3001/api/updateProfile",
-        data
-      );
+      const result = await axios.post("/api/updateProfile", data);
       console.log("result", result);
     } catch (e) {
       console.error("post error", e);

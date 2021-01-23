@@ -15,7 +15,7 @@ const Signup = (): JSX.Element => {
   }) => {
     console.log(data);
     try {
-      const result = await axios.post("http://localhost:3001/api/signup", data);
+      const result = await axios.post("/api/signup", data);
       console.log(result);
     } catch (e) {
       console.error(e);

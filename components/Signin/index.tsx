@@ -40,6 +40,7 @@ const Signin = (): JSX.Element => {
         <Input
           name="password"
           label="Password"
+          type="password"
           register={register}
           placeholder="Enter your password"
         />
