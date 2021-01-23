@@ -8,13 +8,14 @@ import React, {
 } from "react";
 import axios from "axios";
 import { userReducer } from "./index";
-import type {
+import {
   UserState,
   ActionsAndState,
   User,
   LogoutAction,
   LoginAction,
 } from "./types";
+import { apiRequest } from "@/utils/API";
 
 const initialUserState: UserState = {
   user: undefined,
@@ -41,30 +42,34 @@ export const UserProvider: FC = ({ children }): JSX.Element => {
   const [state, dispatch] = useReducer(userReducer, initialUserState);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchUserData() {
-      try {
-        const result = await axios.get<{ accessToken: string }>(
-          "http://localhost:3001/api/generateAccessToken"
-        );
-        console.log("generateAccessToken", result);
-        if (result.status === 200) {
-          const accessToken = result.data.accessToken;
-          // const result = await axios.post<{ accessToken: string, message: string }>('http://localhost:3001/api/getUserData', { accessToken });
-          const user: User = {
-            accessToken,
-            firstname: "blank",
-            lastname: "blank",
-            username: "blank",
-            email: "blank",
-          };
-          dispatch({ type: "login", payload: { user } });
-        }
-      } catch (e) {
-        console.error(e);
+  const fetchUserData = async () => {
+    try {
+      const response = await apiRequest<{ accessToken: string }>(
+        "get",
+        "/api/generateAccessToken"
+      );
+      console.log("/api/generateAccessToken", response.data);
+      if (response.status === 200) {
+        const user = new User({
+          accessToken: response.data.accessToken,
+        });
+        console.log("getAuthorization", user.getAuthorization());
+        const result = await apiRequest("get", "/api/userInfos", {
+          headers: {
+            Authorization: user.getAuthorization(),
+          },
+        });
+        console.log("userInfos", result);
+
+        dispatch({ type: "login", payload: { user } });
       }
-      loading && setLoading(false);
+    } catch (e) {
+      console.error(e);
     }
+    loading && setLoading(false);
+  };
+
+  useEffect(() => {
     fetchUserData();
     // return cancel request
   }, []);
@@ -72,19 +77,20 @@ export const UserProvider: FC = ({ children }): JSX.Element => {
   const login: LoginAction = async (userData): Promise<void> => {
     try {
       setLoading(true);
-      const result = await axios.post<{ accessToken: string; message: string }>(
+      const result = await apiRequest<{ accessToken: string; message: string }>(
+        "post",
         "/api/signIn",
         userData,
         { withCredentials: true }
       );
       if (result.status === 200) {
-        const newUserValue: User = {
+        const newUserValue = new User({
           username: userData.userName,
           accessToken: result.data.accessToken,
           firstname: "string",
           lastname: "string",
           email: "string",
-        };
+        });
         dispatch({ type: "login", payload: { user: newUserValue } });
       }
       console.log(result);
@@ -97,9 +103,7 @@ export const UserProvider: FC = ({ children }): JSX.Element => {
   const logout: LogoutAction = async (): Promise<void> => {
     try {
       setLoading(true);
-      const result = await axios.post<{ message: string }>(
-        "http://localhost:3001/api/logout"
-      );
+      const result = await axios.post<{ message: string }>("/api/logout");
       if (result.status === 200) dispatch({ type: "logout" });
     } catch (e) {
       console.error(e);
