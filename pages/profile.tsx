@@ -3,8 +3,11 @@ import Profile from "@/components/Profile";
 import Layout from "@/components/ui/Layout";
 import { ProfileType } from "@/interfaces";
 
-const profile: ProfileType = {
-  name: "vmod",
+export const profile: ProfileType = {
+  firstName: "vmod",
+  lastName: "vmod",
+  userName: "vmod",
+  email: "vmod@gmail.com",
   url: "/profile.jpg",
   distance: 1.1,
   age: 42,

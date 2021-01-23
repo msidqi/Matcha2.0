@@ -5,6 +5,7 @@ interface BioProps {
   name?: string;
   placeholder?: string;
   maxLength?: number;
+  initialLength?: number;
   register?: any;
 }
 const Bio = ({
@@ -13,10 +14,11 @@ const Bio = ({
   placeholder,
   register,
   maxLength = 999999,
+  initialLength,
 }: BioProps): JSX.Element => {
-  const [count, setCount] = React.useState<number>(0);
+  const [count, setCount] = React.useState<number>(initialLength ?? 0);
   return (
-    <>
+    <div>
       {label && (
         <label htmlFor={name} className="block text-gray-700 font-semibold">
           {label}
@@ -37,7 +39,7 @@ const Bio = ({
           }`}
         >{`${count}/${maxLength}`}</p>
       </div>
-    </>
+    </div>
   );
 };
 

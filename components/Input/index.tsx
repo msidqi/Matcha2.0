@@ -13,6 +13,7 @@ interface InputProps {
   className?: string;
   inputClassName?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }
 
 const Input = ({
@@ -24,6 +25,7 @@ const Input = ({
   className,
   inputClassName,
   onChange,
+  error,
 }: InputProps): JSX.Element => (
   <div className={`${className ? className : "w-full"}`}>
     {label && (
@@ -41,6 +43,7 @@ const Input = ({
       } mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50`}
       placeholder={placeholder}
     />
+    {error && <p className="text-red-600">{error}</p>}
   </div>
 );
 

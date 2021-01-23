@@ -3,7 +3,10 @@ export type Hello = {
 };
 
 export type ProfileType = {
-  name: string;
+  userName: string;
+  firstName: string;
+  lastName: string;
+  email: string;
   url: string;
   distance: number;
   age: number;

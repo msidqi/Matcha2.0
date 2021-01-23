@@ -18,7 +18,7 @@ const DropDownIcon = ({
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <rect width="50" height="21" rx="10.5" fill="#383333" fill-opacity=".6" />
+    <rect width="50" height="21" rx="10.5" fill="#383333" fillOpacity=".6" />
     <circle cx="11.5" cy="10.5" r="4.5" fill="#F8F8F8" />
     <circle cx="25.5" cy="10.5" r="4.5" fill="#F8F8F8" />
     <circle cx="39.5" cy="10.5" r="4.5" fill="#F8F8F8" />
