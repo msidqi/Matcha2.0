@@ -11,6 +11,7 @@ interface InputProps {
     | React.RefObject<HTMLInputElement>
     | null;
   className?: string;
+  inputClassName?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -21,9 +22,10 @@ const Input = ({
   name,
   register,
   className,
+  inputClassName,
   onChange,
 }: InputProps): JSX.Element => (
-  <>
+  <div className={`${className ? className : "w-full"}`}>
     {label && (
       <label htmlFor={name} className="block text-gray-700 font-semibold">
         {label}
@@ -35,11 +37,11 @@ const Input = ({
       name={name}
       ref={register}
       className={`${
-        className && className
+        inputClassName ? inputClassName : ""
       } mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50`}
       placeholder={placeholder}
     />
-  </>
+  </div>
 );
 
 export default Input;

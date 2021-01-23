@@ -114,7 +114,7 @@ const ImageUpload = ({
   }
 
   // print all selected files
-  const handleSubmit = () => {
+  /*const handleSubmit = () => {
     alert(`Submitted Files:\n${JSON.stringify(imagePreviews)}`);
   };
 
@@ -122,7 +122,7 @@ const ImageUpload = ({
   const clearSelection = () => {
     setImagePreviews([]);
     setIsEmpty(true);
-  };
+  };*/
 
   return (
     // <div className="bg-gray-500 h-screen w-screen sm:px-8 md:px-16 sm:py-8">
@@ -130,7 +130,7 @@ const ImageUpload = ({
       {/* file upload modal */}
       <article
         aria-label="File Upload Modal"
-        className="relative h-full flex flex-col bg-white shadow-xl rounded-none sm:rounded-md"
+        className="relative h-full flex flex-col bg-white rounded-none sm:rounded-md"
         onDrop={dropHandler}
         onDragOver={dragOverHandler}
         onDragLeave={dragLeaveHandler}
@@ -202,7 +202,8 @@ const ImageUpload = ({
               >
                 <article
                   tabIndex={0}
-                  className="flex justify-center items-center group hasImage w-full h-full shadow-innerRadius rounded-2xl focus:outline-none focus:shadow-outline  cursor-pointer relative text-transparent hover:text-white hover:shadow-sm "
+                  style={{ boxShadow: "inset 0 0 0 .5em #e4e4e4" }}
+                  className="flex justify-center items-center group hasImage w-full h-full rounded-2xl focus:outline-none focus:shadow-outline  cursor-pointer relative text-transparent hover:text-white hover:shadow-sm "
                 >
                   <img
                     alt="upload preview"
@@ -246,29 +247,3 @@ const ImageUpload = ({
 };
 
 export default ImageUpload;
-
-//         <style>
-//             .hasImage:hover section {
-//                 background - color: rgba(5, 5, 5, 0.4);
-// }
-// .hasImage:hover button:hover {
-//                 background: rgba(5, 5, 5, 0.45);
-// }
-
-// #overlay p,
-// i {
-//                 opacity: 0;
-// }
-
-// #overlay.draggedover {
-//                 background - color: rgba(255, 255, 255, 0.7);
-// }
-// #overlay.draggedover p,
-// #overlay.draggedover i {
-//                 opacity: 1;
-// }
-
-// .group:hover .group-hover\:text-blue-800 {
-//                 color: #2b6cb0;
-// }
-// </style>

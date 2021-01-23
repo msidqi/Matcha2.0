@@ -15,14 +15,14 @@ const Signup = (): JSX.Element => {
   }) => {
     console.log(data);
     try {
-      const result = await axios.post("http://localhost:3001/api/signup", data);
+      const result = await axios.post("/api/signup", data);
       console.log(result);
     } catch (e) {
       console.error(e);
     }
   };
   return (
-    <div className="bg-white border rounded max shadow-lg p-10 max-w-xl m-auto">
+    <div className="bg-white sm:border rounded max sm:shadow-md px-6 py-10 sm:p-10 max-w-xl m-auto sm:mt-8 mb-8">
       <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">
         Create an Account
       </h3>
@@ -36,18 +36,22 @@ const Signup = (): JSX.Element => {
           register={register}
           placeholder="Enter your username"
         />
-        <Input
-          name="firstName"
-          label="First name"
-          register={register}
-          placeholder="Enter your firstname"
-        />
-        <Input
-          name="lastName"
-          label="Last name"
-          register={register}
-          placeholder="Enter your lastname"
-        />
+        <div className="flex flex-wrap space-y-5 sm:space-y-0">
+          <Input
+            name="firstName"
+            label="First name"
+            register={register}
+            placeholder="Enter your firstname"
+            className="w-full sm:w-1/2 sm:pr-2"
+          />
+          <Input
+            name="lastName"
+            label="Last name"
+            register={register}
+            placeholder="Enter your lastname"
+            className="w-full sm:w-1/2 sm:pr-2"
+          />
+        </div>
         <Input
           name="email"
           type="email"

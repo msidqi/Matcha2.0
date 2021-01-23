@@ -1,11 +1,12 @@
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import React from "react";
 import Select from "@/components/Select";
 import Bio from "@/components/Bio";
-import TagsDisplay from "../TagsDisplay";
-import React from "react";
+import TagsDisplay from "@/components/TagsDisplay";
 import ImageUpload, { ImagePreviewProps } from "@/components/ImageUpload";
 import DateInput from "@/components/DateInput";
+import getPosition from "@/utils/getPosition";
 
 type DataType = {
   userName: string;
@@ -27,13 +28,13 @@ const ProfileSetup = (): JSX.Element => {
     try {
       const formdata = new FormData();
       for (const key in data) {
-        formdata.append(key, data[key]);
+        formdata.append(key, (data as any)[key]);
       }
+      const pos = (await getPosition()).coords;
+      formdata.append("position", pos.longitude.toString());
+      formdata.append("position", pos.latitude.toString());
       console.log("formdata", formdata);
-      const result = await axios.post(
-        "http://localhost:3001/api/updateProfile",
-        data
-      );
+      const result = await axios.post("/api/updateProfile", data);
       console.log("result", result);
     } catch (e) {
       console.error("post error", e);
@@ -45,11 +46,11 @@ const ProfileSetup = (): JSX.Element => {
     if (e.code === "Enter") e.preventDefault();
   };
 
-  const mySubmitHandler = (e) => {
+  /*const mySubmitHandler = (e) => {
     console.log("checkKeyDown", e.code);
     e.preventDefault();
     handleSubmit(onSubmit)();
-  };
+  };*/
 
   const genders = [
     { label: "Male", value: "male" },
@@ -58,7 +59,7 @@ const ProfileSetup = (): JSX.Element => {
   const orientation = [...genders, { label: "Both", value: "both" }];
   console.log("errors", errors);
   return (
-    <div className="bg-white sm:border rounded  max shadow-lg p-4 sm:p-10 max-w-3xl m-auto">
+    <div className="bg-white sm:border rounded  max shadow-lg p-4 sm:p-10 max-w-3xl m-auto sm:mt-8 mb-8">
       <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">
         Complete your profile
       </h3>

@@ -1,4 +1,4 @@
-import Loading from "@/components/Loading";
+// import Loading from "@/components/Loading";
 import React, { FC } from "react";
 import { useUser } from "@/components/auth";
 import { useRouter } from "next/router";
@@ -9,6 +9,8 @@ export const ProtectRoute: FC = ({ children }): JSX.Element => {
   const [{ loggedIn }, { loading }] = useUser();
   if (loading) {
     console.log("loading...");
+    console.log("loggedIn", loggedIn);
+    console.log("pathname", pathname);
     // return <Loading />;
   }
   // if (!loggedIn && pathname !== '/signin' && pathname !== '/signup') {

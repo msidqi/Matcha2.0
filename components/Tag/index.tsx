@@ -1,5 +1,6 @@
 import React from "react";
 import ColorHash from "color-hash";
+import CloseIcon from "@/components/ui/Icons/CloseIcon";
 
 interface TagProps {
   onClose?: () => void;
@@ -11,13 +12,15 @@ const Tag = ({ onClose, tagName }: TagProps): JSX.Element => {
   return (
     <div
       style={{ backgroundColor: colorHash.hex(tagName) }}
-      className="relative rounded-xl  inline-block px-4 py-1  mx-1 cursor-pointer transform transition duration-300 hover:scale-110 hover:shadow"
+      className="relative rounded-xl  inline-block px-4 py-1 mb-1 mx-1 cursor-pointer transform transition duration-300 hover:scale-110 hover:shadow"
     >
       <div>
         <p className="text-white pr-1">{tagName}</p>
-        <div className="absolute" style={{ top: "4px", right: "6px" }}>
-          <img onClick={onClose} width={20} src="/close.svg" className="w-2" />
-        </div>
+        {onClose && (
+          <div className="absolute top-2 right-2">
+            <CloseIcon onClick={onClose} className="w-2" />
+          </div>
+        )}
       </div>
     </div>
   );

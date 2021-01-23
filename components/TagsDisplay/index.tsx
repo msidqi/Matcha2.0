@@ -1,16 +1,25 @@
 import React, { useState, ReactNode } from "react";
 import Tag from "@/components/Tag";
 
+interface TagsDisplayProps {
+  initialTags: string[];
+  variant?: string;
+  onTagChange?: (
+    currenlyAdded: string,
+    currentTags: string[],
+    action: "add" | "delete"
+  ) => void;
+}
+
 const TagsDisplay = ({
   initialTags,
-}: {
-  initialTags: string[];
-}): JSX.Element => {
+  variant,
+  onTagChange,
+}: TagsDisplayProps): JSX.Element => {
   const set = new Set<string>();
   initialTags.forEach((tagValue) => set.add(tagValue));
   const [tagsSet, setTagsSet] = useState<Set<string>>(set);
   const [tagName, setTagName] = useState<string>("");
-  // const [renderedTags, setRenderedTags] = useState < ReactNode[]]> (<></>)
 
   const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e) {
@@ -26,6 +35,7 @@ const TagsDisplay = ({
       if (e.which === 13 && trimmedTag.length > 2) {
         tagsSet.add(trimmedTag);
         setTagName("");
+        // onTagChange && onTagChange(trimmedTag, [...tagsSet]);
       }
     }
   };
@@ -36,6 +46,7 @@ const TagsDisplay = ({
     if (trimmedTag.length > 2) {
       tagsSet.add(trimmedTag);
       setTagName("");
+      onTagChange && onTagChange(trimmedTag, [...tagsSet], "add");
     }
   };
 
@@ -50,12 +61,17 @@ const TagsDisplay = ({
         onClose={() => {
           tagsSet.delete(uniqueTag);
           setTagsSet((prevState) => new Set(prevState));
+          onTagChange && onTagChange(uniqueTag, [...tagsSet], "delete");
         }}
       />
     );
   }
   return (
-    <div className="block w-full border-gray-200 rounded-md border-2 p-4">
+    <div
+      className={`block w-full border-gray-200 border-2 p-4 ${
+        variant === "secondary" ? "rounded-2xl" : "rounded-md"
+      }`}
+    >
       <div className="flex flex-wrap justify-center pb-2">{renderedTags}</div>
       <div className="relative">
         <input
