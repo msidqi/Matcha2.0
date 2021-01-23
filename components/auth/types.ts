@@ -1,5 +1,4 @@
 import { Dispatch } from "react";
-import { hasOwnProperty } from "@/utils/hadOwnProperty";
 
 type UserInput = {
   firstname?: string;
