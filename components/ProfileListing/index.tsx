@@ -55,7 +55,7 @@ const ProfileListing = () => {
   >([0, 30]);
   const [distanceRange, setDistanceRange] = React.useState<[number]>([1]);
   const [{ user, loggedIn }] = useUser();
-  console.log("user?.getAuthorization()", user?.getAuthorization?.());
+  console.log("user?.authorization", user?.authorization);
   const { isLoading, error, data } = useQuery(
     "suggestions",
     () =>
@@ -64,7 +64,7 @@ const ProfileListing = () => {
         { offset: 0, row_count: 2 },
         {
           headers: {
-            Authorization: user?.getAuthorization?.(),
+            Authorization: user?.authorization,
           },
         }
       ),

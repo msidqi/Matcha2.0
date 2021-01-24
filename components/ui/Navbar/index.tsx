@@ -14,13 +14,13 @@ function Navbar(): JSX.Element {
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
   const router = useRouter();
 
-  const [{ loggedIn }, { logout }] = useUser();
+  const [{ loggedIn, user }, { logout, loading }] = useUser();
 
   const handleLogout = () => {
     logout();
     router.push("/");
   };
-
+  console.log("navbar loading", loading, "user", user);
   const pathname = router.pathname;
   const links: { href: string; label: string }[] = [
     { label: "Dashboard", href: "/dashboard" },
@@ -164,12 +164,19 @@ function Navbar(): JSX.Element {
                     id="user-menu"
                     aria-haspopup="true"
                   >
-                    <span className="sr-only">Open user menu</span>
-                    <img
-                      className="h-8 w-8 rounded-full"
-                      src="/profile.jpg"
-                      alt=""
-                    />
+                    {loading ? (
+                      "Loading..."
+                    ) : (
+                      <img
+                        className="h-8 w-8 rounded-full"
+                        src={user?.ProfileImageBase64}
+                        alt=""
+                      />
+                    )}
+                    {console.log(
+                      "user?.ProfileImageBase64",
+                      !!user?.ProfileImageBase64
+                    )}
                   </button>
                 </div>
               )}

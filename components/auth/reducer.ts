@@ -8,13 +8,13 @@ export const userReducer = (
     case "login":
       return {
         ...state,
-        ...{
-          user: action.payload.user,
-          loggedIn: true,
-        },
+        user: action.payload.user,
+        loggedIn: true,
       };
     case "logout":
-      return { ...state, ...{ user: undefined, loggedIn: false } };
+      return { ...state, user: undefined, loggedIn: false };
+    case "data":
+      return { ...state, user: action.payload.user, loggedIn: true };
     default:
       return state;
   }

@@ -1,28 +1,28 @@
-import React, {
-  FC,
-  useReducer,
-  useEffect,
-  useContext,
-  createContext,
-  useState,
-} from "react";
-import axios from "axios";
-import { userReducer } from "./index";
-import {
+import * as React from "react";
+import { userReducer } from ".";
+import { User } from "./types";
+import type {
   UserState,
   ActionsAndState,
-  User,
   LogoutAction,
   LoginAction,
+  UserInput,
 } from "./types";
 import { apiRequest } from "@/utils/API";
+import {
+  LOGIN_ERROR_MESSAGE,
+  USERDATA_ERROR_MESSAGE,
+  LOGOUT_ERROR_MESSAGE,
+  UserError,
+} from "./errors";
+import { Canceler } from "axios";
 
 const initialUserState: UserState = {
   user: undefined,
   loggedIn: false,
 };
 
-const userContext = createContext<[UserState, ActionsAndState]>([
+const userContext = React.createContext<[UserState, ActionsAndState]>([
   initialUserState,
   {
     login: async () => {
@@ -32,87 +32,127 @@ const userContext = createContext<[UserState, ActionsAndState]>([
       return;
     },
     loading: false,
+    error: null,
   },
 ]);
 
 export const useUser = (): [UserState, ActionsAndState] =>
-  useContext(userContext);
+  React.useContext(userContext);
 
-export const UserProvider: FC = ({ children }): JSX.Element => {
-  const [state, dispatch] = useReducer(userReducer, initialUserState);
-  const [loading, setLoading] = useState(true);
+export const UserProvider: React.FC = ({ children }): JSX.Element => {
+  const [state, dispatch] = React.useReducer(userReducer, initialUserState);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<UserError | null>(null);
 
-  const fetchUserData = async () => {
-    try {
-      const response = await apiRequest<{ accessToken: string }>(
-        "get",
-        "/api/generateAccessToken"
-      );
-      console.log("/api/generateAccessToken", response.data);
-      if (response.status === 200) {
-        const user = new User({
-          accessToken: response.data.accessToken,
-        });
-        console.log("getAuthorization", user.getAuthorization());
-        const result = await apiRequest("get", "/api/userInfos", {
-          headers: {
-            Authorization: user.getAuthorization(),
-          },
-        });
-        console.log("userInfos", result);
+  React.useEffect(() => {
+    let cancel: Canceler | undefined;
 
+    (async function fetchUserData() {
+      setLoading(true);
+      error && setError(null);
+      try {
+        /* -------- get access token ------- */
+        const [accessTokenRequest, cancelAccessTokenReq] = apiRequest<{
+          accessToken: string;
+        }>("get", "/api/generateAccessToken");
+        cancel = cancelAccessTokenReq;
+        const response = await accessTokenRequest;
+        if (response.status !== 200)
+          throw new UserError(USERDATA_ERROR_MESSAGE);
+        const accessToken = response.data.accessToken;
+        const user = state.user
+          ? state.user.addProperties({ accessToken })
+          : new User({
+              accessToken,
+            });
+        /* -------- get user data ------- */
+        const [userInfoRequest, cancelInfoReq] = apiRequest<UserInput>(
+          "get",
+          "/api/userInfos",
+          {
+            headers: {
+              Authorization: user.authorization,
+            },
+          }
+        );
+        cancel = cancelInfoReq;
+        const result = await userInfoRequest;
+        if (result.status !== 200) throw new UserError(USERDATA_ERROR_MESSAGE);
+        /* -------- update global user state ------- */
+        user.addProperties({ ...result.data });
         dispatch({ type: "login", payload: { user } });
+      } catch (e) {
+        setError(e);
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
-    }
-    loading && setLoading(false);
-  };
+      setLoading(false);
+    })();
 
-  useEffect(() => {
-    fetchUserData();
-    // return cancel request
+    return () => {
+      console.log("cancel cleanup", cancel);
+      cancel && cancel();
+    };
   }, []);
 
   const login: LoginAction = async (userData): Promise<void> => {
+    setLoading(true);
+    error && setError(null);
     try {
-      setLoading(true);
-      const result = await apiRequest<{ accessToken: string; message: string }>(
-        "post",
-        "/api/signIn",
-        userData,
-        { withCredentials: true }
-      );
-      if (result.status === 200) {
-        const newUserValue = new User({
-          username: userData.userName,
-          accessToken: result.data.accessToken,
-          firstname: "string",
-          lastname: "string",
-          email: "string",
-        });
-        dispatch({ type: "login", payload: { user: newUserValue } });
-      }
-      console.log(result);
+      const [signInRequest] = apiRequest<{
+        accessToken: string;
+        message: string;
+      }>("post", "/api/signIn", userData, { withCredentials: true });
+      //   cancel = cancelSingInRequest;
+      const responce = await signInRequest;
+      if (responce.status !== 200) throw new UserError(LOGIN_ERROR_MESSAGE);
+      const newUserValue = new User({
+        userName: userData.userName,
+        accessToken: responce.data.accessToken,
+      });
+
+      /* -------- get user data ------- */
+      const [userInfoRequest] = apiRequest<UserInput>("get", "/api/userInfos", {
+        headers: {
+          Authorization: newUserValue.authorization,
+        },
+      });
+      const result = await userInfoRequest;
+      if (result.status !== 200) throw new UserError(LOGIN_ERROR_MESSAGE);
+      /* -------- update global user state ------- */
+      newUserValue.addProperties({ ...result.data });
+      dispatch({ type: "login", payload: { user: newUserValue } });
+      console.log("/api/signIn result.data", result.data);
     } catch (e) {
+      setError(e);
       console.error(e);
     }
-    loading && setLoading(false);
+    setLoading(false);
   };
 
   const logout: LogoutAction = async (): Promise<void> => {
+    // let cancel: undefined | Canceler;
+    setLoading(true);
+    error && setError(null);
     try {
-      setLoading(true);
-      const result = await axios.post<{ message: string }>("/api/logout");
-      if (result.status === 200) dispatch({ type: "logout" });
+      const [logoutRequest] = apiRequest<{ message: string }>(
+        "post",
+        "/api/logout"
+      );
+      //   cancel = cancelLogout;
+      const result = await logoutRequest;
+      if (result.status !== 200) throw new UserError(LOGOUT_ERROR_MESSAGE);
+      dispatch({ type: "logout" });
     } catch (e) {
+      setError(e);
       console.error(e);
     }
-    loading && setLoading(false);
+    setLoading(false);
   };
 
   return (
-    <userContext.Provider value={[{ ...state }, { login, logout, loading }]}>
+    <userContext.Provider
+      value={[{ ...state }, { login, logout, loading, error }]}
+    >
       {children}
     </userContext.Provider>
   );

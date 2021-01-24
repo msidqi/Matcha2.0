@@ -1,6 +1,7 @@
 import Layout from "@/components/ui/Layout";
 import ChatRoom from "@/components/ChatRoom";
 import CharList from "@/components/CharList";
+import withAuth from "@/components/WithAuth";
 
 const index = (): JSX.Element => {
   return (
@@ -13,4 +14,4 @@ const index = (): JSX.Element => {
   );
 };
 
-export default index;
+export default withAuth(index);

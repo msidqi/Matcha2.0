@@ -1,76 +1,107 @@
 import { Dispatch } from "react";
+import { isValidDate } from "@/utils/date";
+import { UserError } from "@/components/auth/errors";
 
-type UserInput = {
-  firstname?: string;
-  lastname?: string;
-  username?: string;
-  email?: string;
-  accessToken?: string;
-  birthDate?: string;
-};
-
-/*
-bio: "Worsdfadfking"
-birthDate: "1970-07-05T00:00:00.000Z"
-email: "younes.bouladhane.dev@gmail.com"
-experience: 0
-firstName: "Skafandrii_Test"
-gender: "Male"
-genderId: 1
-lastName: "test1"
-orientation: "heterosexual"
-orientationId: 1
-rankId: 5
-userName: "connectedUser"
-*/
-
-export class User {
-  firstname: string;
-  lastname: string;
-  username: string;
+export interface UserInput {
+  firstName: string;
+  lastName: string;
+  userName: string;
   email: string;
-  //   bio: string;
-  //   gender: "Male" | "Female";
-  //   experience: number;
-  birthDate: Date;
-  _accessToken: string;
+  birthDate: Date | string;
+  bio: string;
+  experience: number;
+  gender: "male" | "female";
+  orientation: "heterosexual" | "homosexual" | "bisexual";
+  rankId: number;
+  accessToken: string;
+  ProfileImage: {
+    imageBase64: string;
+    imageName: string;
+  };
+}
 
-  public set accessToken(v: string) {
-    this._accessToken = v;
+interface IUser {
+  data: Partial<UserInput>;
+}
+
+export class User implements IUser {
+  data: {
+    firstName: string;
+    lastName: string;
+    userName: string;
+    email: string;
+    bio: string;
+    ProfileImage: {
+      imageBase64: string;
+      imageName: string;
+    };
+    gender?: "male" | "female";
+    orientation?: "heterosexual" | "homosexual" | "bisexual";
+    experience?: number;
+    birthDate: Date | string;
+    rankId?: number;
+  };
+  private _accessToken?: string;
+
+  public get ProfileImageBase64() {
+    return `data:image/jpeg;base64,${this.data.ProfileImage.imageBase64}`;
   }
 
-  constructor(input: UserInput) {
-    this.firstname = input["firstname"] || "";
-    this.lastname = input["lastname"] || "";
-    this.username = input["username"] || "";
-    this.email = input["email"] || "";
-    this._accessToken = input["accessToken"] || "";
-    this.birthDate = input["birthDate"]
-      ? new Date(input["birthDate"])
-      : new Date();
-  }
-
-  getAuthorization() {
+  public get authorization() {
     return `Bearer ${this._accessToken || ""}`;
   }
+  public set accessToken(v: string | undefined) {
+    this._accessToken = v || "";
+  }
 
-  addProperties(input: Record<string, string>) {
-    /*const validInput = [
-      "firstname",
-      "lastname",
-      "username",
-      "email",
-      "accessToken",
-    ];
-    validInput.forEach((elem) => {
-      if (input[elem] && hasOwnProperty(this, elem))
-        this[elem] = input[elem];
-    });*/
-    if (input["firstname"]) this["firstname"] = input["firstname"];
-    if (input["lastname"]) this.lastname = input["lastname"];
-    if (input["username"]) this.username = input["username"];
-    if (input["email"]) this.email = input["email"];
-    if (input["accessToken"]) this._accessToken = input["accessToken"];
+  constructor(input: Partial<UserInput>) {
+    this.data = {
+      firstName: "",
+      lastName: "",
+      userName: "",
+      email: "",
+      bio: "",
+      birthDate: "",
+      ProfileImage: {
+        imageBase64: "",
+        imageName: "",
+      },
+    };
+    this.addProperties(input);
+  }
+
+  addProperties(input: Partial<UserInput>) {
+    if (typeof input["firstName"] === "string")
+      this.data.firstName = input["firstName"];
+    if (typeof input["lastName"] === "string")
+      this.data.lastName = input["lastName"];
+    if (typeof input["userName"] === "string")
+      this.data.userName = input["userName"];
+    if (typeof input["email"] === "string") this.data.email = input["email"];
+    if (typeof input["experience"] === "number")
+      this.data.experience = input["experience"];
+    if (typeof input["orientation"] === "string")
+      this.data.orientation = input["orientation"];
+    if (typeof input["gender"] === "string") this.data.gender = input["gender"];
+    if (typeof input["bio"] === "string") this.data.bio = input["bio"];
+    if (typeof input["accessToken"] === "string")
+      this.accessToken = input["accessToken"];
+    if (
+      typeof input["ProfileImage"] === "object" &&
+      typeof input["ProfileImage"].imageBase64 === "string"
+    )
+      this.data.ProfileImage = input["ProfileImage"];
+    if (typeof input["birthDate"] === "string") {
+      const date = new Date(input["birthDate"]);
+      if (isValidDate(date)) this.data.birthDate = date;
+    } else if (
+      input["birthDate"] instanceof Date &&
+      isValidDate(input["birthDate"])
+    ) {
+      this.data.birthDate = input["birthDate"];
+    }
+
+    return this;
   }
 }
 
@@ -93,4 +124,5 @@ export type ActionsAndState = {
   login: LoginAction;
   logout: LogoutAction;
   loading: boolean;
+  error: UserError | null;
 };

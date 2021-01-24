@@ -43,6 +43,9 @@ const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
   React.useEffect(() => {
     const socket = io("http://localhost:3001");
     console.log(socket);
+    return () => {
+      socket.close();
+    };
   }, [io]);
 
   const currentUser = { name: "Mouad", lastConnected: "connected 2h ago" };

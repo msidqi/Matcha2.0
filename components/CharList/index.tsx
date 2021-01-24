@@ -1,6 +1,6 @@
 // import axios from "axios";
 import React from "react";
-import { formatDate } from "@/utils/formatDate";
+import { formatDate } from "@/utils/date";
 
 interface ChatPreview {
   preview: string;
