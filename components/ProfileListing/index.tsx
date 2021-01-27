@@ -4,9 +4,8 @@ import { Transition, Switch } from "@headlessui/react";
 import { Range } from "@/components/Range";
 import TagsDisplay from "@/components/TagsDisplay";
 import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
-import { useQuery } from "react-query";
-import axios from "axios";
 import { useUser } from "../auth";
+import { useSuggestions } from "@/utils/requests/suggestions";
 
 interface FilterContainerProps {
   disableFiltersDisplay: () => void;
@@ -56,20 +55,12 @@ const ProfileListing = () => {
   const [distanceRange, setDistanceRange] = React.useState<[number]>([1]);
   const [{ user, loggedIn }] = useUser();
   console.log("user?.authorization", user?.authorization);
-  const { isLoading, error, data } = useQuery(
-    "suggestions",
-    () =>
-      axios.post(
-        "/api/suggestions",
-        { offset: 0, row_count: 2 },
-        {
-          headers: {
-            Authorization: user?.authorization,
-          },
-        }
-      ),
-    { enabled: loggedIn }
-  );
+  const { isLoading, error, data } = useSuggestions({
+    authorization: user?.authorization || "",
+    enabled: loggedIn,
+    offset: 0,
+    row_count: 2,
+  });
 
   console.log(isLoading, error, data);
   const toggleFilters = (event: React.MouseEvent) => {

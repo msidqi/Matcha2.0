@@ -12,7 +12,7 @@ const db: ProfileType[] = dbData as ProfileType[];
 const alreadyRemoved: string[] = [];
 let profilesState = db; // This fixes issues with updating profiles state forcing it to use the current state and not the state that was active when the card was created.
 
-function Advanced() {
+function SwipeImage() {
   const [profiles, setProfiles] = useState<ProfileType[]>(db);
   const [lastDirection, setLastDirection] = useState<string>("");
 
@@ -152,4 +152,4 @@ function Advanced() {
   );
 }
 
-export default Advanced;
+export default SwipeImage;

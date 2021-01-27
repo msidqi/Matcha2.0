@@ -123,7 +123,11 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
     try {
       setLoading(true);
       setError(null);
-      const result = await logoutUserRequest()[0];
+      console.log("logout authorization", state.user?.authorization || "");
+      const result = await logoutUserRequest({
+        authorization: state.user?.authorization || "",
+        userName: state.user?.data.firstName || "",
+      })[0];
       if (result.status !== 200) throw new UserError(LOGOUT_ERROR_MESSAGE);
       dispatch({ type: "logout" });
     } catch (e) {

@@ -1,4 +1,4 @@
-import { apiRequest } from "../API";
+import { apiRequest } from "@/utils/API";
 import { UserInput } from "@/components/auth";
 
 interface GetUserInfoProps {
@@ -10,6 +10,11 @@ interface SingInUserProps {
     userName: string;
     password: string;
   };
+}
+
+interface logoutUserRequestProps {
+  authorization: string;
+  userName: string;
 }
 
 export const getUserInfoRequest = ({ authorization }: GetUserInfoProps) => {
@@ -33,6 +38,18 @@ export const signInUserRequest = ({ userData }: SingInUserProps) => {
   }>("post", "/api/signIn", userData, { withCredentials: true });
 };
 
-export const logoutUserRequest = () => {
-  return apiRequest<{ message: string }>("post", "/api/logout");
+export const logoutUserRequest = ({
+  authorization,
+  userName,
+}: logoutUserRequestProps) => {
+  return apiRequest<{ message: string }>(
+    "post",
+    "/api/logout",
+    { userName },
+    {
+      headers: {
+        Authorization: authorization,
+      },
+    }
+  );
 };
