@@ -22,6 +22,8 @@ const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
 
   /* -- scroll to bottom && set onscroll event -- */
   React.useEffect(() => {
+    let _mount = true;
+
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
@@ -32,12 +34,16 @@ const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
             chatContainerRef.current.clientHeight ===
             chatContainerRef.current.scrollHeight
         ) {
-          setIsAtBottom(true);
+          _mount && setIsAtBottom(true);
         } else if (isAtBottom) {
-          setIsAtBottom(false);
+          _mount && setIsAtBottom(false);
         }
       }, 100);
     }
+
+    return () => {
+      _mount = false;
+    };
   }, []);
 
   React.useEffect(() => {

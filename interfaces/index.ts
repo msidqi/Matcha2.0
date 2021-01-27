@@ -1,7 +1,3 @@
-export type Hello = {
-  world: string;
-};
-
 export type ProfileType = {
   userName: string;
   firstName: string;

@@ -13,8 +13,6 @@ export const userReducer = (
       };
     case "logout":
       return { ...state, user: undefined, loggedIn: false };
-    case "data":
-      return { ...state, user: action.payload.user, loggedIn: true };
     default:
       return state;
   }

@@ -18,7 +18,7 @@ function Navbar(): JSX.Element {
 
   const handleLogout = () => {
     logout();
-    router.push("/");
+    // router.push("/");
   };
   console.log("navbar loading", loading, "user", user);
   const pathname = router.pathname;
