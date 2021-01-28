@@ -1,5 +1,6 @@
 import { apiRequest } from "@/utils/API";
 import { UserInput } from "@/components/auth";
+import { useMutation } from "react-query";
 
 interface GetUserInfoProps {
   authorization: string;
@@ -52,4 +53,30 @@ export const logoutUserRequest = ({
       },
     }
   );
+};
+
+interface UpdateUserDataProps {
+  data: Partial<{
+    userName: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    retryPassword: string;
+  }>;
+  authorization: string;
+}
+
+export const useUpdateUserData = () => {
+  return useMutation(({ data, authorization }: UpdateUserDataProps) => {
+    const formdata = new FormData();
+    for (const key in data) {
+      formdata.append(key, (data as any)[key]);
+    }
+    return apiRequest("post", "/api/updateProfile", formdata, {
+      headers: {
+        Authorization: authorization,
+      },
+    })[0];
+  });
 };

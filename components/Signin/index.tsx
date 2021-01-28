@@ -1,13 +1,13 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-// import { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import Input from "@/components/Input";
 // import Loading from "@/components/Loading";
 import { useUser } from "../auth";
 
 const Signin = (): JSX.Element => {
   const { register, handleSubmit } = useForm();
-  // const router = useRouter();
+  const router = useRouter();
   const [, { login, loading }] = useUser();
   console.log("login loading", loading);
   const onSubmit = async (
@@ -17,7 +17,7 @@ const Signin = (): JSX.Element => {
     e?.preventDefault();
     try {
       await login(data);
-      // router.push('/')
+      router.push("/dashboard");
     } catch (e) {
       console.error(e);
     }

@@ -7,12 +7,14 @@ import TagsDisplay from "@/components/TagsDisplay";
 import DateInput from "@/components/DateInput";
 // import ImageUpload from "@/components/ImageUpload";
 // import type { ImagePreviewProps } from "@/components/ImageUpload";
-import getPosition from "@/utils/getPosition";
+// import getPosition from "@/utils/getPosition";
 import Input from "../Input";
 import { profile } from "@/pages/profile";
 import { ImageType } from "../Profile";
 import { indexOf } from "@/utils/indexOf";
 import { genders, orientation } from "@/components/data/constants.json";
+import { useUpdateUserData } from "@/utils/requests/userRequests";
+import { useUser } from "../auth";
 
 type DataType = {
   userName: string;
@@ -28,7 +30,8 @@ const ProfileEdit = () => {
   const { register, handleSubmit, errors } = useForm({
     defaultValues: { birthdate: "2021-01-13", ...profile },
   });
-
+  const updateUserMutation = useUpdateUserData();
+  const [{ user }] = useUser();
   const {
     register: registerPassword,
     handleSubmit: handlePasswordSubmit,
@@ -42,10 +45,14 @@ const ProfileEdit = () => {
 
   const onPasswordSubmit = (data: {
     password: string;
-    confirmPassword: string;
+    retryPassword: string;
   }) => {
     // make password put request
     console.log(data);
+    updateUserMutation.mutate({
+      data,
+      authorization: user?.authorization || "",
+    });
   };
 
   const onSubmit = async (data: DataType) => {
@@ -148,28 +155,30 @@ const ProfileEdit = () => {
             <Input
               name="password"
               label="Password"
+              type="password"
               register={registerPassword({ required: true })}
               placeholder="Enter your password"
             />
             <Input
-              name="confirmPassword"
+              name="retryPassword"
               label="Confirm Password"
+              type="password"
               register={registerPassword({
                 required: true,
                 validate: (value) => value === getPasswordValues("password"),
               })}
               placeholder="Enter your password"
               error={
-                passwordErrors.confirmPassword?.type === "validate"
+                passwordErrors.retryPassword?.type === "validate"
                   ? "Password does not match"
-                  : passwordErrors.confirmPassword?.type === "required"
+                  : passwordErrors.retryPassword?.type === "required"
                   ? "Required"
                   : undefined
               }
             />
             <div>
-              <button className="w-full bg-blue-500 hover:bg-gray-800 text-white p-2 rounded">
-                Change Password
+              <button className="w-full bg-green-400 hover:bg-green-500 text-white p-2 rounded">
+                {updateUserMutation.isLoading ? "Saving..." : "Change Password"}
               </button>
             </div>
           </form>
@@ -251,7 +260,7 @@ const ProfileEdit = () => {
             </div>
 
             <div>
-              <button className="w-full bg-blue-500 hover:bg-gray-800 text-white p-2 rounded">
+              <button className="w-full bg-green-400 hover:bg-green-500 text-white p-2 rounded">
                 Save Changes
               </button>
             </div>

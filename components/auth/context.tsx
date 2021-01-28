@@ -63,7 +63,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
         const response = await accessTokenRequest;
         if (response.status !== 200)
           throw new UserError(USERDATA_ERROR_MESSAGE);
-        const accessToken = response.data.accessToken;
+        const { accessToken } = response.data;
         const user = state.user
           ? state.user.addProperties({ accessToken })
           : new User({
@@ -87,7 +87,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
       }
     })();
     return () => {
-      cancel && cancel();
+      cancel?.();
     };
   }, []);
 
@@ -126,7 +126,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
       console.log("logout authorization", state.user?.authorization || "");
       const result = await logoutUserRequest({
         authorization: state.user?.authorization || "",
-        userName: state.user?.data.firstName || "",
+        userName: state.user?.data.userName || "",
       })[0];
       if (result.status !== 200) throw new UserError(LOGOUT_ERROR_MESSAGE);
       dispatch({ type: "logout" });
