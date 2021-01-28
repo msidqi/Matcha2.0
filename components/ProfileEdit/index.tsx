@@ -27,7 +27,7 @@ type DataType = {
 const ProfileEdit = () => {
   const { tags, gender, bio, orientation: userOrientation } = profile;
 
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, errors, setValue } = useForm({
     defaultValues: { birthdate: "2021-01-13", ...profile },
   });
   const updateUserMutation = useUpdateUserData();
@@ -42,7 +42,12 @@ const ProfileEdit = () => {
   // const [imagePreviews, setImagePreviews] = React.useState<ImagePreviewProps[]>(
   //   []
   // );
-
+  React.useEffect(() => {
+    // console.log("user?.data.email", user?.data.email);
+    setValue("email", user?.data.email);
+    setValue("firstName", user?.data.firstName);
+    setValue("lastName", user?.data.lastName);
+  }, [user]);
   const onPasswordSubmit = (data: {
     password: string;
     retryPassword: string;
@@ -58,17 +63,11 @@ const ProfileEdit = () => {
   const onSubmit = async (data: DataType) => {
     // console.log({ ...data, images: imagePreviews });
     try {
-      const formdata = new FormData();
-      for (const key in data) {
-        formdata.append(key, (data as any)[key]);
-      }
+      updateUserMutation.mutate({
+        data,
+        authorization: user?.authorization || "",
+      });
       console.log("data", data);
-      console.log("formdata", formdata);
-      const result = await axios.post(
-        "http://localhost:3001/api/updateProfile",
-        data
-      );
-      console.log("result", result);
     } catch (e) {
       console.error("post error", e);
     }
@@ -234,7 +233,7 @@ const ProfileEdit = () => {
               name="orientation"
               register={register}
               placeholder="Select your orientation"
-              label="Sexual Preference"
+              label="Orientation"
               options={orientation}
             />
             <DateInput
