@@ -8,7 +8,6 @@ import DateInput from "@/components/DateInput";
 // import type { ImagePreviewProps } from "@/components/ImageUpload";
 // import getPosition from "@/utils/getPosition";
 import Input from "@/components/Input";
-import { profile } from "@/pages/profile";
 import { ImageType } from "../Profile";
 import { indexOf } from "@/utils/indexOf";
 import { genders, orientation } from "@/components/data/constants.json";
@@ -26,12 +25,20 @@ type DataType = {
 };
 
 const ProfileEdit = () => {
-  const { tags, gender, orientation: userOrientation } = profile;
-  const [tagsSet, setTagsSet] = React.useState<Set<string>>(new Set(tags));
-
-  const { register, handleSubmit, errors, setValue } = useForm({
-    defaultValues: { ...profile },
-  });
+  const { register, handleSubmit, errors, setValue } = useForm();
+  const [tagsSet, setTagsSet] = React.useState<Set<string>>(
+    new Set(["Hello", "World", "1337", "42"])
+  );
+  const [images, setImages] = React.useState<ImageType[]>([
+    { src: "/profile.jpg", isProfilePicture: false },
+    { src: "/profile_jap.jpg", isProfilePicture: true },
+    { src: "/profile_liz.jpg", isProfilePicture: false },
+    { src: "/profile_saf.jpg", isProfilePicture: false },
+    { src: "/profile_eva.jpg", isProfilePicture: false },
+  ]);
+  const [mainPicIndex, setMainPicIndex] = React.useState<number>(
+    indexOf<ImageType>(images, (img) => img.isProfilePicture) ?? 0
+  );
   const updateUserMutation = useUpdateUserData();
   const [{ user }, { setUser }] = useUser();
   const {
@@ -45,7 +52,6 @@ const ProfileEdit = () => {
   //   []
   // );
   React.useEffect(() => {
-    // console.log("user?.data.email", user?.data.email);
     setValue("email", user?.data.email);
     setValue("firstName", user?.data.firstName);
     setValue("lastName", user?.data.lastName);
@@ -60,9 +66,10 @@ const ProfileEdit = () => {
         : user?.data.birthDate
     );
     setTagsSet(new Set(user?.data.tags));
-    /*
-    ProfileImage: {imageName: "1607329039024_leftBG copy.jpg", imageBase64: "/9j/4QBqRXhpZgAATU0AKgAAAAgABIdpAAQAAAABAAAAPgESAA…3nbjNmqIMBhwYS2KSe4YwnSQKfYQ/RCIiCsmqGMNbdiwP/9k="}
-    */
+    const indexOfMainImage =
+      indexOf<ImageType>(images, (img) => img.isProfilePicture) ?? 0;
+    images[indexOfMainImage].src = user?.ProfileImageBase64 || "";
+    setImages(images);
   }, [user]);
 
   const onPasswordSubmit = (data: {
@@ -99,16 +106,6 @@ const ProfileEdit = () => {
     if (e.code === "Enter") e.preventDefault();
   };
 
-  const images: ImageType[] = [
-    { src: "/profile.jpg", isProfilePicture: false },
-    { src: "/profile_jap.jpg", isProfilePicture: true },
-    { src: "/profile_liz.jpg", isProfilePicture: false },
-    { src: "/profile_saf.jpg", isProfilePicture: false },
-    { src: "/profile_eva.jpg", isProfilePicture: false },
-  ];
-  const [mainPicIndex, setMainPicIndex] = React.useState<number>(
-    indexOf<ImageType>(images, (img) => img.isProfilePicture) ?? 0
-  );
   return (
     <article className="w-full flex justify-between flex-wrap bg-white sm:shadow-lg px-4 sm:px-6 pb-8 sm:py-8 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
       <section className="md:w-5/12 w-full mb-10">
@@ -248,7 +245,7 @@ const ProfileEdit = () => {
               />
             </div>
             <Select
-              initialValue={gender}
+              initialValue={genders[0].value}
               name="gender"
               register={register}
               placeholder="Select your gender"
@@ -256,7 +253,7 @@ const ProfileEdit = () => {
               options={genders}
             />
             <Select
-              initialValue={userOrientation}
+              initialValue={orientation[0].value}
               name="orientation"
               register={register}
               placeholder="Select your orientation"
