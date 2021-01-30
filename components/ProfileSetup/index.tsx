@@ -20,6 +20,9 @@ type DataType = {
 
 const ProfileSetup = (): JSX.Element => {
   const { register, handleSubmit, errors } = useForm();
+  const [tagsSet, setTagsSet] = React.useState<Set<string>>(
+    new Set(["Hello", "World", "1337", "42"])
+  );
   const [imagePreviews, setImagePreviews] = React.useState<ImagePreviewProps[]>(
     []
   );
@@ -89,7 +92,7 @@ const ProfileSetup = (): JSX.Element => {
         <label htmlFor="tags" className="block text-gray-700 font-semibold">
           Interest
         </label>
-        <TagsDisplay initialTags={["Hello", "World", "1337", "42"]} />
+        <TagsDisplay tagsSet={tagsSet} setTagsSet={setTagsSet} />
         <ImageUpload
           limit={5}
           imagePreviews={imagePreviews}
@@ -97,7 +100,7 @@ const ProfileSetup = (): JSX.Element => {
         />
         <div className="pt-6">
           <input
-            className="w-full bg-blue-500 hover:bg-gray-800 text-white p-2 rounded"
+            className="w-full bg-green-400 hover:bg-green-500 text-white p-2 rounded"
             type="submit"
             value="Complete Profile"
           />

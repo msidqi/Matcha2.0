@@ -11,7 +11,7 @@ interface CloseIconProps {
 const CloseIcon = ({
   height = "6",
   width = "6",
-  color = "#F8F8F8",
+  color = "#6d7381",
   onClick,
   className,
 }: CloseIconProps): JSX.Element => (

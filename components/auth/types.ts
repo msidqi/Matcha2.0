@@ -18,6 +18,7 @@ export interface UserInput {
     imageBase64: string;
     imageName: string;
   };
+  tags: string[];
 }
 
 interface IUser {
@@ -40,6 +41,7 @@ export class User implements IUser {
     experience?: number;
     birthDate: Date | string;
     rankId?: number;
+    tags: string[];
   };
   private _accessToken?: string;
 
@@ -66,6 +68,7 @@ export class User implements IUser {
         imageBase64: "",
         imageName: "",
       },
+      tags: [],
     };
     this.addProperties(input);
   }
@@ -100,14 +103,16 @@ export class User implements IUser {
     ) {
       this.data.birthDate = input["birthDate"];
     }
+    if (Array.isArray(input["tags"])) this.data.tags = input["tags"];
 
     return this;
   }
 }
 
 export type UserDispatchActions =
-  | { type: "logout" }
-  | { type: "login"; payload: { user: User } };
+  | { type: "LOGOUT" }
+  | { type: "LOGIN"; payload: { user: User } }
+  | { type: "SET_USER"; payload: { user: User } };
 
 export type UserState =
   | { user: undefined; loggedIn: false }
@@ -119,10 +124,15 @@ export type LoginAction = (data: {
   userName: string;
   password: string;
 }) => Promise<void>;
+
 export type LogoutAction = () => Promise<void>;
+
+export type SetUserAction = (userData: Partial<UserInput>) => void;
+
 export type ActionsAndState = {
   login: LoginAction;
   logout: LogoutAction;
+  setUser: SetUserAction;
   loading: boolean;
   error: UserError | null;
 };

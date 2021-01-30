@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import Select from "@/components/Select";
 import Bio from "@/components/Bio";
@@ -8,13 +7,15 @@ import DateInput from "@/components/DateInput";
 // import ImageUpload from "@/components/ImageUpload";
 // import type { ImagePreviewProps } from "@/components/ImageUpload";
 // import getPosition from "@/utils/getPosition";
-import Input from "../Input";
+import Input from "@/components/Input";
 import { profile } from "@/pages/profile";
 import { ImageType } from "../Profile";
 import { indexOf } from "@/utils/indexOf";
 import { genders, orientation } from "@/components/data/constants.json";
 import { useUpdateUserData } from "@/utils/requests/userRequests";
 import { useUser } from "../auth";
+// import Loading from "@/components/Loading";
+import { LoadingAnimation } from "../ui/Icons/LoadingIcon";
 
 type DataType = {
   userName: string;
@@ -25,13 +26,14 @@ type DataType = {
 };
 
 const ProfileEdit = () => {
-  const { tags, gender, bio, orientation: userOrientation } = profile;
+  const { tags, gender, orientation: userOrientation } = profile;
+  const [tagsSet, setTagsSet] = React.useState<Set<string>>(new Set(tags));
 
   const { register, handleSubmit, errors, setValue } = useForm({
-    defaultValues: { birthdate: "2021-01-13", ...profile },
+    defaultValues: { ...profile },
   });
   const updateUserMutation = useUpdateUserData();
-  const [{ user }] = useUser();
+  const [{ user }, { setUser }] = useUser();
   const {
     register: registerPassword,
     handleSubmit: handlePasswordSubmit,
@@ -47,7 +49,22 @@ const ProfileEdit = () => {
     setValue("email", user?.data.email);
     setValue("firstName", user?.data.firstName);
     setValue("lastName", user?.data.lastName);
+    setValue("userName", user?.data.userName);
+    setValue("bio", user?.data.bio);
+    setValue("gender", user?.data.gender?.toLowerCase());
+    setValue("orientation", user?.data.orientation?.toLowerCase());
+    setValue(
+      "birthDate",
+      user?.data.birthDate instanceof Date
+        ? user?.data.birthDate.toISOString().split("T")[0]
+        : user?.data.birthDate
+    );
+    setTagsSet(new Set(user?.data.tags));
+    /*
+    ProfileImage: {imageName: "1607329039024_leftBG copy.jpg", imageBase64: "/9j/4QBqRXhpZgAATU0AKgAAAAgABIdpAAQAAAABAAAAPgESAA…3nbjNmqIMBhwYS2KSe4YwnSQKfYQ/RCIiCsmqGMNbdiwP/9k="}
+    */
   }, [user]);
+
   const onPasswordSubmit = (data: {
     password: string;
     retryPassword: string;
@@ -60,19 +77,23 @@ const ProfileEdit = () => {
     });
   };
 
-  const onSubmit = async (data: DataType) => {
+  const onSubmit = async (submitedData: DataType) => {
     // console.log({ ...data, images: imagePreviews });
+    const data = { ...submitedData, tags: [...tagsSet] };
     try {
       updateUserMutation.mutate({
-        data,
+        data: data,
         authorization: user?.authorization || "",
       });
+      setUser(data);
       console.log("data", data);
+      console.log("set", [...tagsSet]);
     } catch (e) {
       console.error("post error", e);
     }
   };
   console.log("submit errors", errors);
+  console.log("user", user);
 
   const checkKeyDown = (e: any) => {
     if (e.code === "Enter") e.preventDefault();
@@ -89,7 +110,7 @@ const ProfileEdit = () => {
     indexOf<ImageType>(images, (img) => img.isProfilePicture) ?? 0
   );
   return (
-    <article className="w-full flex justify-between flex-wrap bg-white sm:shadow-lg px-6 pb-8 sm:py-8 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
+    <article className="w-full flex justify-between flex-wrap bg-white sm:shadow-lg px-4 sm:px-6 pb-8 sm:py-8 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
       <section className="md:w-5/12 w-full mb-10">
         <section className="flex justify-center">
           {/* ------ main picture ------ */}
@@ -111,7 +132,7 @@ const ProfileEdit = () => {
             {images.map((img, index) => (
               <li
                 key={index}
-                className="block p-0.5 w-20 h-24 mx-auto"
+                className="block pr-0 p-0.5 w-20 h-24 mx-auto"
                 onClick={() => setMainPicIndex(index)}
               >
                 <article
@@ -177,7 +198,13 @@ const ProfileEdit = () => {
             />
             <div>
               <button className="w-full bg-green-400 hover:bg-green-500 text-white p-2 rounded">
-                {updateUserMutation.isLoading ? "Saving..." : "Change Password"}
+                {updateUserMutation.isLoading ? (
+                  <div className="flex justify-center items-center">
+                    <LoadingAnimation height="24" width="24" />
+                  </div>
+                ) : (
+                  "Change Password"
+                )}
               </button>
             </div>
           </form>
@@ -238,11 +265,11 @@ const ProfileEdit = () => {
             />
             <DateInput
               label="Your Birthday"
-              name="birthdate"
+              name="birthDate"
               register={register}
             />
             <Bio
-              initialLength={bio.length}
+              initialLength={user?.data.bio.length}
               register={register({ maxLength: 200 })}
               maxLength={200}
               label="About you"
@@ -255,12 +282,18 @@ const ProfileEdit = () => {
               >
                 Interest
               </label>
-              <TagsDisplay initialTags={tags} />
+              <TagsDisplay tagsSet={tagsSet} setTagsSet={setTagsSet} />
             </div>
 
             <div>
               <button className="w-full bg-green-400 hover:bg-green-500 text-white p-2 rounded">
-                Save Changes
+                {updateUserMutation.isLoading ? (
+                  <div className="flex justify-center items-center">
+                    <LoadingAnimation height="24" width="24" />
+                  </div>
+                ) : (
+                  "Save Changes"
+                )}
               </button>
             </div>
           </form>

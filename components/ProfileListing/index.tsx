@@ -47,7 +47,9 @@ const ProfileListing = () => {
     false
   );
   const [showFilters, setShowFilters] = React.useState<boolean>(false);
-  const [tagsFilter, setTagsFilter] = React.useState<string[]>([]);
+  const [tagsSet, setTagsSet] = React.useState<Set<string>>(
+    new Set(["Hello", "World", "1337", "42"])
+  );
   const [ageRange, setAgeRange] = React.useState<[number, number]>([18, 22]);
   const [popularityRange, setPopularityRange] = React.useState<
     [number, number]
@@ -81,7 +83,7 @@ const ProfileListing = () => {
       console.log(
         "apply filter with these settings\n",
         "tags",
-        tagsFilter,
+        [...tagsSet],
         "age",
         ageRange,
         "popularity",
@@ -179,8 +181,8 @@ const ProfileListing = () => {
             </div>
             <div className="mb-2">
               <TagsDisplay
-                onTagChange={(_, all) => setTagsFilter(all)}
-                initialTags={["Hello", "World", "1337", "42"]}
+                tagsSet={tagsSet}
+                setTagsSet={setTagsSet}
                 variant="secondary"
               />
             </div>

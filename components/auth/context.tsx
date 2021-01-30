@@ -1,6 +1,6 @@
 import * as React from "react";
 import { userReducer } from ".";
-import { User } from "./types";
+import { User, SetUserAction, UserInput } from "./types";
 import type {
   UserState,
   ActionsAndState,
@@ -33,6 +33,9 @@ const userContext = React.createContext<[UserState, ActionsAndState]>([
       return;
     },
     logout: async () => {
+      return;
+    },
+    setUser: () => {
       return;
     },
     loading: false,
@@ -78,7 +81,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
         if (result.status !== 200) throw new UserError(USERDATA_ERROR_MESSAGE);
         /* -------- update global user state ------- */
         user.addProperties({ ...result.data });
-        dispatch({ type: "login", payload: { user } });
+        dispatch({ type: "SET_USER", payload: { user } });
       } catch (e) {
         setError(e);
         console.error(e);
@@ -109,7 +112,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
       if (result.status !== 200) throw new UserError(LOGIN_ERROR_MESSAGE);
       /* -------- update global user state ------- */
       newUserValue.addProperties({ ...result.data });
-      dispatch({ type: "login", payload: { user: newUserValue } });
+      dispatch({ type: "LOGIN", payload: { user: newUserValue } });
       console.log("/api/signIn result.data", result.data);
     } catch (e) {
       setError(e);
@@ -129,7 +132,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
         userName: state.user?.data.userName || "",
       })[0];
       if (result.status !== 200) throw new UserError(LOGOUT_ERROR_MESSAGE);
-      dispatch({ type: "logout" });
+      dispatch({ type: "LOGOUT" });
     } catch (e) {
       setError(e);
       console.error(e);
@@ -138,9 +141,16 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
     }
   };
 
+  const setUser: SetUserAction = (userData: Partial<UserInput>) => {
+    const user = state.user
+      ? state.user?.addProperties(userData)
+      : new User(userData);
+    dispatch({ type: "SET_USER", payload: { user } });
+  };
+
   return (
     <userContext.Provider
-      value={[{ ...state }, { login, logout, loading, error }]}
+      value={[{ ...state }, { login, logout, setUser, loading, error }]}
     >
       {children}
     </userContext.Provider>

@@ -2,23 +2,22 @@ import React, { useState, ReactNode } from "react";
 import Tag from "@/components/Tag";
 
 interface TagsDisplayProps {
-  initialTags: string[];
   variant?: string;
   onTagChange?: (
     currenlyAdded: string,
     currentTags: string[],
     action: "add" | "delete"
   ) => void;
+  tagsSet: Set<string>;
+  setTagsSet: React.Dispatch<React.SetStateAction<Set<string>>>;
 }
 
 const TagsDisplay = ({
-  initialTags,
   variant,
   onTagChange,
+  tagsSet,
+  setTagsSet,
 }: TagsDisplayProps): JSX.Element => {
-  const set = new Set<string>();
-  initialTags.forEach((tagValue) => set.add(tagValue));
-  const [tagsSet, setTagsSet] = useState<Set<string>>(set);
   const [tagName, setTagName] = useState<string>("");
 
   const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -32,10 +31,10 @@ const TagsDisplay = ({
         e.stopPropagation();
       }
       const trimmedTag = tagName.trim();
-      if (e.which === 13 && trimmedTag.length > 2) {
+      if (e.which === 13 && trimmedTag.length >= 2) {
         tagsSet.add(trimmedTag);
         setTagName("");
-        // onTagChange && onTagChange(trimmedTag, [...tagsSet]);
+        // onTagChange?.(trimmedTag, [...tagsSet]);
       }
     }
   };
@@ -46,7 +45,7 @@ const TagsDisplay = ({
     if (trimmedTag.length > 2) {
       tagsSet.add(trimmedTag);
       setTagName("");
-      onTagChange && onTagChange(trimmedTag, [...tagsSet], "add");
+      onTagChange?.(trimmedTag, [...tagsSet], "add");
     }
   };
 
@@ -61,7 +60,7 @@ const TagsDisplay = ({
         onClose={() => {
           tagsSet.delete(uniqueTag);
           setTagsSet((prevState) => new Set(prevState));
-          onTagChange && onTagChange(uniqueTag, [...tagsSet], "delete");
+          onTagChange?.(uniqueTag, [...tagsSet], "delete");
         }}
       />
     );

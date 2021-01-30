@@ -63,6 +63,7 @@ interface UpdateUserDataProps {
     lastName: string;
     email: string;
     retryPassword: string;
+    tags: string[];
   }>;
   authorization: string;
 }
@@ -71,7 +72,11 @@ export const useUpdateUserData = () => {
   return useMutation(({ data, authorization }: UpdateUserDataProps) => {
     const formdata = new FormData();
     for (const key in data) {
-      formdata.append(key, (data as any)[key]);
+      if (Array.isArray((data as any)[key])) {
+        (data as any)[key].forEach((elem: any) => formdata.append(key, elem));
+      } else {
+        formdata.append(key, (data as any)[key]);
+      }
     }
     return apiRequest("post", "/api/updateProfile", formdata, {
       headers: {

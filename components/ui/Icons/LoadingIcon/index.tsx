@@ -27,4 +27,12 @@ const LoadingIcon = ({
   </svg>
 );
 
+export const LoadingAnimation = ({
+  width,
+  height,
+}: {
+  width?: string;
+  height?: string;
+}) => <LoadingIcon className="animate-spin" width={width} height={height} />;
+
 export default LoadingIcon;
