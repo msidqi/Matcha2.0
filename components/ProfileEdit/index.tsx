@@ -8,7 +8,7 @@ import DateInput from "@/components/DateInput";
 // import type { ImagePreviewProps } from "@/components/ImageUpload";
 // import getPosition from "@/utils/getPosition";
 import Input from "@/components/Input";
-import { ImageType } from "../Profile";
+import { Image } from "@/components/auth/classes";
 import { indexOf } from "@/utils/indexOf";
 import { genders, orientation } from "@/components/data/constants.json";
 import { useUpdateUserData } from "@/utils/requests/userRequests";
@@ -29,15 +29,15 @@ const ProfileEdit = () => {
   const [tagsSet, setTagsSet] = React.useState<Set<string>>(
     new Set(["Hello", "World", "1337", "42"])
   );
-  const [images, setImages] = React.useState<ImageType[]>([
-    { src: "/profile.jpg", isProfilePicture: false },
-    { src: "/profile_jap.jpg", isProfilePicture: true },
-    { src: "/profile_liz.jpg", isProfilePicture: false },
-    { src: "/profile_saf.jpg", isProfilePicture: false },
-    { src: "/profile_eva.jpg", isProfilePicture: false },
+  const [images, setImages] = React.useState<Image[]>([
+    { imageName: "1", src: "/profile.jpg", isProfilePicture: 0 },
+    { imageName: "2", src: "/profile_jap.jpg", isProfilePicture: 1 },
+    { imageName: "3", src: "/profile_liz.jpg", isProfilePicture: 0 },
+    { imageName: "4", src: "/profile_saf.jpg", isProfilePicture: 0 },
+    { imageName: "5", src: "/profile_eva.jpg", isProfilePicture: 0 },
   ]);
   const [mainPicIndex, setMainPicIndex] = React.useState<number>(
-    indexOf<ImageType>(images, (img) => img.isProfilePicture) ?? 0
+    indexOf<Image>(images, (img) => !!img.isProfilePicture) ?? 0
   );
   const updateUserMutation = useUpdateUserData();
   const [{ user }, { setUser }] = useUser();
@@ -67,9 +67,9 @@ const ProfileEdit = () => {
     );
     setTagsSet(new Set(user?.data.tags));
     const indexOfMainImage =
-      indexOf<ImageType>(images, (img) => img.isProfilePicture) ?? 0;
-    images[indexOfMainImage].src = user?.ProfileImageBase64 || "";
-    setImages(images);
+      indexOf<Image>(images, (img) => !!img.isProfilePicture) ?? 0;
+    setMainPicIndex(indexOfMainImage);
+    setImages((prev) => user?.data.images ?? prev);
   }, [user]);
 
   const onPasswordSubmit = (data: {
@@ -85,7 +85,6 @@ const ProfileEdit = () => {
   };
 
   const onSubmit = async (submitedData: DataType) => {
-    // console.log({ ...data, images: imagePreviews });
     const data = { ...submitedData, tags: [...tagsSet] };
     try {
       updateUserMutation.mutate({
@@ -93,8 +92,7 @@ const ProfileEdit = () => {
         authorization: user?.authorization || "",
       });
       setUser(data);
-      console.log("data", data);
-      console.log("set", [...tagsSet]);
+      console.log("data", { ...data, tags: [...tagsSet] });
     } catch (e) {
       console.error("post error", e);
     }

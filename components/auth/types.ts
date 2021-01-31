@@ -1,6 +1,7 @@
 import { Dispatch } from "react";
-import { isValidDate } from "@/utils/date";
+// import { isValidDate } from "@/utils/date";
 import { UserError } from "@/components/auth/errors";
+import { User, Image } from "@/components/auth/classes";
 
 export interface UserInput {
   firstName: string;
@@ -14,99 +15,8 @@ export interface UserInput {
   orientation: "heterosexual" | "homosexual" | "bisexual";
   rankId: number;
   accessToken: string;
-  ProfileImage: {
-    imageBase64: string;
-    imageName: string;
-  };
+  images: Image[];
   tags: string[];
-}
-
-interface IUser {
-  data: Partial<UserInput>;
-}
-
-export class User implements IUser {
-  data: {
-    firstName: string;
-    lastName: string;
-    userName: string;
-    email: string;
-    bio: string;
-    ProfileImage: {
-      imageBase64: string;
-      imageName: string;
-    };
-    gender?: "male" | "female";
-    orientation?: "heterosexual" | "homosexual" | "bisexual";
-    experience?: number;
-    birthDate: Date | string;
-    rankId?: number;
-    tags: string[];
-  };
-  private _accessToken?: string;
-
-  public get ProfileImageBase64() {
-    return `data:image/jpeg;base64,${this.data.ProfileImage.imageBase64}`;
-  }
-
-  public get authorization() {
-    return `Bearer ${this._accessToken || ""}`;
-  }
-  public set accessToken(v: string | undefined) {
-    this._accessToken = v || "";
-  }
-
-  constructor(input: Partial<UserInput>) {
-    this.data = {
-      firstName: "",
-      lastName: "",
-      userName: "",
-      email: "",
-      bio: "",
-      birthDate: "",
-      ProfileImage: {
-        imageBase64: "",
-        imageName: "",
-      },
-      tags: [],
-    };
-    this.addProperties(input);
-  }
-
-  addProperties(input: Partial<UserInput>) {
-    if (typeof input["firstName"] === "string")
-      this.data.firstName = input["firstName"];
-    if (typeof input["lastName"] === "string")
-      this.data.lastName = input["lastName"];
-    if (typeof input["userName"] === "string")
-      this.data.userName = input["userName"];
-    if (typeof input["email"] === "string") this.data.email = input["email"];
-    if (typeof input["experience"] === "number")
-      this.data.experience = input["experience"];
-    if (typeof input["orientation"] === "string")
-      this.data.orientation = input["orientation"];
-    if (typeof input["gender"] === "string") this.data.gender = input["gender"];
-    if (typeof input["bio"] === "string") this.data.bio = input["bio"];
-    if (typeof input["accessToken"] === "string")
-      this.accessToken = input["accessToken"];
-    if (
-      typeof input["ProfileImage"] === "object" &&
-      typeof input["ProfileImage"].imageBase64 === "string"
-    )
-      this.data.ProfileImage = input["ProfileImage"];
-    if (typeof input["birthDate"] === "string") {
-      const date = new Date(input["birthDate"]);
-      if (isValidDate(date)) this.data.birthDate = date;
-    } else if (
-      input["birthDate"] instanceof Date &&
-      isValidDate(input["birthDate"])
-    ) {
-      this.data.birthDate = input["birthDate"];
-    }
-    if (Array.isArray(input["tags"])) this.data.tags = input["tags"];
-
-    return this;
-  }
 }
 
 export type UserDispatchActions =

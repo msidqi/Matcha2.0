@@ -167,13 +167,13 @@ function Navbar(): JSX.Element {
                     ) : (
                       <img
                         className="h-8 w-8 rounded-full"
-                        src={user?.ProfileImageBase64}
+                        src={user?.ProfileImageSrc}
                         alt=""
                       />
                     )}
                     {console.log(
-                      "user?.ProfileImageBase64",
-                      !!user?.ProfileImageBase64
+                      "user?.ProfileImageSrc",
+                      !!user?.ProfileImageSrc
                     )}
                   </button>
                 </div>
