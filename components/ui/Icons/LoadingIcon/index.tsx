@@ -1,10 +1,10 @@
 import React from "react";
 
 interface LoadingIconProps {
-  height?: string;
-  width?: string;
-  className?: string;
-  color?: string;
+  height: string;
+  width: string;
+  className: string;
+  color: string;
 }
 
 const LoadingIcon = ({
@@ -12,7 +12,7 @@ const LoadingIcon = ({
   width = "70",
   color = "#33d398",
   className,
-}: LoadingIconProps): JSX.Element => (
+}: Partial<LoadingIconProps>): JSX.Element => (
   <svg
     className={className}
     width={width}

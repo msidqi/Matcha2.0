@@ -64,6 +64,8 @@ interface UpdateUserDataProps {
     email: string;
     retryPassword: string;
     tags: string[];
+    images: string[];
+    profilPicture: string;
   }>;
   authorization: string;
 }

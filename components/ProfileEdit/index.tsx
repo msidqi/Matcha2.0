@@ -8,13 +8,12 @@ import DateInput from "@/components/DateInput";
 // import type { ImagePreviewProps } from "@/components/ImageUpload";
 // import getPosition from "@/utils/getPosition";
 import Input from "@/components/Input";
+import Button from "@/components/Button";
 import { Image } from "@/components/auth/classes";
 import { indexOf } from "@/utils/indexOf";
 import { genders, orientation } from "@/components/data/constants.json";
 import { useUpdateUserData } from "@/utils/requests/userRequests";
-import { useUser } from "../auth";
-// import Loading from "@/components/Loading";
-import { LoadingAnimation } from "../ui/Icons/LoadingIcon";
+import { useUser } from "@/components/auth";
 
 type DataType = {
   userName: string;
@@ -30,11 +29,11 @@ const ProfileEdit = () => {
     new Set(["Hello", "World", "1337", "42"])
   );
   const [images, setImages] = React.useState<Image[]>([
-    { imageName: "1", src: "/profile.jpg", isProfilePicture: 0 },
-    { imageName: "2", src: "/profile_jap.jpg", isProfilePicture: 1 },
-    { imageName: "3", src: "/profile_liz.jpg", isProfilePicture: 0 },
-    { imageName: "4", src: "/profile_saf.jpg", isProfilePicture: 0 },
-    { imageName: "5", src: "/profile_eva.jpg", isProfilePicture: 0 },
+    // { imageName: "1", src: "/profile.jpg", isProfilePicture: 0 },
+    // { imageName: "2", src: "/profile_jap.jpg", isProfilePicture: 1 },
+    // { imageName: "3", src: "/profile_liz.jpg", isProfilePicture: 0 },
+    // { imageName: "4", src: "/profile_saf.jpg", isProfilePicture: 0 },
+    // { imageName: "5", src: "/profile_eva.jpg", isProfilePicture: 0 },
   ]);
   const [mainPicIndex, setMainPicIndex] = React.useState<number>(
     indexOf<Image>(images, (img) => !!img.isProfilePicture) ?? 0
@@ -51,6 +50,8 @@ const ProfileEdit = () => {
   // const [imagePreviews, setImagePreviews] = React.useState<ImagePreviewProps[]>(
   //   []
   // );
+
+  /* ------ set fetched user data in the editable fields ------ */
   React.useEffect(() => {
     setValue("email", user?.data.email);
     setValue("firstName", user?.data.firstName);
@@ -72,6 +73,22 @@ const ProfileEdit = () => {
     setImages((prev) => user?.data.images ?? prev);
   }, [user]);
 
+  const handleProfileImageChange = (index: number) => {
+    try {
+      const data = { profilPicture: images[index].imageName };
+      updateUserMutation.mutate({
+        data,
+        authorization: user?.authorization || "",
+      });
+      setMainPicIndex(index);
+      images[mainPicIndex].isProfilePicture = 0;
+      images[index].isProfilePicture = 1;
+      setUser({ images });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const onPasswordSubmit = (data: {
     password: string;
     retryPassword: string;
@@ -92,7 +109,7 @@ const ProfileEdit = () => {
         authorization: user?.authorization || "",
       });
       setUser(data);
-      console.log("data", { ...data, tags: [...tagsSet] });
+      console.log("data", data);
     } catch (e) {
       console.error("post error", e);
     }
@@ -106,29 +123,32 @@ const ProfileEdit = () => {
 
   return (
     <article className="w-full flex justify-between flex-wrap bg-white sm:shadow-lg px-4 sm:px-6 pb-8 sm:py-8 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
+      {/* ------ profile images section ------ */}
       <section className="md:w-5/12 w-full mb-10">
         <section className="flex justify-center">
           {/* ------ main picture ------ */}
-          <div className="w-80" style={{ height: "30rem" }}>
-            <picture>
-              <source
-                media="(min-width:650px)"
-                srcSet={images[mainPicIndex].src}
-              />
-              <img
-                src={images[mainPicIndex].src}
-                alt="profile picture"
-                className="h-full w-full object-cover rounded-2xl"
-              />
-            </picture>
-          </div>
+          {images[mainPicIndex] && (
+            <div className="w-80" style={{ height: "30rem" }}>
+              <picture>
+                <source
+                  media="(min-width:650px)"
+                  srcSet={images[mainPicIndex].src}
+                />
+                <img
+                  src={images[mainPicIndex].src}
+                  alt="profile picture"
+                  className="h-full w-full object-cover rounded-2xl"
+                />
+              </picture>
+            </div>
+          )}
           {/* ------ other images container ------ */}
           <div className="w-24 block sm:py-0">
             {images.map((img, index) => (
               <li
                 key={index}
                 className="block pr-0 p-0.5 w-20 h-24 mx-auto"
-                onClick={() => setMainPicIndex(index)}
+                onClick={() => handleProfileImageChange(index)}
               >
                 <article
                   tabIndex={0}
@@ -157,6 +177,7 @@ const ProfileEdit = () => {
           imagePreviews={imagePreviews}
           setImagePreviews={setImagePreviews}
         /> */}
+        {/* <Button onClick={handleImagesSubmit}>Save Images</Button> */}
       </section>
       <section className="md:w-7/12 w-full flex flex-col space-y-10 ">
         <div>
@@ -192,15 +213,9 @@ const ProfileEdit = () => {
               }
             />
             <div>
-              <button className="w-full bg-green-400 hover:bg-green-500 text-white p-2 rounded">
-                {updateUserMutation.isLoading ? (
-                  <div className="flex justify-center items-center">
-                    <LoadingAnimation height="24" width="24" />
-                  </div>
-                ) : (
-                  "Change Password"
-                )}
-              </button>
+              <Button loading={updateUserMutation.isLoading}>
+                Save Password
+              </Button>
             </div>
           </form>
         </div>
@@ -281,15 +296,9 @@ const ProfileEdit = () => {
             </div>
 
             <div>
-              <button className="w-full bg-green-400 hover:bg-green-500 text-white p-2 rounded">
-                {updateUserMutation.isLoading ? (
-                  <div className="flex justify-center items-center">
-                    <LoadingAnimation height="24" width="24" />
-                  </div>
-                ) : (
-                  "Save Changes"
-                )}
-              </button>
+              <Button loading={updateUserMutation.isLoading}>
+                Save Changes
+              </Button>
             </div>
           </form>
         </div>
