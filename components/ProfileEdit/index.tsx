@@ -35,8 +35,12 @@ const ProfileEdit = () => {
     // { imageName: "4", src: "/profile_saf.jpg", isProfilePicture: 0 },
     // { imageName: "5", src: "/profile_eva.jpg", isProfilePicture: 0 },
   ]);
+  const defaultMainIndex = indexOf<Image>(
+    images,
+    (img) => !!img.isProfilePicture
+  );
   const [mainPicIndex, setMainPicIndex] = React.useState<number>(
-    indexOf<Image>(images, (img) => !!img.isProfilePicture) ?? 0
+    defaultMainIndex >= 0 ? defaultMainIndex : 0
   );
   const updateUserMutation = useUpdateUserData();
   const [{ user }, { setUser }] = useUser();
@@ -67,10 +71,15 @@ const ProfileEdit = () => {
         : user?.data.birthDate
     );
     setTagsSet(new Set(user?.data.tags));
-    const indexOfMainImage =
-      indexOf<Image>(images, (img) => !!img.isProfilePicture) ?? 0;
-    setMainPicIndex(indexOfMainImage);
-    setImages((prev) => user?.data.images ?? prev);
+    if (user?.data.images) {
+      const index = indexOf<Image>(
+        user?.data.images,
+        (img) => !!img.isProfilePicture
+      );
+      const indexOfMainImage = index >= 0 ? index : 0;
+      setMainPicIndex(indexOfMainImage);
+      setImages((prev) => user?.data.images ?? prev);
+    }
   }, [user]);
 
   const handleProfileImageChange = (index: number) => {
@@ -94,7 +103,7 @@ const ProfileEdit = () => {
     retryPassword: string;
   }) => {
     // make password put request
-    console.log(data);
+    // console.log(data);
     updateUserMutation.mutate({
       data,
       authorization: user?.authorization || "",
@@ -109,18 +118,18 @@ const ProfileEdit = () => {
         authorization: user?.authorization || "",
       });
       setUser(data);
-      console.log("data", data);
+      // console.log("data", data);
     } catch (e) {
       console.error("post error", e);
     }
   };
-  console.log("submit errors", errors);
-  console.log("user", user);
+  // console.log("submit errors", errors);
+  // console.log("user", user);
 
   const checkKeyDown = (e: any) => {
     if (e.code === "Enter") e.preventDefault();
   };
-
+  console.log("mainPicIndex", mainPicIndex, images);
   return (
     <article className="w-full flex justify-between flex-wrap bg-white sm:shadow-lg px-4 sm:px-6 pb-8 sm:py-8 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
       {/* ------ profile images section ------ */}

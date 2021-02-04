@@ -83,7 +83,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
         if (result.status !== 200) throw new UserError(USERDATA_ERROR_MESSAGE);
         /* -------- update global user state ------- */
         user.addProperties({ ...result.data });
-        console.log("fetched data result.data", result.data);
+        // console.log("fetched data result.data", result.data);
         dispatch({ type: "SET_USER", payload: { user } });
       } catch (e) {
         setError(e);
@@ -115,7 +115,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
       /* -------- update global user state ------- */
       newUserValue.addProperties({ ...result.data });
       dispatch({ type: "LOGIN", payload: { user: newUserValue } });
-      console.log("/api/signIn result.data", result.data);
+      // console.log("/api/signIn result.data", result.data);
     } catch (e) {
       setError(e);
       console.error(e);
@@ -128,7 +128,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
     try {
       setLoading(true);
       setError(null);
-      console.log("logout authorization", state.user?.authorization || "");
+      // console.log("logout authorization", state.user?.authorization || "");
       const result = await logoutUserRequest({
         authorization: state.user?.authorization || "",
         userName: state.user?.data.userName || "",
