@@ -7,24 +7,31 @@ export interface IImage {
   imageName: string;
   isProfilePicture: 1 | 0;
   url?: string;
+  isDataBase64?: boolean;
 }
 
 export class Image implements IImage {
   imageBase64?: string;
+  isDataBase64?: boolean;
   url?: string;
   imageName: string;
   isProfilePicture: 1 | 0;
 
   public get src(): string {
-    return this.imageBase64
-      ? `data:image/jpeg;base64,${this.imageBase64}`
-      : this.url
-      ? this.url
-      : "";
+    if (this.imageBase64)
+      return this.isDataBase64
+        ? this.imageBase64
+        : `data:image/jpeg;base64,${this.imageBase64}`;
+    return this.url || "";
   }
 
   constructor({ imageBase64, imageName, isProfilePicture, url }: IImage) {
-    this.imageBase64 = imageBase64;
+    if (imageBase64) {
+      this.isDataBase64 = /^data:image\/(jpeg|jpg|png|gif);base64/.test(
+        imageBase64
+      );
+      this.imageBase64 = imageBase64;
+    }
     this.imageName = imageName;
     this.isProfilePicture = isProfilePicture;
     this.url = url;

@@ -166,7 +166,7 @@ function Navbar(): JSX.Element {
                       "Loading..."
                     ) : (
                       <img
-                        className="h-8 w-8 rounded-full"
+                        className="h-8 w-8 rounded-full object-cover"
                         src={user?.ProfileImageSrc}
                         alt=""
                       />

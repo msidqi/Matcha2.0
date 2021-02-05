@@ -1,11 +1,11 @@
 import React from "react";
 import ImagePreview from "./ImagePreview";
-
-export type ImagePreviewProps = {
-  title: string;
-  objectURL: string;
-  size: string;
-};
+import { ImagePreviewProps } from "@/interfaces";
+import {
+  makeImageData,
+  deleteImageData,
+  fileIsImage,
+} from "@/utils/makeImageData";
 
 interface ImageUploadProps {
   setImagePreviews: React.Dispatch<React.SetStateAction<ImagePreviewProps[]>>;
@@ -26,29 +26,12 @@ const ImageUpload = ({
   const handleImagePrevewDelete = (indexToDelete: number) => {
     const elem = imagePreviews[indexToDelete];
     if (elem) {
-      URL.revokeObjectURL(elem.objectURL);
+      deleteImageData(elem.objectURL);
       imagePreviews.splice(indexToDelete, 1);
       setImagePreviews([...imagePreviews]);
       imagePreviews.length === 0 && setIsEmpty(true);
     }
   };
-
-  const makeImageData = (imageFile: any) => {
-    const objectURL = URL.createObjectURL(imageFile);
-    const imageData: ImagePreviewProps = {
-      title: imageFile.name,
-      objectURL: objectURL,
-      size:
-        imageFile.size > 1024
-          ? imageFile.size > 1048576
-            ? Math.round(imageFile.size / 1048576) + "mb"
-            : Math.round(imageFile.size / 1024) + "kb"
-          : imageFile.size + "b",
-    };
-    return imageData;
-  };
-
-  const fileIsImage = (image: any) => image?.type?.match("image.*");
 
   function addImages(images: FileList) {
     console.log(images);

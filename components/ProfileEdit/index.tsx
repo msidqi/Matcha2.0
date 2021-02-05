@@ -14,6 +14,7 @@ import { indexOf } from "@/utils/indexOf";
 import { genders, orientation } from "@/components/data/constants.json";
 import { useUpdateUserData } from "@/utils/requests/userRequests";
 import { useUser } from "@/components/auth";
+import { makeImageData, fileIsImage } from "@/utils/makeImageData";
 
 type DataType = {
   userName: string;
@@ -23,25 +24,15 @@ type DataType = {
   email: string;
 };
 
+const MAX_IMAGES = 5;
+
 const ProfileEdit = () => {
-  const { register, handleSubmit, errors, setValue } = useForm();
+  const { register, handleSubmit, setValue, errors } = useForm();
   const [tagsSet, setTagsSet] = React.useState<Set<string>>(
     new Set(["Hello", "World", "1337", "42"])
   );
-  const [images, setImages] = React.useState<Image[]>([
-    // { imageName: "1", src: "/profile.jpg", isProfilePicture: 0 },
-    // { imageName: "2", src: "/profile_jap.jpg", isProfilePicture: 1 },
-    // { imageName: "3", src: "/profile_liz.jpg", isProfilePicture: 0 },
-    // { imageName: "4", src: "/profile_saf.jpg", isProfilePicture: 0 },
-    // { imageName: "5", src: "/profile_eva.jpg", isProfilePicture: 0 },
-  ]);
-  const defaultMainIndex = indexOf<Image>(
-    images,
-    (img) => !!img.isProfilePicture
-  );
-  const [mainPicIndex, setMainPicIndex] = React.useState<number>(
-    defaultMainIndex >= 0 ? defaultMainIndex : 0
-  );
+  const [images, setImages] = React.useState<Image[]>([]);
+  const [mainPicIndex, setMainPicIndex] = React.useState<number>(0);
   const updateUserMutation = useUpdateUserData();
   const [{ user }, { setUser }] = useUser();
   const {
@@ -51,36 +42,49 @@ const ProfileEdit = () => {
     getValues: getPasswordValues,
   } = useForm();
 
-  // const [imagePreviews, setImagePreviews] = React.useState<ImagePreviewProps[]>(
-  //   []
-  // );
-
   /* ------ set fetched user data in the editable fields ------ */
   React.useEffect(() => {
-    setValue("email", user?.data.email);
-    setValue("firstName", user?.data.firstName);
-    setValue("lastName", user?.data.lastName);
-    setValue("userName", user?.data.userName);
-    setValue("bio", user?.data.bio);
-    setValue("gender", user?.data.gender?.toLowerCase());
-    setValue("orientation", user?.data.orientation?.toLowerCase());
+    if (!user) return;
+    const { data } = user;
+    setValue("email", data.email);
+    setValue("firstName", data.firstName);
+    setValue("lastName", data.lastName);
+    setValue("userName", data.userName);
+    setValue("bio", data.bio);
+    setValue("gender", data.gender?.toLowerCase());
+    setValue("orientation", data.orientation?.toLowerCase());
     setValue(
       "birthDate",
-      user?.data.birthDate instanceof Date
-        ? user?.data.birthDate.toISOString().split("T")[0]
-        : user?.data.birthDate
+      data.birthDate instanceof Date
+        ? data.birthDate.toISOString().split("T")[0]
+        : data.birthDate
     );
-    setTagsSet(new Set(user?.data.tags));
-    if (user?.data.images) {
-      const index = indexOf<Image>(
-        user?.data.images,
-        (img) => !!img.isProfilePicture
-      );
-      const indexOfMainImage = index >= 0 ? index : 0;
-      setMainPicIndex(indexOfMainImage);
-      setImages((prev) => user?.data.images ?? prev);
-    }
+    setTagsSet(new Set(data.tags));
+    const index = indexOf<Image>(data.images, (img) => !!img.isProfilePicture);
+    const indexOfMainImage = index >= 0 ? index : 0;
+    setMainPicIndex(indexOfMainImage);
+    setImages(data.images);
   }, [user]);
+
+  const handleImageUpload = (file?: File) => {
+    if (!file) return;
+    if (!fileIsImage(file)) return;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      if (typeof event.target?.result == "string" && images.length < 5) {
+        setImages([
+          ...images,
+          new Image({
+            imageName: file.name,
+            isProfilePicture: 0,
+            imageBase64: event.target?.result,
+          }),
+        ]);
+      }
+    };
+  };
 
   const handleProfileImageChange = (index: number) => {
     try {
@@ -102,8 +106,6 @@ const ProfileEdit = () => {
     password: string;
     retryPassword: string;
   }) => {
-    // make password put request
-    // console.log(data);
     updateUserMutation.mutate({
       data,
       authorization: user?.authorization || "",
@@ -123,7 +125,7 @@ const ProfileEdit = () => {
       console.error("post error", e);
     }
   };
-  // console.log("submit errors", errors);
+  console.log("submit errors", errors);
   // console.log("user", user);
 
   const checkKeyDown = (e: any) => {
@@ -136,21 +138,21 @@ const ProfileEdit = () => {
       <section className="md:w-5/12 w-full mb-10">
         <section className="flex justify-center">
           {/* ------ main picture ------ */}
-          {images[mainPicIndex] && (
+          {
             <div className="w-80" style={{ height: "30rem" }}>
               <picture>
                 <source
                   media="(min-width:650px)"
-                  srcSet={images[mainPicIndex].src}
+                  srcSet={images[mainPicIndex]?.src}
                 />
                 <img
-                  src={images[mainPicIndex].src}
+                  src={images[mainPicIndex]?.src}
                   alt="profile picture"
                   className="h-full w-full object-cover rounded-2xl"
                 />
               </picture>
             </div>
-          )}
+          }
           {/* ------ other images container ------ */}
           <div className="w-24 block sm:py-0">
             {images.map((img, index) => (
@@ -178,15 +180,23 @@ const ProfileEdit = () => {
                 </article>
               </li>
             ))}
+            {new Array(MAX_IMAGES - images.length).fill(0).map((_, index) => (
+              <li key={index} className="block pr-0 p-0.5 w-20 h-24 mx-auto">
+                <article
+                  tabIndex={0}
+                  className="w-full h-full rounded bg-red-200"
+                >
+                  <input
+                    id={`imageInput-${index}`}
+                    className="opacity-0 w-full h-full"
+                    type="file"
+                    onChange={(e) => handleImageUpload(e.target.files?.[0])}
+                  />
+                </article>
+              </li>
+            ))}
           </div>
         </section>
-
-        {/* <ImageUpload
-          limit={5}
-          imagePreviews={imagePreviews}
-          setImagePreviews={setImagePreviews}
-        /> */}
-        {/* <Button onClick={handleImagesSubmit}>Save Images</Button> */}
       </section>
       <section className="md:w-7/12 w-full flex flex-col space-y-10 ">
         <div>

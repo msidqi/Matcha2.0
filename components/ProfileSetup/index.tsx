@@ -5,10 +5,10 @@ import Select from "@/components/Select";
 import Bio from "@/components/Bio";
 import TagsDisplay from "@/components/TagsDisplay";
 import ImageUpload from "@/components/ImageUpload";
-import type { ImagePreviewProps } from "@/components/ImageUpload";
 import DateInput from "@/components/DateInput";
 import getPosition from "@/utils/getPosition";
 import { genders, orientation } from "@/components/data/constants.json";
+import { ImagePreviewProps } from "@/interfaces";
 
 type DataType = {
   userName: string;

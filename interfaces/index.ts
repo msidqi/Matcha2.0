@@ -11,3 +11,9 @@ export type ProfileType = {
   bio: string;
   tags: string[];
 };
+
+export type ImagePreviewProps = {
+  title: string;
+  objectURL: string;
+  size: string;
+};
