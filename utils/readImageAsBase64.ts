@@ -1,17 +1,24 @@
 import { fileIsImage } from "@/utils//makeImageData";
 
-export const readImageAsBase64 = (
-  cb: (base64: string) => void,
-  file?: File
-) => {
-  if (!file) return;
-  if (!fileIsImage(file)) return;
+type Base64Image = {
+  base64Data: string;
+  name: string;
+  size: number;
+  type: string;
+};
 
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = (event) => {
-    if (typeof event.target?.result == "string") {
-      cb(event.target?.result);
+export const readImageAsBase64 = (file?: File): Promise<Base64Image> => {
+  return new Promise<Base64Image>((resolve, reject) => {
+    if (!file) reject("file not found");
+    else if (!fileIsImage(file)) reject("file is not an image");
+    else {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      const { name, size, type } = file;
+      reader.onload = ({ target }) => {
+        if (typeof target?.result !== "string") reject("incorrect format");
+        else resolve({ base64Data: target.result, name, size, type });
+      };
     }
-  };
+  });
 };

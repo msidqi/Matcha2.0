@@ -15,7 +15,7 @@ import { genders, orientation } from "@/components/data/constants.json";
 import { useUpdateUserData } from "@/utils/requests/userRequests";
 import { useUser } from "@/components/auth";
 import { makeImageData, fileIsImage } from "@/utils/makeImageData";
-
+import { readImageAsBase64 } from "@/utils/readImageAsBase64";
 type DataType = {
   userName: string;
   password: string;
@@ -67,23 +67,16 @@ const ProfileEdit = () => {
   }, [user]);
 
   const handleImageUpload = (file?: File) => {
-    if (!file) return;
-    if (!fileIsImage(file)) return;
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = (event) => {
-      if (typeof event.target?.result == "string" && images.length < 5) {
-        setImages([
-          ...images,
-          new Image({
-            imageName: file.name,
-            isProfilePicture: 0,
-            imageBase64: event.target?.result,
-          }),
-        ]);
-      }
-    };
+    readImageAsBase64(file).then(({ base64Data, name }) => {
+      setImages([
+        ...images,
+        new Image({
+          imageName: name,
+          isProfilePicture: 0,
+          imageBase64: base64Data,
+        }),
+      ]);
+    });
   };
 
   const handleProfileImageChange = (index: number) => {
