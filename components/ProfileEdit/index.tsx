@@ -4,6 +4,7 @@ import Select from "@/components/Select";
 import Bio from "@/components/Bio";
 import TagsDisplay from "@/components/TagsDisplay";
 import DateInput from "@/components/DateInput";
+import DeleteIcon from "@/components/ui/Icons/DeleteIcon";
 // import ImageUpload from "@/components/ImageUpload";
 // import type { ImagePreviewProps } from "@/components/ImageUpload";
 // import getPosition from "@/utils/getPosition";
@@ -12,10 +13,15 @@ import Button from "@/components/Button";
 import { Image } from "@/components/auth/classes";
 import { indexOf } from "@/utils/indexOf";
 import { genders, orientation } from "@/components/data/constants.json";
-import { useUpdateUserData } from "@/utils/requests/userRequests";
+import {
+  useUpdateUserData,
+  deleteUserImageRequest,
+  getProfilePictureNameRequest,
+} from "@/utils/requests/userRequests";
 import { useUser } from "@/components/auth";
-import { makeImageData, fileIsImage } from "@/utils/makeImageData";
 import { readImageAsBase64 } from "@/utils/readImageAsBase64";
+import PlusIcon from "../ui/Icons/PlusIcon";
+
 type DataType = {
   userName: string;
   password: string;
@@ -24,17 +30,14 @@ type DataType = {
   email: string;
 };
 
-const MAX_IMAGES = 5;
-
 const ProfileEdit = () => {
   const { register, handleSubmit, setValue, errors } = useForm();
   const [tagsSet, setTagsSet] = React.useState<Set<string>>(
     new Set(["Hello", "World", "1337", "42"])
   );
-  const [images, setImages] = React.useState<Image[]>([]);
   const [mainPicIndex, setMainPicIndex] = React.useState<number>(0);
   const updateUserMutation = useUpdateUserData();
-  const [{ user }, { setUser }] = useUser();
+  const [{ user }, { setUser, loading }] = useUser();
   const {
     register: registerPassword,
     handleSubmit: handlePasswordSubmit,
@@ -42,9 +45,10 @@ const ProfileEdit = () => {
     getValues: getPasswordValues,
   } = useForm();
 
+  if (!user || loading) return <>Loading...</>;
+
   /* ------ set fetched user data in the editable fields ------ */
   React.useEffect(() => {
-    if (!user) return;
     const { data } = user;
     setValue("email", data.email);
     setValue("firstName", data.firstName);
@@ -55,7 +59,7 @@ const ProfileEdit = () => {
     setValue("orientation", data.orientation?.toLowerCase());
     setValue(
       "birthDate",
-      data.birthDate instanceof Date
+      data.birthDate instanceof Date && !isNaN(data.birthDate.getTime())
         ? data.birthDate.toISOString().split("T")[0]
         : data.birthDate
     );
@@ -63,33 +67,83 @@ const ProfileEdit = () => {
     const index = indexOf<Image>(data.images, (img) => !!img.isProfilePicture);
     const indexOfMainImage = index >= 0 ? index : 0;
     setMainPicIndex(indexOfMainImage);
-    setImages(data.images);
   }, [user]);
 
-  const handleImageUpload = (file?: File) => {
-    readImageAsBase64(file).then(({ base64Data, name }) => {
-      setImages([
-        ...images,
-        new Image({
-          imageName: name,
-          isProfilePicture: 0,
-          imageBase64: base64Data,
-        }),
-      ]);
-    });
+  const handleImageDelete = async (indexToDelete: number) => {
+    const {
+      authorization,
+      data: { images },
+    } = user;
+    const imageNameToDelete = images[indexToDelete].imageName;
+    try {
+      const result = await deleteUserImageRequest({
+        imageNameToDelete,
+        authorization,
+      });
+      if (result.status !== 200) throw new Error("could not delete image");
+      // if deleted image is main profile pic
+      if (images[indexToDelete].isProfilePicture) {
+        const result = await getProfilePictureNameRequest({
+          authorization,
+        });
+        if (result.status !== 200)
+          throw new Error("could not get profile image name");
+        console.log("getProfilePictureNameRequest", result.data);
+        // result.data.
+        // images[0].isProfilePicture = 1;
+      } else {
+        console.log("is not main profile pic");
+      }
+      // delete image from local user state
+      images.splice(indexToDelete, 1);
+      setUser({ images: [...images] });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  console.log(user.data.images);
+  const handleImageUpload = async (file?: File) => {
+    if (!file || !user) return;
+
+    try {
+      const result = await updateUserMutation.mutateAsync({
+        data: { images: [file] },
+        authorization: user.authorization || "",
+      });
+      if (typeof result.data.newImages[0] !== "string")
+        throw Error("could not get uploaded image name's name");
+      if (result.status === 200) {
+        const { base64Data } = await readImageAsBase64(file);
+        setUser({
+          images: [
+            ...user.data.images,
+            new Image({
+              imageName: result.data.newImages[0],
+              isProfilePicture: user.data.images.length ? 0 : 1,
+              imageBase64: base64Data,
+            }),
+          ],
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  const handleProfileImageChange = (index: number) => {
+  const handleProfileImageChange = async (index: number) => {
+    if (user.data.images[index].isProfilePicture) return;
     try {
-      const data = { profilPicture: images[index].imageName };
-      updateUserMutation.mutate({
+      const data = { profilPicture: user.data.images[index].imageName };
+      const result = await updateUserMutation.mutateAsync({
         data,
         authorization: user?.authorization || "",
       });
-      setMainPicIndex(index);
-      images[mainPicIndex].isProfilePicture = 0;
-      images[index].isProfilePicture = 1;
-      setUser({ images });
+      if (result.status === 200) {
+        setMainPicIndex(index);
+        user.data.images[mainPicIndex].isProfilePicture = 0;
+        user.data.images[index].isProfilePicture = 1;
+        setUser({ images: user.data.images });
+      }
     } catch (e) {
       console.error(e);
     }
@@ -113,50 +167,47 @@ const ProfileEdit = () => {
         authorization: user?.authorization || "",
       });
       setUser(data);
-      // console.log("data", data);
     } catch (e) {
-      console.error("post error", e);
+      console.error("onSubmit", e);
     }
   };
   console.log("submit errors", errors);
-  // console.log("user", user);
 
   const checkKeyDown = (e: any) => {
     if (e.code === "Enter") e.preventDefault();
   };
-  console.log("mainPicIndex", mainPicIndex, images);
   return (
-    <article className="w-full flex justify-between flex-wrap bg-white sm:shadow-lg px-4 sm:px-6 pb-8 sm:py-8 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
+    <article className="w-full flex justify-between flex-wrap bg-white sm:shadow-lg px-4 sm:px-6 pb-8 sm:pb-12 pt-8 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
       {/* ------ profile images section ------ */}
       <section className="md:w-5/12 w-full mb-10">
-        <section className="flex justify-center">
+        <section className="flex justify-start">
           {/* ------ main picture ------ */}
           {
             <div className="w-80" style={{ height: "30rem" }}>
               <picture>
                 <source
                   media="(min-width:650px)"
-                  srcSet={images[mainPicIndex]?.src}
+                  srcSet={user.data.images[mainPicIndex]?.src}
                 />
                 <img
-                  src={images[mainPicIndex]?.src}
+                  src={user.data.images[mainPicIndex]?.src}
                   alt="profile picture"
-                  className="h-full w-full object-cover rounded-2xl"
+                  className="h-full w-full object-cover rounded-2xl sm:rounded-none"
                 />
               </picture>
             </div>
           }
           {/* ------ other images container ------ */}
           <div className="w-24 block sm:py-0">
-            {images.map((img, index) => (
+            {user.data.images.map((img, index) => (
               <li
                 key={index}
-                className="block pr-0 p-0.5 w-20 h-24 mx-auto"
+                className="block pr-0 p-0.5 w-20 h-24 mx-auto cursor-pointer"
                 onClick={() => handleProfileImageChange(index)}
               >
                 <article
                   tabIndex={0}
-                  className="w-full h-full rounded outline-none"
+                  className="w-full h-full rounded outline-none relative"
                 >
                   <img
                     alt="upload preview"
@@ -170,24 +221,41 @@ const ProfileEdit = () => {
                         : { filter: "brightness(60%)" }
                     }
                   />
+                  <button
+                    className="absolute -right-2 -bottom-1 rounded-xl z-10 opacity-95"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleImageDelete(index);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </button>
                 </article>
               </li>
             ))}
-            {new Array(MAX_IMAGES - images.length).fill(0).map((_, index) => (
-              <li key={index} className="block pr-0 p-0.5 w-20 h-24 mx-auto">
+            {/* ------ add new image ------ */}
+            {user.data.images.length < 5 && (
+              <li className="block pr-0 p-0.5 w-20 h-24 mx-auto relative">
                 <article
                   tabIndex={0}
-                  className="w-full h-full rounded bg-red-200"
+                  className="w-full h-full rounded border-gray-200 border-4"
                 >
-                  <input
-                    id={`imageInput-${index}`}
-                    className="opacity-0 w-full h-full"
-                    type="file"
-                    onChange={(e) => handleImageUpload(e.target.files?.[0])}
-                  />
+                  <label htmlFor="imageInput">
+                    <input
+                      id="imageInput"
+                      className="opacity-0 w-full h-full"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e.target.files?.[0])}
+                    />
+                    <PlusIcon
+                      color="#e6e7eb"
+                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    />
+                  </label>
                 </article>
               </li>
-            ))}
+            )}
           </div>
         </section>
       </section>

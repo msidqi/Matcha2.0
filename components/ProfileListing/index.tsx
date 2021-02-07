@@ -6,6 +6,10 @@ import TagsDisplay from "@/components/TagsDisplay";
 import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
 import { useUser } from "../auth";
 import { useSuggestions } from "@/utils/requests/suggestions";
+import dbData from "@/components/SwipeImage/db.json";
+import { ProfileType } from "@/interfaces";
+
+const db: ProfileType[] = dbData as ProfileType[];
 
 interface FilterContainerProps {
   disableFiltersDisplay: () => void;
@@ -56,15 +60,19 @@ const ProfileListing = () => {
   >([0, 30]);
   const [distanceRange, setDistanceRange] = React.useState<[number]>([1]);
   const [{ user, loggedIn }] = useUser();
-  console.log("user?.authorization", user?.authorization);
-  const { isLoading, error, data } = useSuggestions({
+  const { isLoading, data } = useSuggestions({
     authorization: user?.authorization || "",
     enabled: loggedIn,
     offset: 0,
-    row_count: 2,
+    row_count: 4,
   });
 
-  console.log(isLoading, error, data);
+  React.useEffect(() => {
+    (async () => {
+      console.log("isLoading", isLoading, "suggestion data", data?.data);
+    })();
+  }, [data, isLoading]);
+
   const toggleFilters = (event: React.MouseEvent) => {
     setShowFilters(!showFilters);
     event.stopPropagation();
@@ -189,7 +197,7 @@ const ProfileListing = () => {
           </FiltersContainer>
         </Transition>
       </section>
-      <SwipeImage />
+      <SwipeImage profiles={db} />
     </>
   );
 };

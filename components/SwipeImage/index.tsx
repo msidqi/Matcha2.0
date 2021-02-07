@@ -1,22 +1,41 @@
-import React, { useState, useMemo } from "react";
+import React /*{ useMemo }*/ from "react";
 import TinderCard from "react-tinder-card";
 import SwipeImageProfile from "@/components/SwipeImageProfile";
 import LikeIcon from "@/components/ui/Icons/LikeIcon";
 import DislikeIcon from "@/components/ui/Icons/DislikeIcon";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import { ProfileType } from "@/interfaces";
-import dbData from "./db.json";
+import { Direction } from "react-range";
+// import dbData from "./db.json";
 
-const db: ProfileType[] = dbData as ProfileType[];
+// const db: ProfileType[] = dbData as ProfileType[];
 
-const alreadyRemoved: string[] = [];
-let profilesState = db; // This fixes issues with updating profiles state forcing it to use the current state and not the state that was active when the card was created.
+// const alreadyRemoved: string[] = [];
+// let profilesState = db; // This fixes issues with updating profiles state forcing it to use the current state and not the state that was active when the card was created.
 
-function SwipeImage() {
-  const [profiles, setProfiles] = useState<ProfileType[]>(db);
-  const [lastDirection, setLastDirection] = useState<string>("");
+type SwipeDirection = "left" | "right" | "up" | "down";
 
-  const childRefs = useMemo(
+function SwipeImage({
+  profiles,
+  onSwiped,
+}: {
+  profiles?: ProfileType[];
+  onSwiped?: (direction: string, name: string) => void;
+}) {
+  const [lastDirection, setLastDirection] = React.useState<string>("");
+
+  if (!profiles) return <>Loading...</>;
+  const swiped = (direction: string, nameToDelete: string) => {
+    console.log("removing: " + nameToDelete);
+    setLastDirection(direction);
+    onSwiped?.(direction, name);
+  };
+
+  const outOfFrame = (name: string, direction: SwipeDirection) => {
+    console.log(name + " left the screen!", `from the ${direction} direction`);
+  };
+
+  /*const childRefs = useMemo(
     () =>
       Array(db.length)
         .fill(0)
@@ -48,19 +67,27 @@ function SwipeImage() {
       alreadyRemoved.push(toBeRemoved); // Make sure the next card gets removed next time if this card do not have time to exit the screen
       childRefs[index].current.swipe(dir); // Swipe the card!
     }
-  };
+  };*/
 
   return (
     <>
       <div className="h-full w-full sm:w-screen sm:max-w-sm overflow-y-scroll overflow-x-hidden sm:overflow-visible">
         <section className="relative" style={{ height: "34rem" }}>
-          {profiles.map((profile, index) => (
+          {profiles.map((profile) => (
+            // <TinderCard
+            //   preventSwipe={["down", "up"]}
+            //   ref={childRefs[index]}
+            //   key={profile.userName}
+            //   onSwipe={(dir) => swiped(dir, profile.userName)}
+            //   onCardLeftScreen={(direction) =>
+            //     outOfFrame(profile.userName, direction)
+            //   }
+            // >
             <TinderCard
               preventSwipe={["down", "up"]}
-              ref={childRefs[index]}
               key={profile.userName}
               onSwipe={(dir) => swiped(dir, profile.userName)}
-              onCardLeftScreen={(direction) =>
+              onCardLeftScreen={(direction: SwipeDirection) =>
                 outOfFrame(profile.userName, direction)
               }
             >
@@ -92,62 +119,6 @@ function SwipeImage() {
           </div>
         </section>
       </div>
-
-      <style jsx>{`
-        cardContainer {
-          height: 34rem;
-        }
-
-        @media (max-width: 640px) {
-          cardContainer {
-            height: 27rem;
-          }
-        }
-
-        h1 {
-          font-family: "Damion", cursive;
-          color: #fff;
-          text-shadow: 0px 0px 60px 0px rgba(0, 0, 0, 0.3);
-        }
-
-        h2 {
-          color: #fff;
-        }
-
-        .infoText {
-          width: 100%;
-          height: 28px;
-          justify-content: center;
-          display: flex;
-          color: #000;
-          animation-name: popup;
-          animation-duration: 800ms;
-        }
-
-        @keyframes popup {
-          0% {
-            transform: scale(1, 1);
-          }
-          10% {
-            transform: scale(1.1, 1.1);
-          }
-          30% {
-            transform: scale(0.9, 0.9);
-          }
-          50% {
-            transform: scale(1, 1);
-          }
-          57% {
-            transform: scale(1, 1);
-          }
-          64% {
-            transform: scale(1, 1);
-          }
-          100% {
-            transform: scale(1, 1);
-          }
-        }
-      `}</style>
     </>
   );
 }

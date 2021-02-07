@@ -5,7 +5,7 @@ const Button: React.FC<{
   onClick?: () => void | Promise<void>;
 }> = ({ loading, onClick, children }) => (
   <button
-    className="w-full bg-green-400 hover:bg-green-500 text-white p-2 rounded"
+    className="w-full bg-green-500 hover:bg-green-400 text-white p-2 rounded"
     onClick={onClick}
   >
     {loading ? (

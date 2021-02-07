@@ -83,7 +83,7 @@ const TagsDisplay = ({
         />
         <button
           onClick={onAddClick}
-          className="absolute bg-green-400 hover:bg-green-500 text-white rounded-md px-2 py-1"
+          className="absolute bg-green-500 hover:bg-green-400 text-white rounded-md px-2 py-1"
           style={{ top: "50%", right: "6px", transform: "translate(0, -50%)" }}
         >
           add it

@@ -30,7 +30,7 @@ export const useSuggestions = ({
             Authorization: authorization,
           },
         }
-      ),
+      )[0],
     { enabled }
   );
 };

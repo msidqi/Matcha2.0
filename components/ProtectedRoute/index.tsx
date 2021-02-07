@@ -8,9 +8,9 @@ export const ProtectRoute: FC = ({ children }): JSX.Element => {
   const pathname = router.pathname;
   const [{ loggedIn }, { loading }] = useUser();
   if (loading) {
-    console.log("loading...");
-    console.log("loggedIn", loggedIn);
-    console.log("pathname", pathname);
+    // console.log("loading...");
+    // console.log("loggedIn", loggedIn);
+    // console.log("pathname", pathname);
     // return <Loading />;
   }
   // if (!loggedIn && pathname !== '/signin' && pathname !== '/signup') {

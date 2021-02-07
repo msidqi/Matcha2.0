@@ -128,7 +128,6 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
     try {
       setLoading(true);
       setError(null);
-      // console.log("logout authorization", state.user?.authorization || "");
       const result = await logoutUserRequest({
         authorization: state.user?.authorization || "",
         userName: state.user?.data.userName || "",

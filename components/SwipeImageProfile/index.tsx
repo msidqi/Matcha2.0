@@ -60,7 +60,7 @@ const SwipeImageProfile = ({
       style={{ height: "34rem" }}
       className={`${
         isCurrentlyShown ? "shadow-xl bg-red-500" : "bg-white"
-      } absolute top-0 w-full sm:rounded-2xl`}
+      } absolute top-0 w-full sm:rounded-2xl cursor-pointer`}
     >
       <div
         style={{ backgroundImage: `url(${url})` }}

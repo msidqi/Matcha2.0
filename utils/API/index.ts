@@ -1,4 +1,4 @@
-import axios, { Canceler } from "axios";
+import axios from "axios";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 
 export class ApiRequestError extends Error {

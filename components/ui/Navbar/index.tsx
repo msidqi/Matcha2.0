@@ -20,7 +20,6 @@ function Navbar(): JSX.Element {
     logout();
     // router.push("/");
   };
-  console.log("navbar loading", loading, "user", user);
   const pathname = router.pathname;
   const links: { href: string; label: string }[] = [
     { label: "Dashboard", href: "/dashboard" },
@@ -170,10 +169,6 @@ function Navbar(): JSX.Element {
                         src={user?.ProfileImageSrc}
                         alt=""
                       />
-                    )}
-                    {console.log(
-                      "user?.ProfileImageSrc",
-                      !!user?.ProfileImageSrc
                     )}
                   </button>
                 </div>

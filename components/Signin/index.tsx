@@ -45,7 +45,7 @@ const Signin = (): JSX.Element => {
           placeholder="Enter your password"
         />
         <input
-          className="bg-green-400 hover:bg-green-500 text-white p-2 rounded"
+          className="bg-green-500 hover:bg-green-400 text-white p-2 rounded"
           type="submit"
           value="Signin"
         />

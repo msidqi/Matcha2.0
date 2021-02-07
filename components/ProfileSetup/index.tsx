@@ -100,7 +100,7 @@ const ProfileSetup = (): JSX.Element => {
         />
         <div className="pt-6">
           <input
-            className="w-full bg-green-400 hover:bg-green-500 text-white p-2 rounded"
+            className="w-full bg-green-500 hover:bg-green-400 text-white p-2 rounded"
             type="submit"
             value="Complete Profile"
           />

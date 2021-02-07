@@ -2,7 +2,7 @@ import { apiRequest } from "@/utils/API";
 import { UserInput } from "@/components/auth";
 import { useMutation } from "react-query";
 
-interface GetUserInfoProps {
+interface Authorization {
   authorization: string;
 }
 
@@ -14,11 +14,10 @@ interface SingInUserProps {
 }
 
 interface logoutUserRequestProps {
-  authorization: string;
   userName: string;
 }
 
-export const getUserInfoRequest = ({ authorization }: GetUserInfoProps) => {
+export const getUserInfoRequest = ({ authorization }: Authorization) => {
   return apiRequest<UserInput>("get", "/api/userInfos", {
     headers: {
       Authorization: authorization,
@@ -42,7 +41,7 @@ export const signInUserRequest = ({ userData }: SingInUserProps) => {
 export const logoutUserRequest = ({
   authorization,
   userName,
-}: logoutUserRequestProps) => {
+}: logoutUserRequestProps & Authorization) => {
   return apiRequest<{ message: string }>(
     "post",
     "/api/logout",
@@ -64,26 +63,56 @@ interface UpdateUserDataProps {
     email: string;
     retryPassword: string;
     tags: string[];
-    images: string[];
+    images: File[];
     profilPicture: string;
   }>;
-  authorization: string;
 }
 
 export const useUpdateUserData = () => {
-  return useMutation(({ data, authorization }: UpdateUserDataProps) => {
-    const formdata = new FormData();
-    for (const key in data) {
-      if (Array.isArray((data as any)[key])) {
-        (data as any)[key].forEach((elem: any) => formdata.append(key, elem));
-      } else {
-        formdata.append(key, (data as any)[key]);
+  return useMutation(
+    ({ data, authorization }: UpdateUserDataProps & Authorization) => {
+      const formdata = new FormData();
+      for (const key in data) {
+        if (Array.isArray((data as Record<string, any>)[key])) {
+          (data as Record<string, any>)[key].forEach((elem: any) =>
+            formdata.append(key, elem)
+          );
+        } else if (typeof data[key] === "object") {
+          formdata.append(key, JSON.stringify(data[key]));
+        } else {
+          formdata.append(key, (data as any)[key]);
+        }
       }
+
+      return apiRequest("post", "/api/updateProfile", formdata, {
+        headers: {
+          Authorization: authorization,
+        },
+      })[0];
     }
-    return apiRequest("post", "/api/updateProfile", formdata, {
-      headers: {
-        Authorization: authorization,
-      },
-    })[0];
-  });
+  );
+};
+
+export const deleteUserImageRequest = ({
+  authorization,
+  imageNameToDelete,
+}: {
+  imageNameToDelete: string;
+} & Authorization) => {
+  return fetch(`/api/image/${imageNameToDelete}`, {
+    method: "delete",
+    headers: new Headers({
+      Authorization: authorization,
+    }),
+  }).then((res) => res.json());
+};
+
+export const getProfilePictureNameRequest = ({
+  authorization,
+}: Authorization) => {
+  return apiRequest("get", "/api/getProfilePicture", {
+    headers: {
+      Authorization: authorization,
+    },
+  })[0];
 };
