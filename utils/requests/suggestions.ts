@@ -11,6 +11,19 @@ interface UseSuggestionsProps {
   };
 }
 
+export type SuggestedUser = {
+  age: number;
+  bio: string | null;
+  communTags: number;
+  distance: number;
+  email: string;
+  experience: number;
+  gender: "Female" | "Male";
+  id: number;
+  orientation: "bisexual" | "heterosexual" | "homosexual";
+  userName: string;
+};
+
 export const useSuggestions = ({
   authorization,
   enabled,
@@ -21,7 +34,7 @@ export const useSuggestions = ({
   return useQuery(
     "suggestions",
     () =>
-      apiRequest(
+      apiRequest<SuggestedUser[]>(
         "post",
         "/api/suggestions",
         { offset, row_count, tri },
@@ -31,6 +44,6 @@ export const useSuggestions = ({
           },
         }
       )[0],
-    { enabled }
+    { enabled, keepPreviousData: true }
   );
 };

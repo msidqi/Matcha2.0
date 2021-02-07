@@ -4,8 +4,8 @@ import SwipeImageProfile from "@/components/SwipeImageProfile";
 import LikeIcon from "@/components/ui/Icons/LikeIcon";
 import DislikeIcon from "@/components/ui/Icons/DislikeIcon";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
-import { ProfileType } from "@/interfaces";
-import { Direction } from "react-range";
+// import { ProfileType } from "@/interfaces";
+import { SuggestedUser } from "@/utils/requests/suggestions";
 // import dbData from "./db.json";
 
 // const db: ProfileType[] = dbData as ProfileType[];
@@ -13,26 +13,28 @@ import { Direction } from "react-range";
 // const alreadyRemoved: string[] = [];
 // let profilesState = db; // This fixes issues with updating profiles state forcing it to use the current state and not the state that was active when the card was created.
 
-type SwipeDirection = "left" | "right" | "up" | "down";
+export type SwipeDirection = "left" | "right" | "up" | "down";
 
 function SwipeImage({
-  profiles,
+  suggestedUsers,
   onSwiped,
+  onOutOfFrame,
 }: {
-  profiles?: ProfileType[];
-  onSwiped?: (direction: string, name: string) => void;
+  suggestedUsers?: SuggestedUser[];
+  onSwiped?: (direction: SwipeDirection, name: string) => void;
+  onOutOfFrame?: (direction: SwipeDirection, name: string) => void;
 }) {
-  const [lastDirection, setLastDirection] = React.useState<string>("");
+  // const [lastDirection, setLastDirection] = React.useState<string>("");
 
-  if (!profiles) return <>Loading...</>;
-  const swiped = (direction: string, nameToDelete: string) => {
-    console.log("removing: " + nameToDelete);
-    setLastDirection(direction);
+  if (!suggestedUsers) return <>Loading...</>;
+  const swiped = (direction: SwipeDirection, name: string) => {
+    // setLastDirection(direction);
     onSwiped?.(direction, name);
   };
 
   const outOfFrame = (name: string, direction: SwipeDirection) => {
     console.log(name + " left the screen!", `from the ${direction} direction`);
+    onOutOfFrame?.(direction, name);
   };
 
   /*const childRefs = useMemo(
@@ -73,7 +75,7 @@ function SwipeImage({
     <>
       <div className="h-full w-full sm:w-screen sm:max-w-sm overflow-y-scroll overflow-x-hidden sm:overflow-visible">
         <section className="relative" style={{ height: "34rem" }}>
-          {profiles.map((profile) => (
+          {suggestedUsers.map((singleSuggestedUser) => (
             // <TinderCard
             //   preventSwipe={["down", "up"]}
             //   ref={childRefs[index]}
@@ -85,14 +87,14 @@ function SwipeImage({
             // >
             <TinderCard
               preventSwipe={["down", "up"]}
-              key={profile.userName}
-              onSwipe={(dir) => swiped(dir, profile.userName)}
+              key={singleSuggestedUser.userName}
+              onSwipe={(dir) => swiped(dir, singleSuggestedUser.userName)}
               onCardLeftScreen={(direction: SwipeDirection) =>
-                outOfFrame(profile.userName, direction)
+                outOfFrame(singleSuggestedUser.userName, direction)
               }
             >
               <SwipeImageProfile
-                profile={profile}
+                profile={singleSuggestedUser}
                 // isCurrentlyShown={index === profiles.length - 1}
               />
             </TinderCard>
@@ -107,6 +109,7 @@ function SwipeImage({
           </div>
           <div className="transform transition duration-300 hover:scale-110 mt-12 bg-white rounded-full shadow-md h-12 w-12 sm:h-16 sm:w-16 flex justify-center items-center relative cursor-pointer">
             <AvatarIcon
+              variant="filled"
               color="#F3C245"
               className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-6 w-6 sm:h-10 sm:w-10"
             />

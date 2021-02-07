@@ -3,27 +3,17 @@ import PositionIcon from "@/components/ui/Icons/PositionIcon";
 import { Transition } from "@headlessui/react";
 import Tag from "@/components/Tag";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
-import { getSexePreference } from "@/utils/getSexePreference";
 import { ProfileType } from "@/interfaces";
+import { formatDistance } from "@/utils/formatDistance";
+import { SuggestedUser } from "@/utils/requests/suggestions";
 
 interface Props {
-  profile: ProfileType;
+  profile: SuggestedUser;
   isCurrentlyShown?: boolean;
 }
 
 const SwipeImageProfile = ({
-  profile: {
-    url,
-    userName,
-    firstName,
-    lastName,
-    age,
-    distance,
-    gender,
-    orientation,
-    bio,
-    tags,
-  },
+  profile: { userName, age, distance, gender, orientation, bio },
   isCurrentlyShown,
 }: Props) => {
   const [state, setExpand] = React.useState<{
@@ -40,17 +30,19 @@ const SwipeImageProfile = ({
       onClick={!state.expand ? handleExpand : undefined}
       className="cursor-pointer"
     >
-      <h4 className="text-gray-600 text-base">
-        <span className="3">{userName}</span> {age}
+      <h4 className="text-gray-600 text-sm">
+        <span className=" text-lg font-semibold">{userName}</span> {age}
       </h4>
       <div className="absolute right-2 top-2">
         <PositionIcon width="18" height="18" className="inline-block mr-1" />
-        <p className="text-sm inline-block text-gray-500">{`${distance} km`}</p>
+        <p className="text-sm inline-block text-gray-500">{`${formatDistance(
+          distance
+        )} km`}</p>
       </div>
       <div>
         <AvatarIcon className="inline-block mr-1" />{" "}
         <p className="text-sm inline-block text-gray-400">
-          {gender}, {getSexePreference(gender, orientation)}
+          {`${gender}, ${orientation}`}
         </p>
       </div>
     </div>
@@ -63,7 +55,7 @@ const SwipeImageProfile = ({
       } absolute top-0 w-full sm:rounded-2xl cursor-pointer`}
     >
       <div
-        style={{ backgroundImage: `url(${url})` }}
+        style={{ backgroundImage: `url(${"url"})` }}
         className="relative sm:max-w-sm h-full w-full sm:rounded-2xl bg-cover bg-center"
       >
         <div
@@ -80,16 +72,22 @@ const SwipeImageProfile = ({
             leaveFrom="transform scale-y-100"
             leaveTo="transform scale-y-50"
           >
-            <h4 className="text-gray-600 text-base font-medium mt-2">About:</h4>
-            <p className="text-gray-500 text-sm">{bio}</p>
-            <h4 className="text-gray-600 text-base font-medium mt-2">
+            {bio && (
+              <>
+                <h4 className="text-gray-600 text-base font-medium mt-2">
+                  About:
+                </h4>
+                <p className="text-gray-500 text-sm">{bio}</p>
+              </>
+            )}
+            {/*<h4 className="text-gray-600 text-base font-medium mt-2">
               Interests:
             </h4>
-            <div className="mt-1">
+             <div className="mt-1">
               {tags.map((tagName: string, i) => (
                 <Tag key={`tag-${i}`} tagName={tagName} />
               ))}
-            </div>
+            </div> */}
           </Transition>
         </div>
       </div>

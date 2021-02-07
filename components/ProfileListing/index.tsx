@@ -1,15 +1,18 @@
 import React, { CSSProperties } from "react";
 import SwipeImage from "@/components/SwipeImage";
+import type { SwipeDirection } from "@/components/SwipeImage";
 import { Transition, Switch } from "@headlessui/react";
 import { Range } from "@/components/Range";
 import TagsDisplay from "@/components/TagsDisplay";
 import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
 import { useUser } from "../auth";
 import { useSuggestions } from "@/utils/requests/suggestions";
-import dbData from "@/components/SwipeImage/db.json";
-import { ProfileType } from "@/interfaces";
+// import dbData from "@/components/SwipeImage/db.json";
+// import { ProfileType } from "@/interfaces";
 
-const db: ProfileType[] = dbData as ProfileType[];
+// const db: ProfileType[] = dbData as ProfileType[];
+
+const ROW_COUNT = 1;
 
 interface FilterContainerProps {
   disableFiltersDisplay: () => void;
@@ -47,35 +50,30 @@ const FiltersContainer: React.FC<FilterContainerProps> = ({
 };
 
 const ProfileListing = () => {
-  const [isEnabledFilters, setIsEnabledFilters] = React.useState<boolean>(
-    false
-  );
   const [showFilters, setShowFilters] = React.useState<boolean>(false);
-  const [tagsSet, setTagsSet] = React.useState<Set<string>>(
-    new Set(["Hello", "World", "1337", "42"])
-  );
   const [ageRange, setAgeRange] = React.useState<[number, number]>([18, 22]);
+  const [distanceRange, setDistanceRange] = React.useState<[number]>([1]);
+  const [offset, setOffset] = React.useState<number>(0);
   const [popularityRange, setPopularityRange] = React.useState<
     [number, number]
   >([0, 30]);
-  const [distanceRange, setDistanceRange] = React.useState<[number]>([1]);
+  const [isEnabledFilters, setIsEnabledFilters] = React.useState<boolean>(
+    false
+  );
+  const [tagsSet, setTagsSet] = React.useState<Set<string>>(
+    new Set(["Hello", "World", "1337", "42"])
+  );
   const [{ user, loggedIn }] = useUser();
-  const { isLoading, data } = useSuggestions({
+  const { isLoading, data, isFetching } = useSuggestions({
     authorization: user?.authorization || "",
     enabled: loggedIn,
-    offset: 0,
-    row_count: 4,
+    offset: offset,
+    row_count: ROW_COUNT,
   });
 
-  React.useEffect(() => {
-    (async () => {
-      console.log("isLoading", isLoading, "suggestion data", data?.data);
-    })();
-  }, [data, isLoading]);
-
-  const toggleFilters = (event: React.MouseEvent) => {
+  const toggleFilters = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setShowFilters(!showFilters);
-    event.stopPropagation();
     if (showFilters) {
       window.addEventListener("click", disableFiltersDisplay);
     }
@@ -102,6 +100,27 @@ const ProfileListing = () => {
     }
   };
   console.log("isEnabledFilters", isEnabledFilters);
+
+  const handleSwipe = (direction: SwipeDirection, nameToDelete: string) => {
+    console.log("herer1", data?.data.length);
+    if (typeof data?.data.length === "number") {
+      if (data.data.length < 1) {
+        console.log("herer3");
+        setOffset((prev) => prev + ROW_COUNT);
+      }
+    }
+    console.log(
+      `${direction === "left" ? "Disliked" : "Liked"} ${nameToDelete}`
+    );
+  };
+
+  const handleOutOfFrame = (
+    direction: SwipeDirection,
+    nameToDelete: string
+  ) => {
+    data?.data.splice(data?.data.findIndex(), 1); // find index and delete suggestion from data
+    nameToDelete;
+  };
 
   return (
     <>
@@ -197,7 +216,11 @@ const ProfileListing = () => {
           </FiltersContainer>
         </Transition>
       </section>
-      <SwipeImage profiles={db} />
+      <SwipeImage
+        suggestedUsers={data?.data}
+        onSwiped={handleSwipe}
+        onOutOfFrame={handleOutOfFrame}
+      />
     </>
   );
 };
