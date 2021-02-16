@@ -4,7 +4,6 @@ import Tag from "@/components/Tag";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import DropDownIcon from "@/components/ui/Icons/DropDownIcon";
 import PositionIcon from "@/components/ui/Icons/PositionIcon";
-import { getSexePreference } from "@/utils/getSexePreference";
 import { indexOf } from "@/utils/indexOf";
 import Link from "next/link";
 import { Transition } from "@headlessui/react";
@@ -158,7 +157,7 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
                 <div className="mt-4 sm:mt-0">
                   <AvatarIcon className="inline-block" />{" "}
                   <p className="text-sm inline-block text-gray-400">
-                    {gender}, {getSexePreference(gender, orientation)}
+                    {`${gender}, ${orientation}`}
                   </p>
                 </div>
                 <div className="">

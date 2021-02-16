@@ -21,20 +21,15 @@ function SwipeImage({
   onOutOfFrame,
 }: {
   suggestedUsers?: SuggestedUser[];
-  onSwiped?: (direction: SwipeDirection, name: string) => void;
-  onOutOfFrame?: (direction: SwipeDirection, name: string) => void;
+  onSwiped?: (name: string, direction: SwipeDirection) => void;
+  onOutOfFrame?: (name: string, direction: SwipeDirection) => void;
 }) {
   // const [lastDirection, setLastDirection] = React.useState<string>("");
 
   if (!suggestedUsers) return <>Loading...</>;
-  const swiped = (direction: SwipeDirection, name: string) => {
+  const swiped = (name: string, direction: SwipeDirection) => {
     // setLastDirection(direction);
-    onSwiped?.(direction, name);
-  };
-
-  const outOfFrame = (name: string, direction: SwipeDirection) => {
-    console.log(name + " left the screen!", `from the ${direction} direction`);
-    onOutOfFrame?.(direction, name);
+    onSwiped?.(name, direction);
   };
 
   /*const childRefs = useMemo(
@@ -88,9 +83,9 @@ function SwipeImage({
             <TinderCard
               preventSwipe={["down", "up"]}
               key={singleSuggestedUser.userName}
-              onSwipe={(dir) => swiped(dir, singleSuggestedUser.userName)}
+              onSwipe={(dir) => swiped(singleSuggestedUser.userName, dir)}
               onCardLeftScreen={(direction: SwipeDirection) =>
-                outOfFrame(singleSuggestedUser.userName, direction)
+                onOutOfFrame?.(singleSuggestedUser.userName, direction)
               }
             >
               <SwipeImageProfile

@@ -9,7 +9,7 @@ const Signin = (): JSX.Element => {
   const { register, handleSubmit } = useForm();
   const router = useRouter();
   const [, { login, loading }] = useUser();
-  console.log("login loading", loading);
+  // console.log("login loading", loading);
   const onSubmit = async (
     data: { userName: string; password: string },
     e?: React.BaseSyntheticEvent

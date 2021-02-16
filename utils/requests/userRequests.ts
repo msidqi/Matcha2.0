@@ -72,13 +72,13 @@ export const useUpdateUserData = () => {
   return useMutation(
     ({ data, authorization }: UpdateUserDataProps & Authorization) => {
       const formdata = new FormData();
-      for (const key in data) {
-        if (Array.isArray((data as Record<string, any>)[key])) {
-          (data as Record<string, any>)[key].forEach((elem: any) =>
-            formdata.append(key, elem)
-          );
-        } else if (typeof data[key] === "object") {
-          formdata.append(key, JSON.stringify(data[key]));
+      let key: keyof typeof data;
+      for (key in data) {
+        const element = data[key];
+        if (Array.isArray(element)) {
+          element.forEach((elem: string | File) => formdata.append(key, elem));
+        } else if (typeof element === "object") {
+          formdata.append(key, JSON.stringify(element));
         } else {
           formdata.append(key, (data as any)[key]);
         }
@@ -111,6 +111,17 @@ export const getProfilePictureNameRequest = ({
   authorization,
 }: Authorization) => {
   return apiRequest("get", "/api/getProfilePicture", {
+    headers: {
+      Authorization: authorization,
+    },
+  })[0];
+};
+
+export const getImageWithUserId = ({
+  authorization,
+  id,
+}: Authorization & { id: number }) => {
+  return apiRequest("get", `/api/image/${id}`, {
     headers: {
       Authorization: authorization,
     },

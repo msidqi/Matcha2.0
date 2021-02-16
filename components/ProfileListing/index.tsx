@@ -7,18 +7,16 @@ import TagsDisplay from "@/components/TagsDisplay";
 import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
 import { useUser } from "../auth";
 import { useSuggestions } from "@/utils/requests/suggestions";
-// import dbData from "@/components/SwipeImage/db.json";
+import { indexOf } from "@/utils/indexOf";
 // import { ProfileType } from "@/interfaces";
-
-// const db: ProfileType[] = dbData as ProfileType[];
-
-const ROW_COUNT = 1;
 
 interface FilterContainerProps {
   disableFiltersDisplay: () => void;
   applyFilter: () => void;
   style?: CSSProperties;
 }
+
+const ROW_COUNT = 3;
 
 const FiltersContainer: React.FC<FilterContainerProps> = ({
   children,
@@ -53,7 +51,6 @@ const ProfileListing = () => {
   const [showFilters, setShowFilters] = React.useState<boolean>(false);
   const [ageRange, setAgeRange] = React.useState<[number, number]>([18, 22]);
   const [distanceRange, setDistanceRange] = React.useState<[number]>([1]);
-  const [offset, setOffset] = React.useState<number>(0);
   const [popularityRange, setPopularityRange] = React.useState<
     [number, number]
   >([0, 30]);
@@ -64,12 +61,16 @@ const ProfileListing = () => {
     new Set(["Hello", "World", "1337", "42"])
   );
   const [{ user, loggedIn }] = useUser();
-  const { isLoading, data, isFetching } = useSuggestions({
+  const [offset, setOffset] = React.useState<number>(1);
+  const { data, fetchNextPage, isFetching } = useSuggestions({
     authorization: user?.authorization || "",
     enabled: loggedIn,
-    offset: offset,
+    offset,
     row_count: ROW_COUNT,
   });
+
+  const allSuggestedUsers = data?.pages.flatMap((page) => page.data);
+  console.log("allSuggestedUsers", allSuggestedUsers);
 
   const toggleFilters = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -99,27 +100,21 @@ const ProfileListing = () => {
       );
     }
   };
-  console.log("isEnabledFilters", isEnabledFilters);
-
-  const handleSwipe = (direction: SwipeDirection, nameToDelete: string) => {
-    console.log("herer1", data?.data.length);
-    if (typeof data?.data.length === "number") {
-      if (data.data.length < 1) {
-        console.log("herer3");
-        setOffset((prev) => prev + ROW_COUNT);
-      }
+  // console.log("isEnabledFilters", isEnabledFilters);
+  // console.log("data?.pageParams", data?.pageParams);
+  const handleSwipe = (nameToDelete: string, direction: SwipeDirection) => {
+    //   `${direction === "left" ? "Disliked" : "Liked"} ${nameToDelete}`
+    if (!isFetching) {
+      fetchNextPage();
+      setOffset((prev) => prev + 1);
     }
-    console.log(
-      `${direction === "left" ? "Disliked" : "Liked"} ${nameToDelete}`
-    );
   };
 
-  const handleOutOfFrame = (
-    direction: SwipeDirection,
-    nameToDelete: string
-  ) => {
-    data?.data.splice(data?.data.findIndex(), 1); // find index and delete suggestion from data
-    nameToDelete;
+  const handleOutOfFrame = (nameToDelete: string) => {
+    // data?.pages.splice(
+    //   indexOf(data?.pages[0].data, (elem) => elem.userName === nameToDelete),
+    //   1
+    // ); // find index and delete suggestion from data
   };
 
   return (
@@ -130,6 +125,18 @@ const ProfileListing = () => {
       >
         <SettingsIcon />
       </button>
+      {/* <button
+        style={{ backgroundColor: "red" }}
+        onClick={() => {
+          if (!isFetching) {
+            fetchNextPage();
+            setOffset((prev) => prev + 1);
+          }
+        }}
+      >
+        fetch more
+      </button> */}
+      {/* {isFetching ? "isFetching..." : ""} */}
       <section className="relative z-10">
         <Transition
           show={showFilters}
@@ -217,12 +224,11 @@ const ProfileListing = () => {
         </Transition>
       </section>
       <SwipeImage
-        suggestedUsers={data?.data}
+        suggestedUsers={allSuggestedUsers}
         onSwiped={handleSwipe}
         onOutOfFrame={handleOutOfFrame}
       />
     </>
   );
 };
-
 export default ProfileListing;

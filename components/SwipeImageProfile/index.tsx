@@ -6,24 +6,56 @@ import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import { ProfileType } from "@/interfaces";
 import { formatDistance } from "@/utils/formatDistance";
 import { SuggestedUser } from "@/utils/requests/suggestions";
+import { useUser } from "../auth";
+import { getImageWithUserId } from "@/utils/requests/userRequests";
 
 interface Props {
   profile: SuggestedUser;
   isCurrentlyShown?: boolean;
 }
 
+const PLACEHOLDER_IMAGE = "https://via.placeholder.com/400x600";
+
 const SwipeImageProfile = ({
-  profile: { userName, age, distance, gender, orientation, bio },
+  profile: { userName, age, distance, gender, orientation, bio, id },
   isCurrentlyShown,
 }: Props) => {
+  const [image, setImage] = React.useState<string>("");
   const [state, setExpand] = React.useState<{
     expand: boolean;
     doExpand: boolean;
   }>({ expand: false, doExpand: true });
   const handleExpand = () => {
-    console.log("clicked");
     state.doExpand && setExpand({ ...state, expand: !state.expand });
   };
+
+  const [{ user }, { loading }] = useUser();
+
+  if (loading) return <>Loading...</>;
+  if (!user) return <>Error</>;
+
+  React.useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const result = await getImageWithUserId({
+          authorization: user.authorization,
+          id,
+        });
+        // remove body from fetch request of image
+        // console.log("getImageWithUserId", result);
+        if (result.status === 200) {
+          setImage(result.data.image);
+        } else {
+          setImage(PLACEHOLDER_IMAGE);
+        }
+      } catch (e) {
+        console.error(e);
+        setImage(PLACEHOLDER_IMAGE);
+      }
+    };
+
+    fetchImage();
+  }, []);
 
   const mainDetails = (
     <div
@@ -55,7 +87,7 @@ const SwipeImageProfile = ({
       } absolute top-0 w-full sm:rounded-2xl cursor-pointer`}
     >
       <div
-        style={{ backgroundImage: `url(${"url"})` }}
+        style={{ background: `url(${image})` }}
         className="relative sm:max-w-sm h-full w-full sm:rounded-2xl bg-cover bg-center"
       >
         <div
@@ -80,14 +112,6 @@ const SwipeImageProfile = ({
                 <p className="text-gray-500 text-sm">{bio}</p>
               </>
             )}
-            {/*<h4 className="text-gray-600 text-base font-medium mt-2">
-              Interests:
-            </h4>
-             <div className="mt-1">
-              {tags.map((tagName: string, i) => (
-                <Tag key={`tag-${i}`} tagName={tagName} />
-              ))}
-            </div> */}
           </Transition>
         </div>
       </div>

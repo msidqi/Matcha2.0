@@ -1,5 +1,5 @@
 import { apiRequest } from "@/utils/API";
-import { useQuery } from "react-query";
+import { useInfiniteQuery } from "react-query";
 
 interface UseSuggestionsProps {
   authorization: string;
@@ -31,19 +31,23 @@ export const useSuggestions = ({
   offset,
   tri,
 }: UseSuggestionsProps) => {
-  return useQuery(
+  return useInfiniteQuery(
     "suggestions",
-    () =>
+    ({ pageParam = 0 }) =>
       apiRequest<SuggestedUser[]>(
         "post",
         "/api/suggestions",
-        { offset, row_count, tri },
+        { offset: pageParam, row_count, tri },
         {
           headers: {
             Authorization: authorization,
           },
         }
       )[0],
-    { enabled, keepPreviousData: true }
+    {
+      enabled,
+      keepPreviousData: true,
+      getNextPageParam: () => offset,
+    }
   );
 };
