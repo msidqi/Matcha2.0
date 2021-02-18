@@ -6,9 +6,9 @@ import { Range } from "@/components/Range";
 import TagsDisplay from "@/components/TagsDisplay";
 import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
 import { useUser } from "../auth";
-import { useSuggestions } from "@/utils/requests/suggestions";
-import { indexOf } from "@/utils/indexOf";
-// import { ProfileType } from "@/interfaces";
+import { useSuggestions, useSuggestion } from "@/utils/requests/suggestions";
+import { like, deleteLike } from "@/utils/requests/userRequests";
+// import { indexOf } from "@/utils/indexOf";
 
 interface FilterContainerProps {
   disableFiltersDisplay: () => void;
@@ -60,17 +60,15 @@ const ProfileListing = () => {
   const [tagsSet, setTagsSet] = React.useState<Set<string>>(
     new Set(["Hello", "World", "1337", "42"])
   );
-  const [{ user, loggedIn }] = useUser();
-  const [offset, setOffset] = React.useState<number>(1);
-  const { data, fetchNextPage, isFetching } = useSuggestions({
+  const [{ user }] = useUser();
+  const { data, fetchNextPage, isFetching, error, isLoading } = useSuggestions({
     authorization: user?.authorization || "",
-    enabled: loggedIn,
-    offset,
     row_count: ROW_COUNT,
   });
-
-  const allSuggestedUsers = data?.pages.flatMap((page) => page.data);
-  console.log("allSuggestedUsers", allSuggestedUsers);
+  if (error) return <>suggestions error...</>;
+  if (isLoading) return <>suggestions are loading...</>;
+  const allSuggestedUsers = data?.pages.flatMap((page) => page.data).reverse();
+  console.log({ allSuggestedUsers }, data?.pageParams);
 
   const toggleFilters = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -101,12 +99,39 @@ const ProfileListing = () => {
     }
   };
   // console.log("isEnabledFilters", isEnabledFilters);
-  // console.log("data?.pageParams", data?.pageParams);
-  const handleSwipe = (nameToDelete: string, direction: SwipeDirection) => {
-    //   `${direction === "left" ? "Disliked" : "Liked"} ${nameToDelete}`
+  const handleSwipe = async (
+    nameToDelete: string,
+    direction: SwipeDirection
+  ) => {
+    if (
+      typeof nameToDelete === "string" &&
+      typeof user?.data.userName === "string"
+    ) {
+      try {
+        if (direction === "left") {
+          //deleteLike
+          const result = await deleteLike({
+            authorization: user.authorization,
+            liker: user.data.userName,
+            liked: nameToDelete,
+          });
+          console.log("deleteLike result", result);
+        } else if (direction === "right") {
+          //like
+          const result = await like({
+            authorization: user.authorization,
+            liker: user.data.userName,
+            liked: nameToDelete,
+          });
+          console.log("like result", result);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
     if (!isFetching) {
       fetchNextPage();
-      setOffset((prev) => prev + 1);
+      // setOffset((prev) => prev + 1);
     }
   };
 
@@ -125,18 +150,6 @@ const ProfileListing = () => {
       >
         <SettingsIcon />
       </button>
-      {/* <button
-        style={{ backgroundColor: "red" }}
-        onClick={() => {
-          if (!isFetching) {
-            fetchNextPage();
-            setOffset((prev) => prev + 1);
-          }
-        }}
-      >
-        fetch more
-      </button> */}
-      {/* {isFetching ? "isFetching..." : ""} */}
       <section className="relative z-10">
         <Transition
           show={showFilters}

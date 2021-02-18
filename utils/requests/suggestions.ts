@@ -1,8 +1,12 @@
 import { apiRequest } from "@/utils/API";
 import { useInfiniteQuery } from "react-query";
+import React from "react";
+
+interface Authorization {
+  authorization: string;
+}
 
 interface UseSuggestionsProps {
-  authorization: string;
   enabled?: boolean;
   row_count?: number;
   offset?: number;
@@ -30,7 +34,7 @@ export const useSuggestions = ({
   row_count,
   offset,
   tri,
-}: UseSuggestionsProps) => {
+}: UseSuggestionsProps & Authorization) => {
   return useInfiniteQuery(
     "suggestions",
     ({ pageParam = 0 }) =>
@@ -46,8 +50,55 @@ export const useSuggestions = ({
       )[0],
     {
       enabled,
-      keepPreviousData: true,
-      getNextPageParam: () => offset,
+      // keepPreviousData: true,
+      getNextPageParam: (lastPage) =>
+        offset ?? JSON.parse(lastPage.config.data)?.offset + 1,
     }
   );
+};
+
+export const useSuggestion = ({
+  authorization,
+  row_count,
+  offset,
+  tri,
+}: UseSuggestionsProps & Authorization) => {
+  const [suggestedUsers, setSuggestedUsers] = React.useState<SuggestedUser[]>(
+    []
+  );
+  const [error, setError] = React.useState<string>("");
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    const [call, cancel] = apiRequest<SuggestedUser[]>(
+      "post",
+      "/api/suggestions",
+      { offset, row_count, tri },
+      {
+        headers: {
+          Authorization: authorization,
+        },
+      }
+    );
+
+    const getSuggestions = async () => {
+      setLoading(true);
+      const result = await call;
+      if (result.status === 200) {
+        setSuggestedUsers((prev) => [...result.data, ...prev]);
+      }
+      setLoading(false);
+      setError("");
+    };
+
+    try {
+      getSuggestions();
+    } catch (e) {
+      setLoading(false);
+      setError(e.message);
+    }
+    return cancel;
+  }, [row_count, tri, authorization]);
+
+  return { error, suggestedUsers, loading };
 };

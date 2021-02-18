@@ -82,7 +82,7 @@ function SwipeImage({
             // >
             <TinderCard
               preventSwipe={["down", "up"]}
-              key={singleSuggestedUser.userName}
+              key={singleSuggestedUser.id}
               onSwipe={(dir) => swiped(singleSuggestedUser.userName, dir)}
               onCardLeftScreen={(direction: SwipeDirection) =>
                 onOutOfFrame?.(singleSuggestedUser.userName, direction)

@@ -127,3 +127,75 @@ export const getImageWithUserId = ({
     },
   })[0];
 };
+
+interface LikeProps {
+  liker: string;
+  liked: string;
+}
+
+export const like = ({
+  liker,
+  liked,
+  authorization,
+}: LikeProps & Authorization) => {
+  return apiRequest(
+    "post",
+    "/api/like",
+    { liker, liked },
+    {
+      headers: {
+        Authorization: authorization,
+      },
+    }
+  )[0];
+};
+
+export const deleteLike = ({
+  liker,
+  liked,
+  authorization,
+}: LikeProps & Authorization) => {
+  return fetch("/api/like", {
+    method: "delete",
+    headers: new Headers({
+      Authorization: authorization,
+    }),
+    body: JSON.stringify({ liker, liked }),
+  }).then((res) => res.json());
+};
+
+interface BlockProps {
+  blocker: string;
+  blocked: string;
+}
+
+export const block = ({
+  blocker,
+  blocked,
+  authorization,
+}: BlockProps & Authorization) => {
+  return apiRequest(
+    "post",
+    "/api/block",
+    { blocker, blocked },
+    {
+      headers: {
+        Authorization: authorization,
+      },
+    }
+  )[0];
+};
+
+export const deleteBlock = ({
+  blocker,
+  blocked,
+  authorization,
+}: BlockProps & Authorization) => {
+  return fetch("/api/block", {
+    method: "delete",
+    headers: new Headers({
+      Authorization: authorization,
+    }),
+    body: JSON.stringify({ blocker, blocked }),
+  }).then((res) => res.json());
+};
