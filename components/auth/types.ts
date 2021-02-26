@@ -2,8 +2,10 @@ import { Dispatch } from "react";
 // import { isValidDate } from "@/utils/date";
 import { UserError } from "@/components/auth/errors";
 import { User, Image } from "@/components/auth/classes";
+import { Orientation, Gender } from "@/interfaces";
 
 export interface UserInput {
+  id: number;
   firstName: string;
   lastName: string;
   userName: string;
@@ -11,8 +13,8 @@ export interface UserInput {
   birthDate: Date | string;
   bio: string;
   experience: number;
-  gender: "male" | "female";
-  orientation: "heterosexual" | "homosexual" | "bisexual";
+  gender: Gender;
+  orientation: Orientation;
   rankId: number;
   accessToken: string;
   images: Image[];

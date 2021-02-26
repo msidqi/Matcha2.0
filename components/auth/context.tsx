@@ -83,10 +83,10 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
         if (result.status !== 200) throw new UserError(USERDATA_ERROR_MESSAGE);
         /* -------- update global user state ------- */
         user.addProperties({ ...result.data });
-        // console.log("fetched data result.data", result.data);
         dispatch({ type: "SET_USER", payload: { user } });
       } catch (e) {
         setError(e);
+        dispatch({ type: "LOGOUT" });
         console.error(e);
       } finally {
         setLoading(false);

@@ -1,7 +1,8 @@
 import { apiRequest } from "@/utils/API";
 import { UserInput } from "@/components/auth";
-import { useMutation } from "react-query";
-
+import { useMutation, useInfiniteQuery, useQuery } from "react-query";
+import { Orientation, TextMessage } from "@/interfaces";
+import { Image } from "@/components/auth/classes";
 interface Authorization {
   authorization: string;
 }
@@ -198,4 +199,127 @@ export const deleteBlock = ({
     }),
     body: JSON.stringify({ blocker, blocked }),
   }).then((res) => res.json());
+};
+
+export const getOtherUserInfosRequest = ({
+  authorization,
+  otherUserId,
+}: { otherUserId: number } & Authorization) => {
+  return apiRequest<UserInput>("get", `/api/otherUserInfos/${otherUserId}`, {
+    headers: {
+      Authorization: authorization,
+    },
+  })[0];
+};
+
+interface useMessagesProps {
+  userId?: number;
+  offset?: number;
+  row_count?: number;
+}
+
+export const getMessagePreview = ({
+  authorization,
+  userId,
+}: { userId: number } & Authorization) =>
+  apiRequest<TextMessage[]>(
+    "post",
+    "/api/message",
+    { userId, offset: 0, row_count: 1 },
+    {
+      headers: {
+        Authorization: authorization,
+      },
+    }
+  )[0];
+
+export const useMessages = ({
+  authorization,
+  row_count = 12,
+  offset,
+  userId,
+}: useMessagesProps & Authorization) => {
+  return useInfiniteQuery(
+    "message",
+    ({ pageParam = 0 }) =>
+      apiRequest<TextMessage[]>(
+        "post",
+        "/api/message",
+        { userId, offset: pageParam, row_count },
+        {
+          headers: {
+            Authorization: authorization,
+          },
+        }
+      )[0],
+    {
+      enabled: userId != undefined,
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+      getNextPageParam: (lastPage) =>
+        offset ?? JSON.parse(lastPage.config.data)?.offset + 1,
+    }
+  );
+};
+
+interface Match {
+  id: number;
+  userName: string;
+  gender: "Male" | "Female";
+  orientation: Orientation;
+  experience: number;
+}
+
+export type ChatPreview = UserInput & { messagePreview: TextMessage };
+
+export const useGetAllMatches = ({ authorization }: Authorization) => {
+  return useQuery(
+    "matches",
+    async (): Promise<ChatPreview[] | undefined> => {
+      // fetch matches
+      const result = await apiRequest<Match[]>("get", "/api/match", {
+        headers: {
+          Authorization: authorization,
+        },
+      })[0];
+      if (result.status === 200) {
+        const matches = result.data.filter((match) => match);
+        const userDataPromises = matches.map(({ id }) =>
+          getOtherUserInfosRequest({ authorization, otherUserId: id })
+        );
+        // fetch first message of matches
+        const messagesPreview = await Promise.all(
+          matches.map(({ id }) =>
+            getMessagePreview({ authorization, userId: id })
+          )
+        );
+        // fetch rest of otherUserData (images)
+        return (await Promise.all(userDataPromises))
+          .map((elem, index) => {
+            elem.data.images = elem.data.images.map(
+              (image) => new Image(image)
+            );
+            // inserting message preview
+            if (messagesPreview[index].status === 200) {
+              return {
+                ...elem.data,
+                messagePreview: messagesPreview[index].data[0],
+              };
+            } else {
+              const blankMessage: TextMessage = {
+                sender: -1,
+                receiver: -1,
+                content: "",
+                date: "",
+              };
+              return {
+                ...elem.data,
+                messagePreview: blankMessage,
+              };
+            }
+          })
+          .filter((chatPreview) => chatPreview);
+      }
+    }
+  );
 };

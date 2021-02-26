@@ -108,15 +108,7 @@ const ProfileListing = () => {
       typeof user?.data.userName === "string"
     ) {
       try {
-        if (direction === "left") {
-          //deleteLike
-          const result = await deleteLike({
-            authorization: user.authorization,
-            liker: user.data.userName,
-            liked: nameToDelete,
-          });
-          console.log("deleteLike result", result);
-        } else if (direction === "right") {
+        if (direction === "right") {
           //like
           const result = await like({
             authorization: user.authorization,

@@ -1,6 +1,7 @@
 // import { isValidDate } from "@/utils/date";
 
 import { UserInput } from "@/components/auth/types";
+import { Orientation, Gender } from "@/interfaces";
 
 export interface IImage {
   imageBase64?: string;
@@ -44,14 +45,15 @@ interface IUser {
 
 export class User implements IUser {
   data: {
+    id: number;
     firstName: string;
     lastName: string;
     userName: string;
     email: string;
     bio: string;
     images: Image[];
-    gender: "male" | "female";
-    orientation: "heterosexual" | "homosexual" | "bisexual";
+    gender: Gender;
+    orientation: Orientation;
     experience: number;
     birthDate: Date | string;
     rankId?: number;
@@ -76,6 +78,7 @@ export class User implements IUser {
 
   constructor(input: Partial<UserInput>) {
     this.data = {
+      id: -1,
       firstName: "",
       lastName: "",
       userName: "",
@@ -98,7 +101,8 @@ export class User implements IUser {
     ...rest
   }: Partial<UserInput>) {
     this.data = { ...this.data, ...rest };
-    this.data.images = images?.map((img) => new Image(img)) || [];
+    if (Array.isArray(images))
+      this.data.images = images.map((img) => new Image(img));
     this.data.birthDate =
       birthDate instanceof Date ? birthDate : new Date(birthDate || "");
     if (typeof accessToken === "string") this.accessToken = accessToken;

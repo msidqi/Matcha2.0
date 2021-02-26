@@ -1,0 +1,62 @@
+{
+  "currentUser": { "name": "Mouad", "lastConnected": "connected 2h ago" },
+  "textMessagesData": [
+    {
+      "me": true,
+      "text": "Hello world Hello world Hello world ",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    { "me": false, "text": "user2", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": true, "text": "user3", "date": "2021-02-18T06:58:02.857Z" },
+    {
+      "me": false,
+      "text": "Lorem ipsum dolor sit, amet ",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "me": false,
+      "text": "consectetur adipisicing elit",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "me": false,
+      "text": "Distinctio inventore esse odio omnis repellendus autem est",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "me": true,
+      "text": "Hey, How are you doing!",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "me": true,
+      "text": "beatae nostrum accusamus, laborum",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "me": true,
+      "text": "totam sit accusantium tenetur",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "me": true,
+      "text": "quidem corporis veniam",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    { "me": false, "text": "another text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": true, "text": "some text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": false, "text": "another text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": true, "text": "some text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": false, "text": "another text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": true, "text": "some text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": false, "text": "another text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": true, "text": "some text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": false, "text": "another text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": true, "text": "some text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": false, "text": "another text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": true, "text": "some text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": false, "text": "another text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": true, "text": "some text", "date": "2021-02-18T06:58:02.857Z" },
+    { "me": false, "text": "another text", "date": "2021-02-18T06:58:02.857Z" }
+  ]
+}

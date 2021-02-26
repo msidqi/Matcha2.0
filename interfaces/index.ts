@@ -1,3 +1,6 @@
+export type Orientation = "heterosexual" | "homosexual" | "bisexual";
+export type Gender = "male" | "female";
+
 export type ProfileType = {
   userName: string;
   firstName: string;
@@ -6,7 +9,7 @@ export type ProfileType = {
   url: string;
   distance: number;
   age: number;
-  gender: "male" | "female";
+  gender: Gender;
   orientation: "male" | "female" | "both";
   bio: string;
   tags: string[];
@@ -16,4 +19,11 @@ export type ImagePreviewProps = {
   title: string;
   objectURL: string;
   size: string;
+};
+
+export type TextMessage = {
+  sender: number;
+  receiver: number;
+  content: string;
+  date: string | Date;
 };

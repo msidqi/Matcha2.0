@@ -1,0 +1,88 @@
+{
+  "Chatpreview": [
+    {
+      "preview": "some preview text",
+      "username": "user2",
+      "image": "/profile.jpg",
+      "date": "2021-02-10T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user3",
+      "image": "/profile.jpg",
+      "date": "2021-02-10T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user4",
+      "image": "/profile.jpg",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user5",
+      "image": "/profile.jpg",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user6",
+      "image": "/profile.jpg",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user6",
+      "image": "/profile.jpg",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user6",
+      "image": "/profile.jpg",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user6",
+      "image": "/profile.jpg",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user6",
+      "image": "/profile.jpg",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user6",
+      "image": "/profile.jpg",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user6",
+      "image": "/profile.jpg",
+      "date": "2021-02-18T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user6",
+      "image": "/profile.jpg",
+      "date": "2021-02-17T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user6",
+      "image": "/profile.jpg",
+      "date": "2021-02-17T06:58:02.857Z"
+    },
+    {
+      "preview": "some preview text",
+      "username": "user42",
+      "image": "/profile.jpg",
+      "date": "2021-02-17T06:58:02.857Z"
+    }
+  ]
+}
