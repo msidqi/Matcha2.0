@@ -3,16 +3,18 @@ import { socketsReducer } from ".";
 import type {
   SocketState,
   ActionsAndState,
-  CreateConnectionAction,
-  CloseConnectionAction,
+  ListenOnConnectAction,
 } from "./types";
 import { IOError } from "./errors";
-import { useUser } from "../auth";
-import { of } from "rxjs";
+import { useUser } from "@/components/auth";
+import { of, fromEvent } from "rxjs";
 import { io } from "socket.io-client";
+import { switchMap, map } from "rxjs/operators";
 
 const initialSocketState: SocketState = {
-  io: undefined,
+  connect$: undefined,
+  socket: undefined,
+  isOnline: false,
 };
 
 const socketContext = React.createContext<[SocketState, ActionsAndState]>([
@@ -32,73 +34,41 @@ const socketContext = React.createContext<[SocketState, ActionsAndState]>([
 export const useSocketConnection = (): [SocketState, ActionsAndState] =>
   React.useContext(socketContext);
 
-export const UserProvider: React.FC = ({ children }): JSX.Element => {
+export const SocketsProvider: React.FC = ({ children }): JSX.Element => {
   const [state, dispatch] = React.useReducer(
     socketsReducer,
     initialSocketState
   );
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const [error, setError] = React.useState<IOError | null>(null);
+  const [loading] = React.useState<boolean>(true);
+  const [error] = React.useState<IOError | null>(null);
   const [{ user, loggedIn }, { loading: isLoadingUser }] = useUser();
 
   React.useEffect(() => {
-    // (async function fetchUserData() {
-    //   try {
-    //     setLoading(true);
-    //     setError(null);
-    //     /* -------- get access token ------- */
-    //     dispatch({ type: "CREATE_CONNECTION", payload: { io } });
-    //   } catch (e) {
-    //     setError(e);
-    //     dispatch({ type: "CLOSE_CLIENT" });
-    //     console.error(e);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // })();
     if (user && loggedIn) {
-      const socket$ = of(io("/", { auth: { token: user.authorization } }));
-      dispatch({ type: "CREATE_CONNECTION", payload: { io: socket$ } });
+      const socket = io("/", { auth: { token: user.authorization } });
+      const socket$ = of(socket);
+      const connect$ = socket$.pipe(
+        switchMap((socket) =>
+          fromEvent(socket, "connect").pipe(map(() => socket))
+        )
+      );
+      dispatch({ type: "CREATE_CONNECTION", payload: { connect$, socket } });
+    } else if (state.connect$) {
+      dispatch({ type: "CLOSE_CONNECTION" });
     }
 
     return () => {};
   }, [user]);
 
-  const createConnection: CreateConnectionAction = async ({
-    io,
-  }): Promise<void> => {
-    try {
-      setLoading(true);
-      setError(null);
-      /* -------- get user data ------- */
-      dispatch({ type: "CREATE_CONNECTION", payload: { io } });
-    } catch (e) {
-      setError(e);
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const closeConnection: CloseConnectionAction = async (): Promise<void> => {
-    try {
-      setLoading(true);
-      setError(null);
-      dispatch({ type: "CLOSE_CONNECTION" });
-    } catch (e) {
-      setError(e);
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+  const listenOnConnect: ListenOnConnectAction = (event: string) => {
+    return state.connect$?.pipe(
+      switchMap((socket) => fromEvent(socket, event))
+    );
   };
 
   return (
     <socketContext.Provider
-      value={[
-        { ...state },
-        { createConnection, closeConnection, loading, error },
-      ]}
+      value={[{ ...state }, { listenOnConnect, loading, error }]}
     >
       {children}
     </socketContext.Provider>

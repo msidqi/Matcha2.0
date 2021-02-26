@@ -1,14 +1,24 @@
-import type { SocketState, IOClientActions } from "./index";
+import type { SocketState, SocketActions } from "./index";
 
 export const socketsReducer = (
   state: SocketState,
-  action: IOClientActions
+  action: SocketActions
 ): SocketState => {
   switch (action.type) {
     case "CREATE_CONNECTION":
-      return { ...state, io: action.payload.io };
+      return {
+        ...state,
+        connect$: action.payload.connect$,
+        socket: action.payload.socket,
+        isOnline: true,
+      };
     case "CLOSE_CONNECTION":
-      return { ...state, io: undefined };
+      return {
+        ...state,
+        connect$: undefined,
+        socket: undefined,
+        isOnline: false,
+      };
     default:
       return state;
   }

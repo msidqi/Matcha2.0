@@ -1,24 +1,28 @@
 import { Dispatch } from "react";
 // import { isValidDate } from "@/utils/date";
 import { IOError } from "./errors";
+import { Socket } from "socket.io-client";
+import { Observable } from "rxjs";
 
-class IOClient {}
-
-export type IOClientActions =
-  | { type: "CREATE_CONNECTION"; payload: { io: IOClient } }
+export type SocketActions =
+  | {
+      type: "CREATE_CONNECTION";
+      payload: { socket: Socket; connect$: Observable<Socket> };
+    }
   | { type: "CLOSE_CONNECTION" };
 
-export type SocketState = { io: undefined } | { io: IOClient };
+export type SocketState =
+  | { connect$: Observable<Socket>; socket: Socket; isOnline: true }
+  | { connect$: undefined; socket: undefined; isOnline: false };
 
-export type IOClientDispatch = Dispatch<IOClientActions>;
+export type SocketDispatch = Dispatch<SocketActions>;
 
-export type CreateConnectionAction = (data: { io: IOClient }) => Promise<void>;
-
-export type CloseConnectionAction = () => Promise<void>;
+export type ListenOnConnectAction = (
+  event: string
+) => Observable<unknown> | undefined;
 
 export type ActionsAndState = {
-  createConnection: CreateConnectionAction;
-  closeConnection: CloseConnectionAction;
+  listenOnConnect: ListenOnConnectAction;
   loading: boolean;
   error: IOError | null;
 };
