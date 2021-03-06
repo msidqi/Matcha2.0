@@ -37,7 +37,6 @@ const ChatListSingle = ({
       <p className="text-gray-500">{chatPreview.messagePreview.content}</p>
     </div>
     <div className="absolute right-4 top-5">
-      {console.log(chatPreview)}
       <p className="text-gray-500">
         {formatDate(chatPreview.messagePreview.date) || ""}
       </p>

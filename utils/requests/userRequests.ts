@@ -216,6 +216,7 @@ interface useMessagesProps {
   userId?: number;
   offset?: number;
   row_count?: number;
+  onSuccess?: () => void;
 }
 
 export const getMessagePreview = ({
@@ -238,6 +239,7 @@ export const useMessages = ({
   row_count = 12,
   offset,
   userId,
+  onSuccess,
 }: useMessagesProps & Authorization) => {
   return useInfiniteQuery(
     ["message", userId],
@@ -255,7 +257,8 @@ export const useMessages = ({
     {
       enabled: userId != undefined && userId !== -1,
       keepPreviousData: true,
-      refetchOnWindowFocus: false,
+      onSuccess,
+      refetchOnWindowFocus: true,
       getNextPageParam: (lastPage) =>
         offset ?? JSON.parse(lastPage.config.data)?.offset + 1,
     }

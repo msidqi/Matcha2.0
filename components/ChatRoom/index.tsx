@@ -3,13 +3,6 @@ import TextBuble from "@/components/ChatTextBuble";
 import ArrowBack from "@/components/ui/Icons/ArrowBack";
 import { debounce } from "@/utils/debounce";
 import { currentUser } from "./data.json";
-import {
-  emitOnConnect,
-  listenOnConnect,
-  emitOnEnter,
-} from "@/utils/observers/chatObservers";
-import { fromEvent, Subscription } from "rxjs";
-import { map, tap, switchMap } from "rxjs/operators";
 import { useUser } from "@/components/auth";
 import { User } from "@/components/auth/classes";
 import { useMessages, useGetAllMatches } from "@/utils/requests/userRequests";
@@ -17,6 +10,16 @@ import { TextMessage, OtherUser } from "@/interfaces";
 import { LoadingAnimation } from "@/components/ui/Icons/LoadingIcon";
 import { useSocketConnection } from "../Sockets";
 import { useChatUsers } from "../useChat";
+
+type SocketMessageEventPayload = {
+  to: string;
+  message: string;
+};
+
+const EVENT_KEY_MESSAGE_SEND = "message";
+const EVENT_KEY_MESSAGE_RECIEVE = "message";
+const EVENT_KEY_CONNECT = "connect";
+type MessageRecievedType = { from: string; message: string; date: string };
 
 const scrollToBottom = (container: HTMLDivElement) => {
   container.scrollTop = container.scrollHeight;
@@ -29,20 +32,25 @@ interface ChatProps {
 // test2 261
 const ChatRoom = ({ onClickBack }: ChatProps): JSX.Element => {
   const [isAtBottom, setIsAtBottom] = React.useState<boolean>(true);
+  const [message, setMessage] = React.useState<string>("");
   const [state] = useUser();
-  const { isOnline, connect$, socket } = useSocketConnection();
+  const { socket } = useSocketConnection();
   const { otherUser } = useChatUsers();
-  const { authorization }: User = state.user!;
+  const { authorization, data: userData }: User = state.user!;
   // const { data, isLoading } = useGetAllMatches({ authorization });
   // data?.find((elem) => elem.id)
+  const [messagesHistoryLocal, setMessagesHistoryLocal] = React.useState<
+    TextMessage[]
+  >([]);
   const {
     data: messagesHistory,
     fetchNextPage: fetchNextMessages,
     isLoading: isLoadingMessages,
-  } = useMessages({ authorization, userId: otherUser.id });
-  const [messagesHistoryLocal, setMessagesHistoryLocal] = React.useState<
-    TextMessage[]
-  >([]);
+  } = useMessages({
+    authorization,
+    userId: otherUser.id,
+    onSuccess: () => setMessagesHistoryLocal([]),
+  });
   // merge fetched messages and local messages
   const messagesHistoryPages: TextMessage[] = [
     ...(messagesHistory?.pages
@@ -57,6 +65,11 @@ const ChatRoom = ({ onClickBack }: ChatProps): JSX.Element => {
       console.log("all messages 2", messagesHistory?.pages);
     })();
   }, [isLoadingMessages]);*/
+
+  React.useEffect(() => {
+    // scroll to bottom of chat box
+    chatContainerRef.current && scrollToBottom(chatContainerRef.current);
+  }, [messagesHistoryLocal, chatContainerRef]);
 
   /* -- scroll to bottom && set onscroll event -- */
   React.useEffect(() => {
@@ -83,76 +96,52 @@ const ChatRoom = ({ onClickBack }: ChatProps): JSX.Element => {
     };
   }, []);
 
-  const messageInputRef = React.useRef<HTMLInputElement>(null);
-  // connect with sockets
-  React.useEffect(
-    () => {
-      const input = messageInputRef.current;
-      const subscriptions: Subscription[] = [];
-      if (input && socket && connect$ /*&& otherUser.id !== -1*/) {
-        // console.log(
-        //   "otherUser.id 2",
-        //   input,
-        //   socket,
-        //   connect$,
-        //   otherUser.id,
-        //   isOnline
-        // );
-        const sendOnConnect$ = connect$.pipe(
-          switchMap((socket) =>
-            emitOnEnter(input).pipe(
-              map(({ content }) => {
-                const newMessage = {
-                  to: "test2", //otherUser.userName,
-                  message: content,
-                };
-                const textMessage: TextMessage = {
-                  content,
-                  date: new Date(),
-                  sender: 260,
-                  receiver: 261, //otherUser.id,
-                };
-                setMessagesHistoryLocal((prev) => [...prev, textMessage]);
-                socket.emit("message", newMessage);
-                // scroll to bottom of chat box
-                chatContainerRef.current &&
-                  scrollToBottom(chatContainerRef.current);
-              })
-            )
-          )
-        );
-        subscriptions.push(
-          sendOnConnect$.subscribe(
-            () => console.log("success"),
-            (error) => console.log("error", error)
-          )
-        );
-        const onMessageRecieved$ = connect$.pipe(
-          switchMap((socket) => fromEvent<TextMessage>(socket, "message")),
-          map((data) => {
-            setMessagesHistoryLocal((prev) => [...prev, data]);
-            // scroll to bottom of chat box
-            chatContainerRef.current &&
-              scrollToBottom(chatContainerRef.current);
-          })
-        );
-        subscriptions.push(onMessageRecieved$.subscribe());
-      }
-      return () => subscriptions.forEach((sub) => sub.unsubscribe());
-    },
-    [
-      /*otherUser.id*/
-    ]
-  );
+  const onKeyEnterUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.keyCode === 13 && message && otherUser.id !== -1) {
+      const newMessage: SocketMessageEventPayload = {
+        to: otherUser.userName,
+        message: message,
+      };
+      socket?.emit(EVENT_KEY_MESSAGE_SEND, newMessage);
+      setMessage("");
+      const textMessage: TextMessage = {
+        content: message,
+        date: new Date(),
+        sender: userData.id,
+        receiver: otherUser.id,
+      };
+      setMessagesHistoryLocal((prev) => [...prev, textMessage]);
+    }
+  };
 
-  const isOtherUserMessage = (textMessage: TextMessage) =>
+  // connect with sockets
+  React.useEffect(() => {
+    if (socket && otherUser.id !== -1) {
+      socket.on(EVENT_KEY_MESSAGE_RECIEVE, (data: MessageRecievedType[][]) => {
+        console.log("on message", data);
+        const messages: TextMessage[] = data.flat().map((elem) => ({
+          content: elem.message,
+          date: new Date(elem.date),
+          sender: otherUser.id,
+          receiver: userData.id,
+        }));
+        setMessagesHistoryLocal((prev) => [...prev, ...messages]);
+      });
+    } else if (socket) {
+      socket.off(EVENT_KEY_CONNECT);
+      socket.off(EVENT_KEY_MESSAGE_RECIEVE);
+    }
+  }, [otherUser.id]);
+
+  const isOtherUserMessage = (textMessage?: TextMessage) =>
+    typeof textMessage?.sender === "number" &&
     textMessage.sender === otherUser.id;
 
   const chatBubblePosition = (index: number) => {
     const context = [
-      messagesHistoryPages[index - 1]?.receiver === otherUser.id,
-      messagesHistoryPages[index]?.receiver === otherUser.id,
-      messagesHistoryPages[index + 1]?.receiver === otherUser.id,
+      isOtherUserMessage(messagesHistoryPages[index - 1]),
+      isOtherUserMessage(messagesHistoryPages[index]),
+      isOtherUserMessage(messagesHistoryPages[index + 1]),
     ];
     if (context[0] !== context[1] && context[1] === context[2]) return "top";
     if (context[0] === context[1] && context[1] !== context[2]) return "bottom";
@@ -214,7 +203,10 @@ const ChatRoom = ({ onClickBack }: ChatProps): JSX.Element => {
         }`}
       >
         <input
-          ref={messageInputRef}
+          // ref={messageInputRef}
+          onKeyUp={onKeyEnterUp}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           className="bg-gray-100 rounded-3xl py-2 px-3 w-full placeholder-gray-400 focus:outline-none sm:focus:ring focus:border-blue-300"
           placeholder="type something"
         />
