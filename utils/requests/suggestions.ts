@@ -13,6 +13,12 @@ interface UseSuggestionsProps {
   tri?: {
     age: number;
   };
+  filter?: {
+    age: number[];
+    distance: number[];
+    experience: number[];
+    tags: string[];
+  };
 }
 
 export type SuggestedUser = {
@@ -34,14 +40,20 @@ export const useSuggestions = ({
   row_count,
   offset,
   tri,
+  filter,
 }: UseSuggestionsProps & Authorization) => {
   return useInfiniteQuery(
-    "suggestions",
+    ["suggestions", filter],
     ({ pageParam = 0 }) =>
       apiRequest<SuggestedUser[]>(
         "post",
         "/api/suggestions",
-        { offset: pageParam, row_count, tri },
+        {
+          offset: pageParam,
+          row_count,
+          tri,
+          filter,
+        },
         {
           headers: {
             Authorization: authorization,
@@ -50,7 +62,7 @@ export const useSuggestions = ({
       )[0],
     {
       enabled,
-      // keepPreviousData: true,
+      keepPreviousData: true,
       getNextPageParam: (lastPage) =>
         offset ?? JSON.parse(lastPage.config.data)?.offset + 1,
     }

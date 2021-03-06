@@ -59,17 +59,17 @@ const ChatRoom = ({ onClickBack }: ChatProps): JSX.Element => {
     ...messagesHistoryLocal,
   ];
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
+  // scroll to bottom of chat box
+  React.useEffect(() => {
+    chatContainerRef.current && scrollToBottom(chatContainerRef.current);
+  }, [messagesHistoryLocal, chatContainerRef]);
+
   /*React.useEffect(() => {
     (async () => {
       fetchNextMessages();
       console.log("all messages 2", messagesHistory?.pages);
     })();
   }, [isLoadingMessages]);*/
-
-  React.useEffect(() => {
-    // scroll to bottom of chat box
-    chatContainerRef.current && scrollToBottom(chatContainerRef.current);
-  }, [messagesHistoryLocal, chatContainerRef]);
 
   /* -- scroll to bottom && set onscroll event -- */
   React.useEffect(() => {
@@ -177,12 +177,16 @@ const ChatRoom = ({ onClickBack }: ChatProps): JSX.Element => {
       <section
         ref={chatContainerRef}
         id="chatbox"
-        className="w-full pb-2 px-4 h-full overflow-y-auto"
+        className="w-full pb-2 px-4 h-full overflow-y-auto relative "
         style={{ height: "calc(100% - 5.3rem)" }}
       >
         {isLoadingMessages ? (
           <div className="flex justify-center items-center h-full">
             <LoadingAnimation height="30" width="30" />
+          </div>
+        ) : messagesHistoryPages.length === 0 ? (
+          <div className="absolute bottom-10 transform -translate-x-1/2 left-1/2">
+            <p className="text-gray-400">Start a new conversation !</p>
           </div>
         ) : (
           messagesHistoryPages.map((message, index) => (

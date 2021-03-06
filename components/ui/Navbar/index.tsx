@@ -5,6 +5,7 @@ import { Transition } from "@headlessui/react";
 import Logo from "@/components/ui/Icons/Logo";
 import LogoSm from "@/components/ui/Icons/LogoSm";
 import { useUser } from "@/components/auth";
+import links from "./links.json";
 
 function Navbar(): JSX.Element {
   const [showMenu, setShowMenu] = React.useState<boolean>(false);
@@ -16,16 +17,8 @@ function Navbar(): JSX.Element {
 
   const [{ loggedIn, user }, { logout, loading }] = useUser();
 
-  const handleLogout = () => {
-    logout();
-    // router.push("/");
-  };
   const pathname = router.pathname;
-  const links: { href: string; label: string }[] = [
-    { label: "Dashboard", href: "/dashboard" },
-    { label: "Messages", href: "/messages" },
-    { label: "Settings", href: "/settings" },
-  ];
+
   return (
     <nav className="bg-gray-800 fixed top-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
@@ -33,7 +26,7 @@ function Navbar(): JSX.Element {
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              onBlur={() => setShowMenu(false)}
+              // onBlur={() => setShowMenu(false)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
               aria-expanded="false"
             >
@@ -104,7 +97,7 @@ function Navbar(): JSX.Element {
             {loggedIn && (
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                onBlur={() => setShowNotifications(false)}
+                // onBlur={() => setShowNotifications(false)}
                 className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
               >
                 <span className="sr-only">View notifications</span>
@@ -156,7 +149,7 @@ function Navbar(): JSX.Element {
                 <div>
                   <button
                     onClick={() => setShowDropDown(!showDropDown)}
-                    onBlur={() => setShowDropDown(false)}
+                    // onBlur={() => setShowDropDown(false)}
                     className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
                     id="user-menu"
                     aria-haspopup="true"
@@ -205,7 +198,7 @@ function Navbar(): JSX.Element {
                         Settings
                       </a>
                       <button
-                        onClick={handleLogout}
+                        onClick={logout}
                         className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                       >

@@ -2,14 +2,14 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import Input from "@/components/Input";
-// import Loading from "@/components/Loading";
 import { useUser } from "../auth";
+import guestRoute from "../GuestRoute";
 
 const Signin = (): JSX.Element => {
   const { register, handleSubmit } = useForm();
   const router = useRouter();
-  const [, { login, loading }] = useUser();
-  // console.log("login loading", loading);
+  const [, { login }] = useUser();
+
   const onSubmit = async (
     data: { userName: string; password: string },
     e?: React.BaseSyntheticEvent
@@ -54,4 +54,4 @@ const Signin = (): JSX.Element => {
   );
 };
 
-export default Signin;
+export default guestRoute(Signin);

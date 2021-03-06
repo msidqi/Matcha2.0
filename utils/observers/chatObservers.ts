@@ -1,5 +1,5 @@
 import { fromEvent, of, Observable } from "rxjs";
-import { switchMap, map, filter, concatAll } from "rxjs/operators";
+import { switchMap, map, filter } from "rxjs/operators";
 import { io, Socket } from "socket.io-client";
 // how to pass auth
 const socket$ = of(io("localhost:3001/"));

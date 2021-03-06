@@ -3,14 +3,16 @@ import Router from "next/router";
 import { useUser } from "@/components/auth";
 import SplashScreen from "@/components/SplashScreen";
 
-const withAuth = (Component: React.ComponentType<any>) => (props: unknown) => {
-  const [{ user }, { error, loading }] = useUser();
+const guestRoute = (Component: React.ComponentType<any>) => (
+  props: unknown
+) => {
+  const [{ loggedIn }, { loading }] = useUser();
   if (loading) return <SplashScreen />;
-  if (!user || error) {
-    Router.push("/signin");
+  if (loggedIn) {
+    Router.push("/dashboard");
     return <SplashScreen />;
   }
   return <Component {...props} />;
 };
 
-export default withAuth;
+export default guestRoute;

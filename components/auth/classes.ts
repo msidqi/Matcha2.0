@@ -98,9 +98,11 @@ export class User implements IUser {
     accessToken,
     images,
     birthDate,
+    bio,
     ...rest
   }: Partial<UserInput>) {
     this.data = { ...this.data, ...rest };
+    this.data.bio = bio ?? "";
     if (Array.isArray(images))
       this.data.images = images.map((img) => new Image(img));
     this.data.birthDate =

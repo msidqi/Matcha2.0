@@ -8,14 +8,12 @@ export const socketsReducer = (
     case "CREATE_CONNECTION":
       return {
         ...state,
-        connect$: action.payload.connect$,
         socket: action.payload.socket,
         isOnline: true,
       };
     case "CLOSE_CONNECTION":
       return {
         ...state,
-        connect$: undefined,
         socket: undefined,
         isOnline: false,
       };

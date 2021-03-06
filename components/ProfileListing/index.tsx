@@ -12,16 +12,14 @@ import { like, deleteLike } from "@/utils/requests/userRequests";
 
 interface FilterContainerProps {
   disableFiltersDisplay: () => void;
-  applyFilter: () => void;
   style?: CSSProperties;
 }
 
-const ROW_COUNT = 3;
+const ROW_COUNT = 10;
 
 const FiltersContainer: React.FC<FilterContainerProps> = ({
   children,
   disableFiltersDisplay,
-  applyFilter,
   style,
 }): JSX.Element => {
   const handleBodyClick = (event: React.MouseEvent) => {
@@ -32,7 +30,6 @@ const FiltersContainer: React.FC<FilterContainerProps> = ({
     window.addEventListener("click", disableFiltersDisplay);
     return () => {
       window.removeEventListener("click", disableFiltersDisplay);
-      // applyFilter();
     };
   }, []);
 
@@ -51,24 +48,32 @@ const ProfileListing = () => {
   const [showFilters, setShowFilters] = React.useState<boolean>(false);
   const [ageRange, setAgeRange] = React.useState<[number, number]>([18, 22]);
   const [distanceRange, setDistanceRange] = React.useState<[number]>([1]);
-  const [popularityRange, setPopularityRange] = React.useState<
+  const [experienceRange, setExperienceRange] = React.useState<
     [number, number]
   >([0, 30]);
-  const [isEnabledFilters, setIsEnabledFilters] = React.useState<boolean>(
-    false
-  );
   const [tagsSet, setTagsSet] = React.useState<Set<string>>(
     new Set(["Hello", "World", "1337", "42"])
+  );
+  const [isEnabledFilters, setIsEnabledFilters] = React.useState<boolean>(
+    false
   );
   const [{ user }] = useUser();
   const { data, fetchNextPage, isFetching, error, isLoading } = useSuggestions({
     authorization: user?.authorization || "",
     row_count: ROW_COUNT,
+    filter: isEnabledFilters
+      ? {
+          age: ageRange,
+          distance: distanceRange,
+          experience: experienceRange,
+          tags: [...tagsSet],
+        }
+      : undefined,
   });
   if (error) return <>suggestions error...</>;
   if (isLoading) return <>suggestions are loading...</>;
   const allSuggestedUsers = data?.pages.flatMap((page) => page.data).reverse();
-  console.log({ allSuggestedUsers }, data?.pageParams);
+  // console.log({ allSuggestedUsers }, data?.pageParams);
 
   const toggleFilters = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -83,22 +88,6 @@ const ProfileListing = () => {
     window.removeEventListener("click", disableFiltersDisplay);
   };
 
-  const applyFilter = () => {
-    if (isEnabledFilters) {
-      console.log(
-        "apply filter with these settings\n",
-        "tags",
-        [...tagsSet],
-        "age",
-        ageRange,
-        "popularity",
-        popularityRange,
-        "distance",
-        distanceRange
-      );
-    }
-  };
-  // console.log("isEnabledFilters", isEnabledFilters);
   const handleSwipe = async (
     nameToDelete: string,
     direction: SwipeDirection
@@ -153,7 +142,6 @@ const ProfileListing = () => {
           leaveTo="transform opacity-0 scale-20"
         >
           <FiltersContainer
-            applyFilter={applyFilter}
             disableFiltersDisplay={disableFiltersDisplay}
             style={!isEnabledFilters ? { filter: "grayscale(80%)" } : {}}
           >
@@ -197,8 +185,8 @@ const ProfileListing = () => {
                 max={100}
                 min={0}
                 unit="pt"
-                range={popularityRange}
-                setRange={setPopularityRange}
+                range={experienceRange}
+                setRange={setExperienceRange}
                 onRangeChange={(currentRange) =>
                   console.log("popularity range", currentRange)
                 }

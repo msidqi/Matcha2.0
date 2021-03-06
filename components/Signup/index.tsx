@@ -2,10 +2,12 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Input from "@/components/Input";
+import guestRoute from "../GuestRoute";
+import { useRouter } from "next/router";
 
 const Signup = (): JSX.Element => {
   const { register, handleSubmit } = useForm();
-
+  const router = useRouter();
   const onSubmit = async (data: {
     userName: string;
     password: string;
@@ -13,10 +15,9 @@ const Signup = (): JSX.Element => {
     lastName: string;
     email: string;
   }) => {
-    console.log(data);
     try {
       const result = await axios.post("/api/signup", data);
-      console.log(result);
+      if (result.status === 200) router.push("/signin");
     } catch (e) {
       console.error(e);
     }
@@ -75,4 +76,4 @@ const Signup = (): JSX.Element => {
   );
 };
 
-export default Signup;
+export default guestRoute(Signup);
