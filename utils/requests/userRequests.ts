@@ -240,7 +240,7 @@ export const useMessages = ({
   userId,
 }: useMessagesProps & Authorization) => {
   return useInfiniteQuery(
-    "message",
+    ["message", userId],
     ({ pageParam = 0 }) =>
       apiRequest<TextMessage[]>(
         "post",
@@ -253,7 +253,7 @@ export const useMessages = ({
         }
       )[0],
     {
-      enabled: userId != undefined,
+      enabled: userId != undefined && userId !== -1,
       keepPreviousData: true,
       refetchOnWindowFocus: false,
       getNextPageParam: (lastPage) =>

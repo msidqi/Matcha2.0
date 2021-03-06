@@ -1,18 +1,24 @@
-// import axios from "axios";
 import React from "react";
 import { formatDate } from "@/utils/date";
 import { useGetAllMatches, ChatPreview } from "@/utils/requests/userRequests";
-import { useUser } from "../auth";
+import { useUser } from "@/components/auth";
 import { LoadingAnimation } from "@/components/ui/Icons/LoadingIcon";
 import { isArray } from "util";
+import { OtherUser } from "@/interfaces";
+import { useChatUsers } from "../useChat";
 
 const ChatListSingle = ({
   chatPreview,
   isFirst,
+  onClick,
 }: {
   chatPreview: ChatPreview;
-} & { isFirst?: boolean }): JSX.Element => (
+} & {
+  isFirst?: boolean;
+  onClick?: () => void;
+}): JSX.Element => (
   <div
+    onClick={onClick}
     className={`relative flex justify-start items-center h-24 px-6 hover:bg-gray-50 ${
       !isFirst ? "border-t border-gray-200" : ""
     }`}
@@ -39,10 +45,27 @@ const ChatListSingle = ({
   </div>
 );
 
-const ChatList = (): JSX.Element => {
+const ChatList = ({
+  onClick,
+}: {
+  onClick?: (otherUser: OtherUser) => void;
+}): JSX.Element => {
   const [{ user }] = useUser();
   const { authorization } = user!;
   const { isLoading, data } = useGetAllMatches({ authorization });
+  const handlePreviewClick = (otherUser: OtherUser) => onClick?.(otherUser);
+  const { addOtherUsers, otherUser } = useChatUsers();
+
+  // select default user
+  React.useEffect(() => {
+    if (data?.[0] && otherUser?.id === -1) {
+      addOtherUsers({
+        userName: data[0].userName,
+        id: data[0].id,
+        image: data[0].images.find((elem) => elem.isProfilePicture),
+      });
+    }
+  }, [isLoading]);
 
   return (
     <div className="bg-white h-full overflow-y-auto hidden sm:block sm:border-r sm:border-l sm:border-gray-200 sm:w-5/12">
@@ -57,6 +80,13 @@ const ChatList = (): JSX.Element => {
       ) : (
         data.map((chatPreview, index) => (
           <ChatListSingle
+            onClick={() =>
+              handlePreviewClick({
+                userName: chatPreview.userName,
+                id: chatPreview.id,
+                image: chatPreview.images.find((elem) => elem.isProfilePicture),
+              })
+            }
             chatPreview={chatPreview}
             key={index}
             isFirst={index === 0}

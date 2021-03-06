@@ -1,3 +1,5 @@
+import { Image } from "@/components/auth/classes";
+
 export type Orientation = "heterosexual" | "homosexual" | "bisexual";
 export type Gender = "male" | "female";
 
@@ -26,4 +28,10 @@ export type TextMessage = {
   receiver: number;
   content: string;
   date: string | Date;
+};
+
+export type OtherUser = {
+  id: number;
+  userName: string;
+  image?: Image;
 };
