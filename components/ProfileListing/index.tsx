@@ -37,7 +37,7 @@ const FiltersContainer: React.FC<FilterContainerProps> = ({
     <div
       onClick={handleBodyClick}
       style={{ ...style, maxWidth: "44rem" }}
-      className="absolute top-0 left-1/2 transform -translate-x-1/2 shadow-lg sm:rounded-md w-screen px-4 py-2 bg-white border-2 border-gray-100 z-10"
+      className="absolute bottom-16 left-1/2 transform -translate-x-1/2 shadow-lg sm:rounded-md w-screen px-4 py-2 bg-white border-2 border-gray-100 z-10"
     >
       {children}
     </div>
@@ -125,13 +125,20 @@ const ProfileListing = () => {
 
   return (
     <>
-      <button
-        className="my-4 mx-auto transform transition duration-300 hover:scale-110 bg-white rounded-full shadow-md h-12 w-12 sm:h-14 sm:w-14 flex justify-center items-center cursor-pointer"
-        onClick={toggleFilters}
-      >
-        <SettingsIcon />
-      </button>
-      <section className="relative z-10">
+      <SwipeImage
+        suggestedUsers={allSuggestedUsers}
+        onSwiped={handleSwipe}
+        onOutOfFrame={handleOutOfFrame}
+      />
+      <div className="my-2 mx-auto">
+        <div
+          className="transform transition duration-300 hover:scale-110 bg-white rounded-full shadow-md h-12 w-12 sm:h-14 sm:w-14 flex justify-center items-center cursor-pointer"
+          onClick={toggleFilters}
+        >
+          <SettingsIcon />
+        </div>
+      </div>
+      <section className="relative">
         <Transition
           show={showFilters}
           enter="transition ease-out duration-100"
@@ -216,11 +223,6 @@ const ProfileListing = () => {
           </FiltersContainer>
         </Transition>
       </section>
-      <SwipeImage
-        suggestedUsers={allSuggestedUsers}
-        onSwiped={handleSwipe}
-        onOutOfFrame={handleOutOfFrame}
-      />
     </>
   );
 };

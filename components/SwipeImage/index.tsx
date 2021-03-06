@@ -68,7 +68,7 @@ function SwipeImage({
 
   return (
     <>
-      <div className="h-full w-full sm:w-screen sm:max-w-sm overflow-y-scroll overflow-x-hidden sm:overflow-visible">
+      <div className="w-full sm:w-screen sm:max-w-sm overflow-y-scroll overflow-x-hidden sm:overflow-visible">
         <section className="relative" style={{ height: "34rem" }}>
           {suggestedUsers.map((singleSuggestedUser) => (
             // <TinderCard
@@ -95,14 +95,17 @@ function SwipeImage({
             </TinderCard>
           ))}
         </section>
-        <section className="flex justify-evenly items-center pb-2 sm:mt-2 w-full sm:w-screen sm:max-w-sm">
+        {/* <section className="flex justify-evenly items-center pb-2 sm:mt-2 w-full sm:w-screen sm:max-w-sm">
           <div
             onClick={() => swipe("left")}
             className="transform transition duration-300 hover:scale-110 bg-white rounded-full shadow-md h-16 w-16 sm:h-20 sm:w-20 flex justify-center items-center relative cursor-pointer"
           >
             <DislikeIcon className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-6 w-6 sm:h-10 sm:w-10" />
           </div>
-          <div className="transform transition duration-300 hover:scale-110 mt-12 bg-white rounded-full shadow-md h-12 w-12 sm:h-16 sm:w-16 flex justify-center items-center relative cursor-pointer">
+          <div
+            className="transform transition duration-300 hover:scale-110 mt-12 bg-white rounded-full shadow-md h-12 w-12 sm:h-16 sm:w-16 flex justify-center items-center relative cursor-pointer"
+            // onClick={() => console.log(suggestedUsers.)}
+          >
             <AvatarIcon
               variant="filled"
               color="#F3C245"
@@ -115,7 +118,7 @@ function SwipeImage({
           >
             <LikeIcon className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-8 w-8 sm:h-12 sm:w-12" />
           </div>
-        </section>
+        </section> */}
       </div>
     </>
   );
