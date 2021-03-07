@@ -19,6 +19,8 @@ type SocketMessageEventPayload = {
 const EVENT_KEY_MESSAGE_SEND = "message";
 const EVENT_KEY_MESSAGE_RECIEVE = "message";
 const EVENT_KEY_CONNECT = "connect";
+const EVENT_KEY_RESPONSE_CONNECTED_USER = "responseConnectedUser";
+const EVENT_KEY_CHECK_CONNECTED_USER = "checkConnectedUser";
 type MessageRecievedType = { from: string; message: string; date: string };
 
 const scrollToBottom = (container: HTMLDivElement) => {
@@ -99,6 +101,7 @@ const ChatRoom = (): JSX.Element => {
         to: otherUser.userName,
         message: message,
       };
+      console.log("emit", newMessage);
       socket?.emit(EVENT_KEY_MESSAGE_SEND, newMessage);
       setMessage("");
       const textMessage: TextMessage = {
@@ -115,15 +118,19 @@ const ChatRoom = (): JSX.Element => {
   React.useEffect(() => {
     if (socket && otherUser.id !== -1) {
       socket.on(EVENT_KEY_MESSAGE_RECIEVE, (data: MessageRecievedType[][]) => {
-        console.log("on message", data);
         const messages: TextMessage[] = data.flat().map((elem) => ({
           content: elem.message,
           date: new Date(elem.date),
           sender: otherUser.id,
           receiver: userData.id,
         }));
+        // console.log("messages", [...messagesHistoryLocal, ...messages]);
         setMessagesHistoryLocal((prev) => [...prev, ...messages]);
       });
+      /*socket.on(EVENT_KEY_MESSAGE_RECIEVE, (data: any) =>
+        console.log("EVENT_KEY_MESSAGE_RECIEVE", data)
+      );
+      socket.emit(EVENT_KEY_CHECK_CONNECTED_USER, otherUser.id);*/
     } else if (socket) {
       socket.off(EVENT_KEY_CONNECT);
       socket.off(EVENT_KEY_MESSAGE_RECIEVE);
