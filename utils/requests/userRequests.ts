@@ -322,7 +322,6 @@ export const useGetAllMatches = ({ authorization }: Authorization) => {
             );
             // inserting message preview
             if (messagesPreview[index].status === 200) {
-              console.log(messagesPreview[index].data[0]);
               return {
                 ...elem.data,
                 messagePreview: messagesPreview[index].data[0],

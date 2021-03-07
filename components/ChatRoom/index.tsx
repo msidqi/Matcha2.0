@@ -5,8 +5,8 @@ import { debounce } from "@/utils/debounce";
 import { currentUser } from "./data.json";
 import { useUser } from "@/components/auth";
 import { User } from "@/components/auth/classes";
-import { useMessages, useGetAllMatches } from "@/utils/requests/userRequests";
-import { TextMessage, OtherUser } from "@/interfaces";
+import { useMessages } from "@/utils/requests/userRequests";
+import { TextMessage } from "@/interfaces";
 import { LoadingAnimation } from "@/components/ui/Icons/LoadingIcon";
 import { useSocketConnection } from "../Sockets";
 import { useChatUsers } from "../useChat";
@@ -19,8 +19,8 @@ type SocketMessageEventPayload = {
 const EVENT_KEY_MESSAGE_SEND = "message";
 const EVENT_KEY_MESSAGE_RECIEVE = "message";
 const EVENT_KEY_CONNECT = "connect";
-const EVENT_KEY_RESPONSE_CONNECTED_USER = "responseConnectedUser";
-const EVENT_KEY_CHECK_CONNECTED_USER = "checkConnectedUser";
+/*const EVENT_KEY_RESPONSE_CONNECTED_USER = "responseConnectedUser";
+const EVENT_KEY_CHECK_CONNECTED_USER = "checkConnectedUser";*/
 type MessageRecievedType = { from: string; message: string; date: string };
 
 const scrollToBottom = (container: HTMLDivElement) => {
@@ -36,8 +36,6 @@ const ChatRoom = (): JSX.Element => {
   const { socket } = useSocketConnection();
   const { otherUser, toggleListAndRoom, listRoom } = useChatUsers();
   const { authorization, data: userData }: User = state.user!;
-  // const { data, isLoading } = useGetAllMatches({ authorization });
-  // data?.find((elem) => elem.id)
   const [messagesHistoryLocal, setMessagesHistoryLocal] = React.useState<
     TextMessage[]
   >([]);
@@ -101,7 +99,7 @@ const ChatRoom = (): JSX.Element => {
         to: otherUser.userName,
         message: message,
       };
-      console.log("emit", newMessage);
+      // console.log("emit", newMessage);
       socket?.emit(EVENT_KEY_MESSAGE_SEND, newMessage);
       setMessage("");
       const textMessage: TextMessage = {
@@ -124,7 +122,6 @@ const ChatRoom = (): JSX.Element => {
           sender: otherUser.id,
           receiver: userData.id,
         }));
-        // console.log("messages", [...messagesHistoryLocal, ...messages]);
         setMessagesHistoryLocal((prev) => [...prev, ...messages]);
       });
       /*socket.on(EVENT_KEY_MESSAGE_RECIEVE, (data: any) =>
@@ -152,8 +149,6 @@ const ChatRoom = (): JSX.Element => {
     if (context[0] === context[1] && context[1] === context[2]) return "middle";
     return "single";
   };
-
-  // if (!otherUser || otherUser?.id === -1) return <>no user selected...</>;
 
   return (
     <div

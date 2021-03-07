@@ -6,6 +6,52 @@ import Logo from "@/components/ui/Icons/Logo";
 import LogoSm from "@/components/ui/Icons/LogoSm";
 import { useUser } from "@/components/auth";
 import links from "./links.json";
+import { useSocketConnection } from "@/components/Sockets";
+
+const EVENT_KEY_NOTIFICATION = "notification";
+
+type Notification = {
+  date: string;
+  notified: {
+    id: number;
+    email: string;
+    userName: string;
+    firstName: string;
+    lastName: string;
+    experience: number;
+    birthDate: string;
+    lastSeen: string;
+    bio: string | null;
+    age: number;
+  };
+  notifier: {
+    id: number;
+    email: string;
+    userName: string;
+    firstName: string;
+    lastName: string;
+    experience: number;
+    birthDate: string;
+    lastSeen: string;
+    bio: string | null;
+    age: number;
+  };
+  type: "consult";
+};
+
+const useNotifications = () => {
+  const { socket } = useSocketConnection();
+  const [state, setNotifications] = React.useState<Notification[]>([]);
+  React.useEffect(() => {
+    if (socket) {
+      socket.on(EVENT_KEY_NOTIFICATION, (data: Notification[]) => {
+        setNotifications(data);
+        console.log(data);
+      });
+    }
+  }, [socket]);
+  return [state];
+};
 
 function Navbar(): JSX.Element {
   const [showMenu, setShowMenu] = React.useState<boolean>(false);
@@ -14,7 +60,7 @@ function Navbar(): JSX.Element {
   );
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
   const router = useRouter();
-
+  const [notifications] = useNotifications();
   const [{ loggedIn, user }, { logout, loading }] = useUser();
 
   const pathname = router.pathname;
@@ -133,15 +179,20 @@ function Navbar(): JSX.Element {
                 aria-orientation="vertical"
                 aria-labelledby="user-menu"
               >
-                <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <p>Notification number 0</p>
-                </div>
-                <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                {notifications.map((elem, index) => (
+                  <div
+                    key={`notification-${index}`}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <p>{`${elem.notifier.userName} ${elem.type}ed`}</p>
+                  </div>
+                ))}
+                {/* <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   <p>Notification number 1</p>
                 </div>
                 <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   <p>Notification number 2</p>
-                </div>
+                </div> */}
               </div>
             </Transition>
             <div className="ml-3 relative">
