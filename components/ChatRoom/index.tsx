@@ -185,7 +185,7 @@ const ChatRoom = ({ onClickBack }: ChatProps): JSX.Element => {
             <LoadingAnimation height="30" width="30" />
           </div>
         ) : messagesHistoryPages.length === 0 ? (
-          <div className="absolute bottom-10 transform -translate-x-1/2 left-1/2">
+          <div className="text-center absolute bottom-10 transform -translate-x-1/2 left-1/2">
             <p className="text-gray-400">Start a new conversation !</p>
           </div>
         ) : (
@@ -212,7 +212,7 @@ const ChatRoom = ({ onClickBack }: ChatProps): JSX.Element => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="bg-gray-100 rounded-3xl py-2 px-3 w-full placeholder-gray-400 focus:outline-none sm:focus:ring focus:border-blue-300"
-          placeholder="type something"
+          placeholder="Type your message"
         />
       </section>
       <style jsx>{`

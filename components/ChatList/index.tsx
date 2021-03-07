@@ -48,16 +48,14 @@ const ChatListSingle = ({
   </div>
 );
 
-const ChatList = ({
-  onClick,
-}: {
-  onClick?: (otherUser: OtherUser) => void;
-}): JSX.Element => {
+const ChatList = (): JSX.Element => {
   const [{ user }] = useUser();
   const { authorization } = user!;
   const { isLoading, data } = useGetAllMatches({ authorization });
-  const handlePreviewClick = (otherUser: OtherUser) => onClick?.(otherUser);
   const { addOtherUsers, otherUser } = useChatUsers();
+
+  const handlePreviewClick = (newOtherUser: OtherUser) =>
+    newOtherUser.id !== otherUser.id && addOtherUsers(newOtherUser);
 
   // select default user
   React.useEffect(() => {

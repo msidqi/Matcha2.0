@@ -277,6 +277,22 @@ export type ChatPreview = UserInput & {
   messagePreview: TextMessage | undefined;
 };
 
+/*const matches = [
+  {
+    id: 262,
+    userName: "test3",
+    gender: "Male",
+    orientation: "bisexual",
+    experience: 0,
+  },
+  {
+    id: 261,
+    userName: "test2",
+    gender: "Male",
+    orientation: "bisexual",
+    experience: 0,
+  },
+];*/
 export const useGetAllMatches = ({ authorization }: Authorization) => {
   return useQuery(
     "matches",
@@ -288,7 +304,6 @@ export const useGetAllMatches = ({ authorization }: Authorization) => {
         },
       })[0];
       if (result.status === 200) {
-        console.log("result.data", result.data);
         const matches = result.data.filter((match) => match);
         const userDataPromises = matches.map(({ id }) =>
           getOtherUserInfosRequest({ authorization, otherUserId: id })
