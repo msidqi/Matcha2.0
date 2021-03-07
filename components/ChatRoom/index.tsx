@@ -25,17 +25,14 @@ const scrollToBottom = (container: HTMLDivElement) => {
   container.scrollTop = container.scrollHeight;
 };
 
-interface ChatProps {
-  onClickBack?: () => void;
-}
 // connectedUser 260
 // test2 261
-const ChatRoom = ({ onClickBack }: ChatProps): JSX.Element => {
+const ChatRoom = (): JSX.Element => {
   const [isAtBottom, setIsAtBottom] = React.useState<boolean>(true);
   const [message, setMessage] = React.useState<string>("");
   const [state] = useUser();
   const { socket } = useSocketConnection();
-  const { otherUser } = useChatUsers();
+  const { otherUser, toggleListAndRoom, listRoom } = useChatUsers();
   const { authorization, data: userData }: User = state.user!;
   // const { data, isLoading } = useGetAllMatches({ authorization });
   // data?.find((elem) => elem.id)
@@ -152,16 +149,18 @@ const ChatRoom = ({ onClickBack }: ChatProps): JSX.Element => {
   // if (!otherUser || otherUser?.id === -1) return <>no user selected...</>;
 
   return (
-    <div className="bg-white p-2 pb-14 h-full  relative w-full sm:w-7/12 sm:border-r sm:border-gray-200">
+    <div
+      className={`bg-white p-2 pb-14 h-full relative w-full sm:block sm:w-7/12 sm:border-r sm:border-gray-200 ${
+        listRoom === "room" ? "" : "hidden"
+      }`}
+    >
       <header className="p-2 pb-0 flex justify-start items-center w-full mb-5">
-        {onClickBack && (
-          <button
-            className="sm:hidden rounded-full bg-gray-200 w-8 h-8 flex items-center justify-center"
-            onClick={onClickBack}
-          >
-            <ArrowBack color="#fff" />
-          </button>
-        )}
+        <button
+          className="sm:hidden rounded-full bg-gray-200 w-8 h-8 flex items-center justify-center"
+          onClick={() => toggleListAndRoom("list")}
+        >
+          <ArrowBack color="#fff" />
+        </button>
         <div className="rounded-full h-14 w-14 overflow-hidden mx-2">
           <img
             src={otherUser.image?.src ?? "/profile.jpg"}

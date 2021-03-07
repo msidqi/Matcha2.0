@@ -34,7 +34,7 @@ const ChatListSingle = ({
     </div>
     <div className="pl-4 pr-2">
       <h3 className="text-gray-700 font-bold">{chatPreview.userName}</h3>
-      <p className="text-gray-500">
+      <p className="text-gray-500 text-sm">
         {chatPreview.messagePreview?.content || "Start a new conversation!"}
       </p>
     </div>
@@ -52,10 +52,19 @@ const ChatList = (): JSX.Element => {
   const [{ user }] = useUser();
   const { authorization } = user!;
   const { isLoading, data } = useGetAllMatches({ authorization });
-  const { addOtherUsers, otherUser } = useChatUsers();
+  const {
+    addOtherUsers,
+    toggleListAndRoom,
+    otherUser,
+    listRoom,
+  } = useChatUsers();
 
-  const handlePreviewClick = (newOtherUser: OtherUser) =>
-    newOtherUser.id !== otherUser.id && addOtherUsers(newOtherUser);
+  const handlePreviewClick = (newOtherUser: OtherUser) => {
+    if (newOtherUser.id !== otherUser.id) {
+      addOtherUsers(newOtherUser);
+      toggleListAndRoom("room");
+    }
+  };
 
   // select default user
   React.useEffect(() => {
@@ -69,7 +78,11 @@ const ChatList = (): JSX.Element => {
   }, [isLoading]);
 
   return (
-    <div className="bg-white h-full overflow-y-auto hidden sm:block sm:border-r sm:border-l sm:border-gray-200 sm:w-5/12">
+    <div
+      className={`bg-white h-full w-full overflow-y-auto sm:block sm:border-r sm:border-l sm:border-gray-200 sm:w-5/12 ${
+        listRoom === "list" ? "" : "hidden"
+      }`}
+    >
       {isLoading ? (
         <div className="flex justify-center items-center h-full">
           <LoadingAnimation height="30" width="30" />

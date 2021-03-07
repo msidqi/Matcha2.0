@@ -12,6 +12,13 @@ export const chatReducer = (
       };
     case "REMOVE_OTHER_USERS":
       return { ...initialChatState };
+    case "TOGGLE_LIST_AND_ROOM":
+      return {
+        ...state,
+        listRoom:
+          action.payload.listRoom ||
+          (state.listRoom === "room" ? "list" : "room"),
+      };
     default:
       return state;
   }

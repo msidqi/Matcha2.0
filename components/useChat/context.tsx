@@ -8,12 +8,14 @@ export const initialChatState: ChatState = {
     userName: "",
     id: -1,
   },
+  listRoom: "list",
 };
 
 const chatContext = React.createContext<ChatState & ChatProviderActions>({
   ...initialChatState,
   addOtherUsers: () => {},
   removeOtherUsers: () => {},
+  toggleListAndRoom: () => {},
 });
 
 export const useChatUsers = (): ChatState & ChatProviderActions =>
@@ -27,12 +29,16 @@ export const ChatProvider: React.FC = ({ children }): JSX.Element => {
 
   const removeOtherUsers = () => dispatch({ type: "REMOVE_OTHER_USERS" });
 
+  const toggleListAndRoom = (listRoom?: "room" | "list") =>
+    dispatch({ type: "TOGGLE_LIST_AND_ROOM", payload: { listRoom } });
+
   return (
     <chatContext.Provider
       value={{
         ...state,
         addOtherUsers,
         removeOtherUsers,
+        toggleListAndRoom,
       }}
     >
       {children}
