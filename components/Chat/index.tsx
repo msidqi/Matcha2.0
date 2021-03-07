@@ -4,7 +4,7 @@ import ChatList from "@/components/ChatList";
 import { ChatProvider } from "../useChat";
 
 const Chat = () => (
-  <div className="flex h-full">
+  <div className="flex h-full w-full">
     <ChatProvider>
       <ChatList />
       <ChatRoom />

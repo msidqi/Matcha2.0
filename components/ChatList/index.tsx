@@ -34,11 +34,15 @@ const ChatListSingle = ({
     </div>
     <div className="pl-4 pr-2">
       <h3 className="text-gray-700 font-bold">{chatPreview.userName}</h3>
-      <p className="text-gray-500">{chatPreview.messagePreview.content}</p>
+      <p className="text-gray-500">
+        {chatPreview.messagePreview?.content || "Start a new conversation!"}
+      </p>
     </div>
     <div className="absolute right-4 top-5">
       <p className="text-gray-500">
-        {formatDate(chatPreview.messagePreview.date) || ""}
+        {chatPreview.messagePreview
+          ? formatDate(chatPreview.messagePreview.date)
+          : ""}
       </p>
     </div>
   </div>

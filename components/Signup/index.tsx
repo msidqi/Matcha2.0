@@ -4,6 +4,7 @@ import axios from "axios";
 import Input from "@/components/Input";
 import guestRoute from "../GuestRoute";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const Signup = (): JSX.Element => {
   const { register, handleSubmit } = useForm();
@@ -23,7 +24,7 @@ const Signup = (): JSX.Element => {
     }
   };
   return (
-    <div className="bg-white sm:border rounded max sm:shadow-md px-6 py-10 sm:p-10 max-w-xl m-auto sm:mt-8 mb-8">
+    <div className="bg-white sm:border rounded  max sm:shadow-md px-6 py-10 sm:p-10 max-w-xl m-auto w-full h-full sm:h-auto">
       <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">
         Create an Account
       </h3>
@@ -72,6 +73,15 @@ const Signup = (): JSX.Element => {
           value="Signup"
         />
       </form>
+      <div className="text-center mt-4 text-sm sm:text-base">
+        <span className="text-gray-400">
+          Already have an account ?{" "}
+          <Link href="/signin">
+            <a className="underline bold">Sign in instead</a>
+          </Link>
+          .
+        </span>
+      </div>
     </div>
   );
 };

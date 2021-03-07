@@ -273,7 +273,9 @@ interface Match {
   experience: number;
 }
 
-export type ChatPreview = UserInput & { messagePreview: TextMessage };
+export type ChatPreview = UserInput & {
+  messagePreview: TextMessage | undefined;
+};
 
 export const useGetAllMatches = ({ authorization }: Authorization) => {
   return useQuery(
@@ -286,6 +288,7 @@ export const useGetAllMatches = ({ authorization }: Authorization) => {
         },
       })[0];
       if (result.status === 200) {
+        console.log("result.data", result.data);
         const matches = result.data.filter((match) => match);
         const userDataPromises = matches.map(({ id }) =>
           getOtherUserInfosRequest({ authorization, otherUserId: id })
@@ -304,6 +307,7 @@ export const useGetAllMatches = ({ authorization }: Authorization) => {
             );
             // inserting message preview
             if (messagesPreview[index].status === 200) {
+              console.log(messagesPreview[index].data[0]);
               return {
                 ...elem.data,
                 messagePreview: messagesPreview[index].data[0],
