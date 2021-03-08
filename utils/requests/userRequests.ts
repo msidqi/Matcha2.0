@@ -277,22 +277,6 @@ export type ChatPreview = UserInput & {
   messagePreview: TextMessage | undefined;
 };
 
-/*const matches = [
-  {
-    id: 262,
-    userName: "test3",
-    gender: "Male",
-    orientation: "bisexual",
-    experience: 0,
-  },
-  {
-    id: 261,
-    userName: "test2",
-    gender: "Male",
-    orientation: "bisexual",
-    experience: 0,
-  },
-];*/
 export const useGetAllMatches = ({ authorization }: Authorization) => {
   return useQuery(
     "matches",

@@ -9,28 +9,34 @@ import links from "./links.json";
 import { useSocketConnection } from "@/components/Sockets";
 import Notification from "@/components/Notification";
 import { NotificationType } from "@/interfaces";
-import { debounce } from "@/utils/debounce";
 
 const EVENT_KEY_NOTIFICATION = "notification";
 
 type NotificationSeenType = NotificationType & { seen: boolean };
 
-const makeSeen = (notif: NotificationType): NotificationSeenType => {
-  return { ...notif, seen: true };
-};
-const makeUnSeen = (notif: NotificationType): NotificationSeenType => {
-  return { ...notif, seen: true };
-};
+const makeSeen = (notif: NotificationType): NotificationSeenType => ({
+  ...notif,
+  seen: true,
+});
+const makeUnSeen = (notif: NotificationType): NotificationSeenType => ({
+  ...notif,
+  seen: true,
+});
 
-const useNotifications = (): [NotificationSeenType[], () => void] => {
+const useNotifications = (): {
+  notifications: NotificationSeenType[];
+  makeNotificationsSeen: () => void;
+  newNotificationsNumber: number;
+} => {
   const { socket } = useSocketConnection();
-  // add seen for old notifs and not seen for new ones
-  const [state, setNotifications] = React.useState<NotificationSeenType[]>([]);
+  const [notifications, setNotifications] = React.useState<
+    NotificationSeenType[]
+  >([]);
   React.useEffect(() => {
     if (socket) {
       socket.on(EVENT_KEY_NOTIFICATION, (data: NotificationType[]) => {
+        console.log("event", data);
         setNotifications((prev) => prev.concat(data.map(makeUnSeen)));
-        console.log(data);
       });
     }
   }, [socket]);
@@ -38,7 +44,13 @@ const useNotifications = (): [NotificationSeenType[], () => void] => {
   const makeNotificationsSeen = () =>
     setNotifications((prev) => prev.map(makeSeen));
 
-  return [state, makeNotificationsSeen];
+  const newNotificationsNumber = notifications.reduce(
+    (prevValue, currentValue) =>
+      currentValue.seen == false ? prevValue + 1 : prevValue,
+    0
+  );
+  console.log(notifications);
+  return { notifications, newNotificationsNumber, makeNotificationsSeen };
 };
 
 function Navbar(): JSX.Element {
@@ -48,21 +60,19 @@ function Navbar(): JSX.Element {
   );
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
   const router = useRouter();
-  const [notifications, makeNotificationsSeen] = useNotifications();
+  const {
+    notifications,
+    makeNotificationsSeen,
+    newNotificationsNumber,
+  } = useNotifications();
   const [{ loggedIn, user }, { logout, loading }] = useUser();
-
   const pathname = router.pathname;
 
   const handleNotificationIconClick = () => {
-    if (!showNotifications) debounce(makeNotificationsSeen, 1000);
+    // console.log("handleNotificationIconClick");
+    // if (!showNotifications) makeNotificationsSeen();
     setShowNotifications(!showNotifications);
   };
-
-  const notificationsNumber = notifications.reduce(
-    (prevValue, currentValue) =>
-      currentValue.seen === true ? prevValue++ : prevValue,
-    0
-  );
 
   return (
     <nav className="bg-gray-800 fixed top-0 w-full z-50">
@@ -71,7 +81,6 @@ function Navbar(): JSX.Element {
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              // onBlur={() => setShowMenu(false)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
               aria-expanded="false"
             >
@@ -142,13 +151,13 @@ function Navbar(): JSX.Element {
             {loggedIn && (
               <button
                 onClick={handleNotificationIconClick}
-                // onBlur={() => setShowNotifications(false)}
                 className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white relative"
               >
-                {notificationsNumber && (
+                {console.log({ newNotificationsNumber })}
+                {Boolean(newNotificationsNumber) && (
                   <div className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center absolute top-0 left-0">
                     <p className="text-white text-xs m-0">
-                      {notificationsNumber}
+                      {newNotificationsNumber}
                     </p>
                   </div>
                 )}
@@ -199,7 +208,6 @@ function Navbar(): JSX.Element {
                 <div>
                   <button
                     onClick={() => setShowDropDown(!showDropDown)}
-                    // onBlur={() => setShowDropDown(false)}
                     className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
                     id="user-menu"
                     aria-haspopup="true"
