@@ -35,3 +35,34 @@ export type OtherUser = {
   userName: string;
   image?: Image;
 };
+
+export type NotificationType =
+  | {
+      date: string;
+      notified: {
+        id: number;
+        email: string;
+        userName: string;
+        firstName: string;
+        lastName: string;
+        experience: number;
+        birthDate: string;
+        lastSeen: string;
+        bio: string | null;
+        age: number;
+      };
+      notifier: {
+        id: number;
+        email: string;
+        userName: string;
+        firstName: string;
+        lastName: string;
+        experience: number;
+        birthDate: string;
+        lastSeen: string;
+        bio: string | null;
+        age: number;
+      };
+      type: "consult";
+    }
+  | { type: "empty" };

@@ -7,45 +7,19 @@ import LogoSm from "@/components/ui/Icons/LogoSm";
 import { useUser } from "@/components/auth";
 import links from "./links.json";
 import { useSocketConnection } from "@/components/Sockets";
+import Notification from "@/components/Notification";
+import { NotificationType } from "@/interfaces";
 
 const EVENT_KEY_NOTIFICATION = "notification";
 
-type Notification = {
-  date: string;
-  notified: {
-    id: number;
-    email: string;
-    userName: string;
-    firstName: string;
-    lastName: string;
-    experience: number;
-    birthDate: string;
-    lastSeen: string;
-    bio: string | null;
-    age: number;
-  };
-  notifier: {
-    id: number;
-    email: string;
-    userName: string;
-    firstName: string;
-    lastName: string;
-    experience: number;
-    birthDate: string;
-    lastSeen: string;
-    bio: string | null;
-    age: number;
-  };
-  type: "consult";
-};
-
 const useNotifications = () => {
   const { socket } = useSocketConnection();
-  const [state, setNotifications] = React.useState<Notification[]>([]);
+  // add seen for old notifs and not seen for new ones
+  const [state, setNotifications] = React.useState<{NotificationType & {seen: boolean}}[]>([]);
   React.useEffect(() => {
     if (socket) {
-      socket.on(EVENT_KEY_NOTIFICATION, (data: Notification[]) => {
-        setNotifications(data);
+      socket.on(EVENT_KEY_NOTIFICATION, (data: NotificationType[]) => {
+        setNotifications((prev) => [...prev, ...data]);
         console.log(data);
       });
     }
@@ -139,13 +113,18 @@ function Navbar(): JSX.Element {
               </div>
             </div>
           </div>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 z-40">
             {loggedIn && (
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
                 // onBlur={() => setShowNotifications(false)}
-                className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white relative"
               >
+                <div className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center absolute top-0 left-0">
+                  <p className="text-white text-xs m-0">
+                    {notifications.length}
+                  </p>
+                </div>
                 <span className="sr-only">View notifications</span>
                 <svg
                   className="h-6 w-6"
@@ -179,20 +158,13 @@ function Navbar(): JSX.Element {
                 aria-orientation="vertical"
                 aria-labelledby="user-menu"
               >
-                {notifications.map((elem, index) => (
-                  <div
-                    key={`notification-${index}`}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    <p>{`${elem.notifier.userName} ${elem.type}ed`}</p>
-                  </div>
-                ))}
-                {/* <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <p>Notification number 1</p>
-                </div>
-                <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <p>Notification number 2</p>
-                </div> */}
+                {notifications.length === 0 ? (
+                  <Notification type="empty" key="empty-notification" />
+                ) : (
+                  notifications.map((elem, index) => (
+                    <Notification key={`notification-${index}`} {...elem} />
+                  ))
+                )}
               </div>
             </Transition>
             <div className="ml-3 relative">
