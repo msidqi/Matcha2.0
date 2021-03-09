@@ -7,6 +7,7 @@ import LogoSm from "@/components/ui/Icons/LogoSm";
 import { useUser } from "@/components/auth";
 import links from "./links.json";
 import Notification from "@/components/Notification";
+import useNotifications from "@/components/useNotifications";
 
 function Navbar(): JSX.Element {
   const [showMenu, setShowMenu] = React.useState<boolean>(false);
