@@ -3,6 +3,8 @@ import { UserInput } from "@/components/auth";
 import { useMutation, useInfiniteQuery, useQuery } from "react-query";
 import { Orientation, TextMessage } from "@/interfaces";
 import { Image } from "@/components/auth/classes";
+import config from "@/config";
+import getPosition from "../getPosition";
 interface Authorization {
   authorization: string;
 }
@@ -327,4 +329,74 @@ export const useGetAllMatches = ({ authorization }: Authorization) => {
       }
     }
   );
+};
+
+export const updatePositionRequest = ({
+  authorization,
+  position: { altitude, longitude, latitude },
+}: Authorization & {
+  position: {
+    altitude?: number | null;
+    longitude: number;
+    latitude: number;
+  };
+}) => {
+  return apiRequest(
+    "post",
+    "/api/location",
+    {
+      altitude: altitude?.toString() || 0,
+      longitude: longitude.toString(),
+      latitude: latitude.toString(),
+    },
+    {
+      headers: {
+        Authorization: authorization,
+      },
+    }
+  )[0];
+};
+
+// covers both geolocation scenarios (navigator.geolocation prmission on and off)
+export const updatePosition = async (authorization: string) => {
+  try {
+    const {
+      coords: { latitude, altitude, longitude },
+    } = await getPosition();
+    updatePositionRequest({
+      position: { latitude, altitude, longitude },
+      authorization,
+    });
+  } catch (e) {
+    const result = await getPositionAPI();
+    const [latitude, longitude] = result.data.loc.split(",");
+    if (typeof latitude === "string" && typeof longitude === "string") {
+      updatePositionRequest({
+        authorization,
+        position: {
+          latitude: parseFloat(latitude),
+          longitude: parseFloat(longitude),
+        },
+      });
+    }
+  }
+};
+
+interface ipinfoReponse {
+  ip: string;
+  hostname: string;
+  city: string;
+  region: string;
+  country: string;
+  loc: string;
+  org: string;
+  timezone: string;
+  readme: string;
+}
+
+export const getPositionAPI = () => {
+  return apiRequest<ipinfoReponse>(
+    "get",
+    `ipinfo.io/?token=${config.IP_API_TOKEN}`
+  )[0];
 };

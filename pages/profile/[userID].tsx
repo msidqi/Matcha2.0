@@ -21,9 +21,9 @@ export const profile: ProfileType = {
     "Dignissim suspendisse in est ant nibh Nisi est ? sit amet facilisis...Urna condimentum mattis pellentesque id nibh tortor id 🖤❤️",
 };
 
-const index = (): JSX.Element => (
+const index = ({ userData }: { userData: ProfileType }): JSX.Element => (
   <Layout>
-    <Profile profile={profile} />
+    <Profile profile={userData} />
   </Layout>
 );
 
@@ -59,7 +59,7 @@ export const getServerSideProps: GetServerSideProps = async ({
     console.log("err", e);
   }
   return {
-    props: {},
+    props: { userData: profile },
   };
 };
 
