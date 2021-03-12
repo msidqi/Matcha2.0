@@ -397,6 +397,6 @@ interface ipinfoReponse {
 export const getPositionAPI = () => {
   return apiRequest<ipinfoReponse>(
     "get",
-    `ipinfo.io/?token=${config.IP_API_TOKEN}`
+    `https://ipinfo.io/?token=${config.IP_API_TOKEN}`
   )[0];
 };
