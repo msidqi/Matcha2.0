@@ -101,7 +101,7 @@ const ProfileEdit = () => {
       console.error(e);
     }
   };
-  console.log(user.data.images);
+
   const handleImageUpload = async (file?: File) => {
     if (!file || !user) return;
 
@@ -171,16 +171,18 @@ const ProfileEdit = () => {
       console.error("onSubmit", e);
     }
   };
-  console.log("submit errors", errors);
 
   const checkKeyDown = (e: any) => {
     if (e.code === "Enter") e.preventDefault();
   };
   return (
-    <article className="w-full flex justify-between flex-wrap bg-white sm:shadow-lg px-4 sm:px-6 pb-8 sm:pb-12 pt-8 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
+    <article
+      style={{ height: "min-content" }}
+      className="w-full flex justify-between flex-wrap bg-white sm:shadow-lg px-4 sm:px-6 pb-8 sm:pb-12 pt-8 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8"
+    >
       {/* ------ profile images section ------ */}
       <section className="md:w-5/12 w-full mb-10">
-        <section className="flex justify-start">
+        <section className="flex md:justify-start justify-center">
           {/* ------ main picture ------ */}
           {
             <div className="w-80" style={{ height: "30rem" }}>
