@@ -6,11 +6,13 @@ import { isArray } from "util";
 import { OtherUser } from "@/interfaces";
 import { useChatUsers } from "@/components/useChat";
 import ChatListSingle from "@/components/ChatListSingle";
+import { useRouter } from "next/router";
 
 const ChatList = (): JSX.Element => {
   const [{ user }] = useUser();
   const { authorization } = user!;
   const { isLoading, data } = useGetAllMatches({ authorization });
+  const router = useRouter();
   const {
     addOtherUsers,
     toggleListAndRoom,
@@ -23,16 +25,35 @@ const ChatList = (): JSX.Element => {
     if (listRoom !== "room") toggleListAndRoom("room");
   };
 
-  // select default user
-  React.useEffect(() => {
-    if (data?.[0] && otherUser?.id === -1) {
+  const selectDefaultUser = () => {
+    let isUserAlreadySelected = false;
+    // select user from query params
+    if (typeof router.query.user === "string" && data && data.length > 0) {
+      const userID = parseInt(router.query.user);
+      if (!isNaN(userID)) {
+        const queryOtherUser = data.find((elem) => elem.id === userID);
+        if (queryOtherUser) {
+          isUserAlreadySelected = true;
+          toggleListAndRoom("room");
+          addOtherUsers({
+            userName: queryOtherUser.userName,
+            id: queryOtherUser.id,
+            image: queryOtherUser.images.find((elem) => elem.isProfilePicture),
+          });
+        }
+      }
+    }
+    // select first user if user is not yet selected
+    if (!isUserAlreadySelected && data?.[0] && otherUser?.id === -1) {
       addOtherUsers({
         userName: data[0].userName,
         id: data[0].id,
         image: data[0].images.find((elem) => elem.isProfilePicture),
       });
     }
-  }, [isLoading]);
+  };
+
+  React.useEffect(selectDefaultUser, [isLoading]);
 
   return (
     <div

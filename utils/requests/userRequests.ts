@@ -1,7 +1,7 @@
 import { apiRequest } from "@/utils/API";
 import { UserInput } from "@/components/auth";
 import { useMutation, useInfiniteQuery, useQuery } from "react-query";
-import { Orientation, TextMessage } from "@/interfaces";
+import { Orientation, TextMessage, OtherUserProfileType } from "@/interfaces";
 import { Image } from "@/components/auth/classes";
 import config from "@/config";
 import getPosition from "../getPosition";
@@ -212,6 +212,33 @@ export const getOtherUserInfosRequest = ({
       Authorization: authorization,
     },
   })[0];
+};
+
+export const useOtherUserInfosRequest = ({
+  authorization,
+  otherUserId,
+}: { otherUserId?: number } & { authorization?: string }) => {
+  return useQuery(
+    ["otherUserProfile", otherUserId],
+    async () => {
+      const data = (
+        await apiRequest<OtherUserProfileType>(
+          "get",
+          `/api/otherUserInfos/${otherUserId}`,
+          {
+            headers: {
+              Authorization: authorization,
+            },
+          }
+        )[0]
+      ).data;
+      data.images = data.images.map((elem) => new Image(elem));
+      return data;
+    },
+    {
+      enabled: Boolean(authorization && typeof otherUserId === "number"),
+    }
+  );
 };
 
 interface useMessagesProps {

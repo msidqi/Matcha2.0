@@ -8,34 +8,57 @@ import { indexOf } from "@/utils/indexOf";
 import Link from "next/link";
 import { Transition } from "@headlessui/react";
 import Modal from "@/components/ui/Modal";
-
-interface ProfileProps {
-  profile: ProfileType;
-}
-
-export type ImageType = { src: string; isProfilePicture: boolean };
-
-const ProfileDisplay = ({ profile }: ProfileProps) => {
+import { useOtherUserInfosRequest } from "@/utils/requests/userRequests";
+import { useUser } from "../auth";
+import formatRelative from "date-fns/formatRelative";
+import { useRouter } from "next/router";
+import { Image } from "@/components/auth/classes";
+export type ImageType = { src: string; isProfilePicture: 1 | 0 };
+const ProfileDisplay = () => {
+  const router = useRouter();
+  const [otherUserId, setOtherUserId] = React.useState<number | undefined>();
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
-  const { userName, tags, distance, gender, bio, orientation, age } = profile;
-  const images: ImageType[] = [
-    { src: "/profile.jpg", isProfilePicture: false },
-    { src: "/profile_jap.jpg", isProfilePicture: true },
-    { src: "/profile_liz.jpg", isProfilePicture: false },
-    { src: "/profile_saf.jpg", isProfilePicture: false },
-    { src: "/profile_eva.jpg", isProfilePicture: false },
-  ];
-  const isConnected = true;
-  const lastConnected = "2h ago";
+  const [{ user }] = useUser();
+  const { data: profile, isLoading, error } = useOtherUserInfosRequest({
+    authorization: user?.authorization,
+    otherUserId,
+  });
+
+  React.useEffect(() => {
+    const userID = router.query.userID;
+    if (userID && typeof userID === "string") setOtherUserId(parseInt(userID));
+  }, [router.query.userID]);
+
+  const distance = "1.2 km";
+  let isConnected = false;
+  const getLastConnected = React.useCallback(() => {
+    const lastSeenDate = new Date(profile?.lastSeen || "");
+    return isNaN(lastSeenDate.getTime())
+      ? ""
+      : `last seen ${formatRelative(lastSeenDate, new Date())}`;
+  }, [profile?.lastSeen]);
+  Image;
   const [mainPicIndex, setMainPicIndex] = React.useState<number>(
-    indexOf<ImageType>(images, (img) => img.isProfilePicture) ?? 0
+    Math.max(
+      0,
+      profile
+        ? indexOf<Image>(profile.images as Image[], (img) =>
+            Boolean(img.isProfilePicture)
+          )
+        : 0
+    )
   );
 
   const blockUser = () => {};
   const reportUser = () => {};
+  if (isLoading) return <>loading...</>;
+  if (!profile || error) return <>error</>;
   return (
     <>
-      <article className="w-full max-w-4xl flex flex-col sm:flex-row justify-center bg-white sm:shadow-lg p-0 sm:px-6 sm:py-4 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
+      <article
+        style={{ height: "min-content" }}
+        className="w-full max-w-4xl flex flex-col sm:flex-row justify-center bg-white sm:shadow-lg p-0 sm:px-6 sm:py-4 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8"
+      >
         <section className="min-w-1/4 relative">
           {/* ------ main picture ------ */}
           <div
@@ -45,10 +68,10 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
             <picture>
               <source
                 media="(min-width:650px)"
-                srcSet={images[mainPicIndex].src}
+                srcSet={profile.images[mainPicIndex].src}
               />
               <img
-                src={images[mainPicIndex].src}
+                src={profile.images[mainPicIndex].src}
                 alt="profile picture"
                 className="h-full w-full object-cover sm:rounded-2xl "
               />
@@ -72,7 +95,7 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
             >
               <div className=" w-64 bg-white rounded-xl text-center divide-y divide-gray-400 shadow-lg border border-gray-400">
                 <div className="block w-full rounded-t py-2.5 px-4">
-                  {userName} did something bad ?
+                  {profile.userName} did something bad ?
                 </div>
                 <Modal
                   onAccept={reportUser}
@@ -81,7 +104,7 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
                   acceptText="Report"
                   denyText="Cancel"
                   classNameButton="block w-full text-gray-400 py-2.5 uppercase hover:bg-gray-50"
-                  description={`are you sure you want to report ${userName} ?`}
+                  description={`are you sure you want to report ${profile.userName} ?`}
                 />
                 <Modal
                   onAccept={blockUser}
@@ -90,7 +113,7 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
                   acceptText="Block"
                   denyText="Cancel"
                   classNameButton="block w-full text-gray-400 py-2.5 uppercase rounded-xl hover:bg-gray-50"
-                  description={`you and ${userName} wont be able to see each other profile, are you sure ?`}
+                  description={`you and ${profile.userName} wont be able to see each other profile, are you sure ?`}
                 />
               </div>
             </Transition>
@@ -99,7 +122,7 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
         <section className="sm:flex">
           {/* ------ other images container ------ */}
           <div className="sm:w-24 flex justify-evenly sm:block sm:py-0 py-2">
-            {images.map((img, index) => (
+            {profile.images.map((img, index) => (
               <li
                 key={index}
                 className="block p-0.5 w-16 sm:w-20 h-24 mx-auto"
@@ -131,9 +154,12 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
               <div className="text-center mb-4 sm:mb-6 px-2 sm:px-0">
                 <div className="flex justify-between items-center">
                   <h4 className="text-gray-600 text-base ">
-                    <span className="text-xl font-bold">{userName}</span> {age}
+                    <span className="text-xl font-bold">
+                      {profile.userName}
+                    </span>{" "}
+                    {profile.age}
                   </h4>
-                  <Link href="/messages">
+                  <Link href={`/messages?user=${profile.id}`}>
                     <a
                       style={{ transition: "all .15s ease" }}
                       className="bg-green-400 uppercase font-bold hover:shadow-md text-white rounded text-xs px-4 py-2 outline-none focus:outline-none"
@@ -151,13 +177,13 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
                     }`}
                   />
                   <p className="text-gray-500 text-xs">
-                    {isConnected ? "connected" : lastConnected}
+                    {isConnected ? "connected" : getLastConnected()}
                   </p>
                 </div>
                 <div className="mt-4 sm:mt-0">
                   <AvatarIcon className="inline-block" />{" "}
                   <p className="text-sm inline-block text-gray-400">
-                    {`${gender}, ${orientation}`}
+                    {`${profile.gender}, ${profile.orientation}`}
                   </p>
                 </div>
                 <div className="">
@@ -166,25 +192,33 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
                     height="12"
                     className="inline-block mr-1"
                   />
-                  <p className="text-sm inline-block text-gray-400">{`${distance} km`}</p>
+                  <p className="text-sm inline-block text-gray-400">
+                    {distance}
+                  </p>
                 </div>
               </div>
-              <div className="text-center mb-4 sm:mx-4">
-                <h4 className="text-gray-600 text-base font-medium my-2">
-                  About:
-                </h4>
-                <p className="text-gray-500 text-sm max-w-md">{bio}</p>
-              </div>
-              <div className="text-center  sm:mx-4">
-                <h4 className="text-gray-600 text-base font-medium my-2">
-                  Interests:
-                </h4>
-                <div className="mt-1">
-                  {tags.map((tagName: string, i) => (
-                    <Tag key={`tag-${i}`} tagName={tagName} />
-                  ))}
+              {profile.bio && (
+                <div className="text-center mb-4 sm:mx-4">
+                  <h4 className="text-gray-600 text-base font-medium my-2">
+                    About:
+                  </h4>
+                  <p className="text-gray-500 text-sm max-w-md">
+                    {profile.bio}
+                  </p>
                 </div>
-              </div>
+              )}
+              {profile.tags.length > 0 && (
+                <div className="text-center  sm:mx-4">
+                  <h4 className="text-gray-600 text-base font-medium my-2">
+                    Interests:
+                  </h4>
+                  <div className="mt-1">
+                    {profile.tags.map((tagName: string, i) => (
+                      <Tag key={`tag-${i}`} tagName={tagName} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>

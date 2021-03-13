@@ -3,6 +3,31 @@ import { Image } from "@/components/auth/classes";
 export type Orientation = "heterosexual" | "homosexual" | "bisexual";
 export type Gender = "male" | "female";
 
+export interface OtherUserProfileType {
+  age: number;
+  bio: string | null;
+  birthDate: string;
+  experience: number;
+  firstName: string;
+  gender: string;
+  id: number;
+  images: (
+    | {
+        imageBase64: string;
+        imageName: string;
+        isProfilePicture: 1 | 0;
+      }
+    | Image
+  )[];
+  lastName: string;
+  lastSeen: string;
+  orientation: string;
+  rank: string;
+  tags: string[];
+  userName: string;
+  distance?: string /* maybe */;
+}
+
 export type ProfileType = {
   userName: string;
   firstName: string;
