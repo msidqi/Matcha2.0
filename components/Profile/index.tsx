@@ -1,5 +1,4 @@
 import React from "react";
-import { ProfileType } from "@/interfaces";
 import Tag from "@/components/Tag";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import DropDownIcon from "@/components/ui/Icons/DropDownIcon";
@@ -9,11 +8,13 @@ import Link from "next/link";
 import { Transition } from "@headlessui/react";
 import Modal from "@/components/ui/Modal";
 import { useOtherUserInfosRequest } from "@/utils/requests/userRequests";
-import { useUser } from "../auth";
+import { useUser } from "@/components/auth";
 import formatRelative from "date-fns/formatRelative";
 import { useRouter } from "next/router";
 import { Image } from "@/components/auth/classes";
+
 export type ImageType = { src: string; isProfilePicture: 1 | 0 };
+
 const ProfileDisplay = () => {
   const router = useRouter();
   const [otherUserId, setOtherUserId] = React.useState<number | undefined>();
@@ -62,9 +63,9 @@ const ProfileDisplay = () => {
     <>
       <article
         style={{ height: "min-content" }}
-        className="w-full max-w-4xl flex flex-col sm:flex-row justify-center bg-white sm:shadow-lg p-0 sm:px-6 sm:py-4 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8"
+        className="max-w-4xl bg-white sm:shadow-lg p-0 sm:px-6 sm:py-4 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8"
       >
-        <section className="min-w-1/4 relative">
+        <section className="flex justify-around flex-wrap relative mb-4">
           {/* ------ main picture ------ */}
           <div
             className="sm:max-w-sm sm:w-80 w-full"
@@ -126,14 +127,12 @@ const ProfileDisplay = () => {
               </Transition>
             </div>
           )}
-        </section>
-        <section className="sm:flex">
           {/* ------ other images container ------ */}
-          <div className="sm:w-24 flex justify-evenly sm:block sm:py-0 py-2">
+          <div className="flex-none sm:w-24 flex justify-evenly sm:block sm:py-0 py-2">
             {profile.images.map((img, index) => (
               <li
                 key={index}
-                className="block p-0.5 w-16 sm:w-20 h-24 mx-auto"
+                className="block p-0.5 w-16 sm:w-20 h-24 ml-auto mr-0"
                 onClick={() => setMainPicIndex(index)}
               >
                 <article
@@ -156,84 +155,79 @@ const ProfileDisplay = () => {
               </li>
             ))}
           </div>
+        </section>
+
+        <section className="flex-grow">
           {/* ------ profile information ------ */}
-          <div>
-            <div className="px-2 py-2 w-full sm:border-b sm:border-gray-200 divide-y sm:divide-y-0 divide-gray-200 divide-solide">
-              <div className="text-center mb-4 sm:mb-6 px-2 sm:px-0">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-gray-600 text-base ">
-                    <span className="text-xl font-bold">
-                      {profile.userName}
-                    </span>{" "}
-                    {profile.age}
-                  </h4>
-                  {!isMyProfile && (
-                    <Link href={`/messages?user=${profile.id}`}>
-                      <a
-                        style={{ transition: "all .15s ease" }}
-                        className="bg-green-400 uppercase font-bold hover:shadow-md text-white rounded text-xs px-4 py-2 outline-none focus:outline-none"
-                      >
-                        Message
-                      </a>
-                    </Link>
-                  )}
-                </div>
+          <div className="px-2 py-2 w-full divide-y sm:divide-y-0 divide-gray-200 divide-solide">
+            <div className="text-center mb-4 sm:mb-6 px-2 sm:px-0">
+              <div className="flex justify-between items-center">
+                <h4 className="text-gray-600 text-base ">
+                  <span className="text-xl font-bold">{profile.userName}</span>{" "}
+                  {profile.age}
+                </h4>
                 {!isMyProfile && (
-                  <div className="flex justify-start items-center">
-                    <>
-                      <div
-                        className={`rounded-full mr-1 ${
-                          isConnected
-                            ? "bg-green-400 w-2.5 h-2.5"
-                            : "border-gray-200 border w-2.5 h-2.5"
-                        }`}
-                      />
-                      <p className="text-gray-500 text-xs">
-                        {isConnected ? "connected" : getLastConnected()}
-                      </p>
-                    </>
-                  </div>
+                  <Link href={`/messages?user=${profile.id}`}>
+                    <a
+                      style={{ transition: "all .15s ease" }}
+                      className="bg-green-400 uppercase font-bold hover:shadow-md text-white rounded text-xs px-4 py-2 outline-none focus:outline-none"
+                    >
+                      Message
+                    </a>
+                  </Link>
                 )}
-                <div className="mt-4 sm:mt-0">
-                  <AvatarIcon className="inline-block" />{" "}
-                  <p className="text-sm inline-block text-gray-400">
-                    {`${profile.gender}, ${profile.orientation}`}
-                  </p>
+              </div>
+              {!isMyProfile && (
+                <div className="flex justify-start items-center">
+                  <>
+                    <div
+                      className={`rounded-full mr-1 ${
+                        isConnected
+                          ? "bg-green-400 w-2.5 h-2.5"
+                          : "border-gray-200 border w-2.5 h-2.5"
+                      }`}
+                    />
+                    <p className="text-gray-500 text-xs">
+                      {isConnected ? "connected" : getLastConnected()}
+                    </p>
+                  </>
                 </div>
-                <div className="">
-                  <PositionIcon
-                    width="12"
-                    height="12"
-                    className="inline-block mr-1"
-                  />
-                  <p className="text-sm inline-block text-gray-400">
-                    {distance}
-                  </p>
+              )}
+              <div className="mt-4 sm:mt-0">
+                <AvatarIcon className="inline-block" />{" "}
+                <p className="text-sm inline-block text-gray-400">
+                  {`${profile.gender}, ${profile.orientation}`}
+                </p>
+              </div>
+              <div>
+                <PositionIcon
+                  width="12"
+                  height="12"
+                  className="inline-block mr-1"
+                />
+                <p className="text-sm inline-block text-gray-400">{distance}</p>
+              </div>
+            </div>
+            {profile.bio && (
+              <div className="text-center mb-4 sm:mx-4">
+                <h4 className="text-gray-600 text-base font-medium my-2">
+                  About:
+                </h4>
+                <p className="text-gray-500 text-sm max-w-md">{profile.bio}</p>
+              </div>
+            )}
+            {profile.tags.length > 0 && (
+              <div className="text-center  sm:mx-4">
+                <h4 className="text-gray-600 text-base font-medium my-2">
+                  Interests:
+                </h4>
+                <div className="mt-1">
+                  {profile.tags.map((tagName: string, i) => (
+                    <Tag key={`tag-${i}`} tagName={tagName} />
+                  ))}
                 </div>
               </div>
-              {profile.bio && (
-                <div className="text-center mb-4 sm:mx-4">
-                  <h4 className="text-gray-600 text-base font-medium my-2">
-                    About:
-                  </h4>
-                  <p className="text-gray-500 text-sm max-w-md">
-                    {profile.bio}
-                  </p>
-                </div>
-              )}
-              {profile.tags.length > 0 && (
-                <div className="text-center  sm:mx-4">
-                  <h4 className="text-gray-600 text-base font-medium my-2">
-                    Interests:
-                  </h4>
-                  <div className="mt-1">
-                    {profile.tags.map((tagName: string, i) => (
-                      <Tag key={`tag-${i}`} tagName={tagName} />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </section>
       </article>
