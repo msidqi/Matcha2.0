@@ -68,7 +68,7 @@ function SwipeImage({
 
   return (
     <>
-      <div className="w-full sm:w-screen sm:max-w-sm overflow-y-scroll overflow-x-hidden sm:overflow-visible">
+      <div className="z-10 w-full sm:w-screen sm:max-w-sm">
         <section className="relative" style={{ height: "34rem" }}>
           {suggestedUsers.map((singleSuggestedUser) => (
             // <TinderCard

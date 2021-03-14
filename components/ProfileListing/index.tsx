@@ -37,7 +37,7 @@ const FiltersContainer: React.FC<FilterContainerProps> = ({
     <div
       onClick={handleBodyClick}
       style={{ ...style, maxWidth: "44rem" }}
-      className="absolute bottom-16 left-1/2 transform -translate-x-1/2 shadow-lg sm:rounded-md w-screen px-4 py-2 bg-white border-2 border-gray-100 z-10"
+      className="absolute bottom-16 left-1/2 transform -translate-x-1/2 shadow-lg sm:rounded-md w-screen px-4 py-2 bg-white border-2 border-gray-100"
     >
       {children}
     </div>
@@ -138,7 +138,7 @@ const ProfileListing = () => {
           <SettingsIcon />
         </div>
       </div>
-      <section className="relative">
+      <section className="z-20 relative">
         <Transition
           show={showFilters}
           enter="transition ease-out duration-100"
