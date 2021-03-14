@@ -1,5 +1,5 @@
 [
   { "label": "Dashboard", "href": "/dashboard" },
   { "label": "Messages", "href": "/messages" },
-  { "label": "Profile", "href": "/profile-edit" }
+  { "label": "Settings", "href": "/profile-edit" }
 ]

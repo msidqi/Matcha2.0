@@ -1,5 +1,6 @@
 import { formatDate } from "@/utils/date";
 import { ChatPreview } from "@/utils/requests/userRequests";
+import Link from "next/link";
 
 const ChatListSingle = ({
   chatPreview,
@@ -27,7 +28,11 @@ const ChatListSingle = ({
       />
     </div>
     <div className="pl-4 pr-2">
-      <h3 className="text-gray-700 font-bold">{chatPreview.userName}</h3>
+      <h3 className="text-gray-700 font-bold">
+        <Link href={`/profile/${chatPreview.id}`}>
+          <a className="cursor-pointer">{chatPreview.userName}</a>
+        </Link>
+      </h3>
       <p className="text-gray-500 text-sm">
         {chatPreview.messagePreview?.content || "Start a new conversation!"}
       </p>

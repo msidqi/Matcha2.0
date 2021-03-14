@@ -22,6 +22,7 @@ import {
   signInUserRequest,
   logoutUserRequest,
 } from "@/utils/requests/userRequests";
+import { Router, useRouter } from "next/router";
 
 const initialUserState: UserState = {
   user: undefined,
@@ -52,6 +53,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
   const [state, dispatch] = React.useReducer(userReducer, initialUserState);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<UserError | null>(null);
+  const router = useRouter();
 
   React.useEffect(() => {
     let cancel: Canceler | undefined;
@@ -87,6 +89,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
       } catch (e) {
         setError(e);
         dispatch({ type: "LOGOUT" });
+        router.push("/signin");
         console.error(e);
       } finally {
         setLoading(false);

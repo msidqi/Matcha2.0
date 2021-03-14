@@ -54,7 +54,8 @@ const ChatList = (): JSX.Element => {
   };
 
   React.useEffect(selectDefaultUser, [isLoading]);
-
+  {
+  }
   return (
     <div
       className={`bg-white h-full w-full overflow-y-auto sm:block sm:border-r sm:border-l sm:border-gray-200 sm:w-5/12 ${

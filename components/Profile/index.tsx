@@ -17,6 +17,7 @@ export type ImageType = { src: string; isProfilePicture: 1 | 0 };
 const ProfileDisplay = () => {
   const router = useRouter();
   const [otherUserId, setOtherUserId] = React.useState<number | undefined>();
+  const [isMyProfile, setIsMyProfile] = React.useState<boolean>(false);
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
   const [{ user }] = useUser();
   const { data: profile, isLoading, error } = useOtherUserInfosRequest({
@@ -26,7 +27,11 @@ const ProfileDisplay = () => {
 
   React.useEffect(() => {
     const userID = router.query.userID;
-    if (userID && typeof userID === "string") setOtherUserId(parseInt(userID));
+    if (userID && typeof userID === "string") {
+      const userIDNumber = parseInt(userID);
+      setOtherUserId(userIDNumber);
+      if (userIDNumber === user?.data.id) setIsMyProfile(true);
+    }
   }, [router.query.userID]);
 
   const distance = "1.2 km";
@@ -77,47 +82,50 @@ const ProfileDisplay = () => {
               />
             </picture>
           </div>
-          <div className="absolute top-4 left-2">
-            <div
-              className="cursor-pointer inline"
-              onClick={() => setShowDropDown(!showDropDown)}
-            >
-              <DropDownIcon className="shadow rounded-xl" />
-            </div>
-            <Transition
-              show={showDropDown}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-20"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-100"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-20"
-            >
-              <div className=" w-64 bg-white rounded-xl text-center divide-y divide-gray-400 shadow-lg border border-gray-400">
-                <div className="block w-full rounded-t py-2.5 px-4">
-                  {profile.userName} did something bad ?
-                </div>
-                <Modal
-                  onAccept={reportUser}
-                  title="Report"
-                  buttonText="Report"
-                  acceptText="Report"
-                  denyText="Cancel"
-                  classNameButton="block w-full text-gray-400 py-2.5 uppercase hover:bg-gray-50"
-                  description={`are you sure you want to report ${profile.userName} ?`}
-                />
-                <Modal
-                  onAccept={blockUser}
-                  title="Block"
-                  buttonText="Block"
-                  acceptText="Block"
-                  denyText="Cancel"
-                  classNameButton="block w-full text-gray-400 py-2.5 uppercase rounded-xl hover:bg-gray-50"
-                  description={`you and ${profile.userName} wont be able to see each other profile, are you sure ?`}
-                />
+          {/* report and block drop down */}
+          {!isMyProfile && (
+            <div className="absolute top-4 left-2">
+              <div
+                className="cursor-pointer inline"
+                onClick={() => setShowDropDown(!showDropDown)}
+              >
+                <DropDownIcon className="shadow rounded-xl" />
               </div>
-            </Transition>
-          </div>
+              <Transition
+                show={showDropDown}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-20"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-100"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-20"
+              >
+                <div className=" w-64 bg-white rounded-xl text-center divide-y divide-gray-400 shadow-lg border border-gray-400">
+                  <div className="block w-full rounded-t py-2.5 px-4">
+                    {profile.userName} did something bad ?
+                  </div>
+                  <Modal
+                    onAccept={reportUser}
+                    title="Report"
+                    buttonText="Report"
+                    acceptText="Report"
+                    denyText="Cancel"
+                    classNameButton="block w-full text-gray-400 py-2.5 uppercase hover:bg-gray-50"
+                    description={`are you sure you want to report ${profile.userName} ?`}
+                  />
+                  <Modal
+                    onAccept={blockUser}
+                    title="Block"
+                    buttonText="Block"
+                    acceptText="Block"
+                    denyText="Cancel"
+                    classNameButton="block w-full text-gray-400 py-2.5 uppercase rounded-xl hover:bg-gray-50"
+                    description={`you and ${profile.userName} wont be able to see each other profile, are you sure ?`}
+                  />
+                </div>
+              </Transition>
+            </div>
+          )}
         </section>
         <section className="sm:flex">
           {/* ------ other images container ------ */}
@@ -159,27 +167,33 @@ const ProfileDisplay = () => {
                     </span>{" "}
                     {profile.age}
                   </h4>
-                  <Link href={`/messages?user=${profile.id}`}>
-                    <a
-                      style={{ transition: "all .15s ease" }}
-                      className="bg-green-400 uppercase font-bold hover:shadow-md text-white rounded text-xs px-4 py-2 outline-none focus:outline-none"
-                    >
-                      Message
-                    </a>
-                  </Link>
+                  {!isMyProfile && (
+                    <Link href={`/messages?user=${profile.id}`}>
+                      <a
+                        style={{ transition: "all .15s ease" }}
+                        className="bg-green-400 uppercase font-bold hover:shadow-md text-white rounded text-xs px-4 py-2 outline-none focus:outline-none"
+                      >
+                        Message
+                      </a>
+                    </Link>
+                  )}
                 </div>
-                <div className="flex justify-start items-center">
-                  <div
-                    className={`rounded-full mr-1 ${
-                      isConnected
-                        ? "bg-green-400 w-2.5 h-2.5"
-                        : "border-gray-200 border w-2.5 h-2.5"
-                    }`}
-                  />
-                  <p className="text-gray-500 text-xs">
-                    {isConnected ? "connected" : getLastConnected()}
-                  </p>
-                </div>
+                {!isMyProfile && (
+                  <div className="flex justify-start items-center">
+                    <>
+                      <div
+                        className={`rounded-full mr-1 ${
+                          isConnected
+                            ? "bg-green-400 w-2.5 h-2.5"
+                            : "border-gray-200 border w-2.5 h-2.5"
+                        }`}
+                      />
+                      <p className="text-gray-500 text-xs">
+                        {isConnected ? "connected" : getLastConnected()}
+                      </p>
+                    </>
+                  </div>
+                )}
                 <div className="mt-4 sm:mt-0">
                   <AvatarIcon className="inline-block" />{" "}
                   <p className="text-sm inline-block text-gray-400">
