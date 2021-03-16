@@ -216,7 +216,7 @@ const ProfileEdit = () => {
                     src={img.src}
                     className={`${
                       index === mainPicIndex ? "ring ring-green-400" : ""
-                    } w-full h-full object-cover rounded`}
+                      } w-full h-full object-cover rounded`}
                     style={
                       index === mainPicIndex
                         ? {}
@@ -290,8 +290,8 @@ const ProfileEdit = () => {
                 passwordErrors.retryPassword?.type === "validate"
                   ? "Password does not match"
                   : passwordErrors.retryPassword?.type === "required"
-                  ? "Required"
-                  : undefined
+                    ? "Required"
+                    : undefined
               }
             />
             <div>

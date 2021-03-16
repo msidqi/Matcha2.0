@@ -54,14 +54,12 @@ const ProfileListing = () => {
   const [tagsSet, setTagsSet] = React.useState<Set<string>>(
     new Set(["Hello", "World", "1337", "42"])
   );
-  const [isEnabledFilters, setIsEnabledFilters] = React.useState<boolean>(
-    false
-  );
+  const [isFilterActive, setIsFilterActive] = React.useState<boolean>(false);
   const [{ user }] = useUser();
   const { data, fetchNextPage, isFetching, error, isLoading } = useSuggestions({
     authorization: user?.authorization || "",
     row_count: ROW_COUNT,
-    filter: isEnabledFilters
+    filter: isFilterActive
       ? {
           age: ageRange,
           distance: distanceRange,
@@ -73,7 +71,7 @@ const ProfileListing = () => {
   if (error) return <>suggestions error...</>;
   if (isLoading) return <>suggestions are loading...</>;
   const allSuggestedUsers = data?.pages.flatMap((page) => page.data).reverse();
-  // console.log({ allSuggestedUsers }, data?.pageParams);
+  console.log({ allSuggestedUsers }, data?.pageParams);
 
   const toggleFilters = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -150,7 +148,7 @@ const ProfileListing = () => {
         >
           <FiltersContainer
             disableFiltersDisplay={disableFiltersDisplay}
-            style={!isEnabledFilters ? { filter: "grayscale(80%)" } : {}}
+            style={!isFilterActive ? { filter: "grayscale(80%)" } : {}}
           >
             <div className="w-full mb-4 mt-2 pr-4">
               <Switch.Group
@@ -160,10 +158,10 @@ const ProfileListing = () => {
                 <label>Enable Filters</label>
                 <Switch
                   as="button"
-                  checked={isEnabledFilters}
-                  onChange={setIsEnabledFilters}
+                  checked={isFilterActive}
+                  onChange={setIsFilterActive}
                   className={`${
-                    isEnabledFilters ? "bg-green-400" : "bg-gray-200"
+                    isFilterActive ? "bg-green-400" : "bg-gray-200"
                   } relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:shadow-outline`}
                 >
                   {({ checked }) => (

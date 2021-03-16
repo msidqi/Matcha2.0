@@ -22,7 +22,8 @@ import {
   signInUserRequest,
   logoutUserRequest,
 } from "@/utils/requests/userRequests";
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
+import guestRoutes from "./guestRoutes.json";
 
 const initialUserState: UserState = {
   user: undefined,
@@ -45,6 +46,8 @@ const userContext = React.createContext<[UserState, ActionsAndState]>([
     error: null,
   },
 ]);
+
+new Promise(function (resolve, reject) {});
 
 export const useUser = (): [UserState, ActionsAndState] =>
   React.useContext(userContext);
@@ -89,7 +92,8 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
       } catch (e) {
         setError(e);
         dispatch({ type: "LOGOUT" });
-        router.push("/signin");
+        console.log(router.pathname);
+        if (!guestRoutes.includes(router.pathname)) router.push("/signin");
         console.error(e);
       } finally {
         setLoading(false);

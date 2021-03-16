@@ -5,6 +5,7 @@ import Input from "@/components/Input";
 import guestRoute from "../GuestRoute";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import DateInput from "../DateInput";
 
 const Signup = (): JSX.Element => {
   const { register, handleSubmit } = useForm();
@@ -54,6 +55,7 @@ const Signup = (): JSX.Element => {
             className="w-full sm:w-1/2 sm:pr-2"
           />
         </div>
+        <DateInput label="Your Birthday" name="birthDate" register={register} />
         <Input
           name="email"
           type="email"
@@ -64,6 +66,7 @@ const Signup = (): JSX.Element => {
         <Input
           name="password"
           label="Password"
+          type="password"
           register={register}
           placeholder="Enter your password"
         />
