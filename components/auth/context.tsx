@@ -47,8 +47,6 @@ const userContext = React.createContext<[UserState, ActionsAndState]>([
   },
 ]);
 
-new Promise(function (resolve, reject) {});
-
 export const useUser = (): [UserState, ActionsAndState] =>
   React.useContext(userContext);
 

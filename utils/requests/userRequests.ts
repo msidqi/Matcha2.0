@@ -427,3 +427,13 @@ export const getPositionAPI = () => {
     `https://ipinfo.io/?token=${config.IP_API_TOKEN}`
   )[0];
 };
+
+interface ResetPasswordProps {
+  data: { password: string; retryPassword: string; passwordToken: string };
+}
+
+export const useResetPassword = () => {
+  return useMutation(({ data }: ResetPasswordProps) => {
+    return apiRequest("post", "/api/resetPassword", data)[0];
+  });
+};

@@ -111,6 +111,7 @@ const ProfileDisplay = () => {
                     buttonText="Report"
                     acceptText="Report"
                     denyText="Cancel"
+                    variant="secondary"
                     classNameButton="block w-full text-gray-400 py-2.5 uppercase hover:bg-gray-50"
                     description={`are you sure you want to report ${profile.userName} ?`}
                   />
@@ -120,6 +121,7 @@ const ProfileDisplay = () => {
                     buttonText="Block"
                     acceptText="Block"
                     denyText="Cancel"
+                    variant="secondary"
                     classNameButton="block w-full text-gray-400 py-2.5 uppercase rounded-xl hover:bg-gray-50"
                     description={`you and ${profile.userName} wont be able to see each other profile, are you sure ?`}
                   />

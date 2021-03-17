@@ -6,8 +6,11 @@ interface ModalProps {
   denyText?: string;
   title?: string;
   classNameButton?: string;
-  buttonText: string;
+  buttonText?: string;
   onAccept: () => any;
+  variant?: "primary" | "secondary";
+  noButton?: boolean;
+  doShowModal?: boolean;
 }
 
 const Modal = ({
@@ -18,6 +21,9 @@ const Modal = ({
   buttonText,
   title,
   onAccept,
+  variant = "primary",
+  noButton,
+  doShowModal,
 }: ModalProps) => {
   const [showModal, setShowModal] = React.useState<boolean>(false);
 
@@ -26,19 +32,21 @@ const Modal = ({
     toggleModal();
   };
   const toggleModal = function () {
-    setShowModal(!showModal);
+    !noButton && setShowModal(!showModal);
   };
   return (
     <div>
-      <button
-        className={classNameButton} //"bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-        type="button"
-        style={{ transition: "all .15s ease" }}
-        onClick={toggleModal}
-      >
-        {buttonText}
-      </button>
-      {showModal && (
+      {!noButton && (
+        <button
+          className={classNameButton} //"bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+          type="button"
+          style={{ transition: "all .15s ease" }}
+          onClick={toggleModal}
+        >
+          {buttonText || "Open"}
+        </button>
+      )}
+      {(showModal || (noButton && doShowModal)) && (
         <>
           <div className="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
             <div className="relative w-auto my-6 mx-auto max-w-sm">
@@ -66,16 +74,22 @@ const Modal = ({
                 </div>
                 {/* <!--footer--> */}
                 <div className="flex items-center justify-evenly p-4  rounded-b">
+                  {denyText && (
+                    <button
+                      className="w-32 text-gray-500 bg-transparent border border-solid border-gray-500 hover:shadow-md font-bold uppercase text-sm px-8 py-3 rounded-xl outline-none focus:outline-none mr-1 mb-1"
+                      type="button"
+                      style={{ transition: "all .15s ease" }}
+                      onClick={toggleModal}
+                    >
+                      {denyText || "Close"}
+                    </button>
+                  )}
                   <button
-                    className="w-32 text-gray-500 bg-transparent border border-solid border-gray-500 hover:shadow-md font-bold uppercase text-sm px-8 py-3 rounded-xl outline-none focus:outline-none mr-1 mb-1"
-                    type="button"
-                    style={{ transition: "all .15s ease" }}
-                    onClick={toggleModal}
-                  >
-                    {denyText || "Close"}
-                  </button>
-                  <button
-                    className="w-32 text-white background-transparent bg-red-500 active:bg-red-600  rounded-xl font-bold hover:shadow-md uppercase px-8 py-3 text-sm outline-none focus:outline-none mr-1 mb-1"
+                    className={`w-32 text-white background-transparent ${
+                      variant === "primary"
+                        ? "bg-green-500 active:bg-green-600"
+                        : "bg-red-500 active:bg-red-600"
+                    }  rounded-xl font-bold hover:shadow-md uppercase px-8 py-3 text-sm outline-none focus:outline-none mr-1 mb-1`}
                     type="button"
                     style={{ transition: "all .15s ease" }}
                     onClick={onClickAccept}
