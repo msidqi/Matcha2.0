@@ -437,3 +437,16 @@ export const useResetPassword = () => {
     return apiRequest("post", "/api/resetPassword", data)[0];
   });
 };
+
+interface ForgotPasswordProps {
+  userName: string;
+  email: string;
+}
+
+export const forgotPasswordRequest = (data: ForgotPasswordProps) => {
+  return apiRequest<ForgotPasswordProps>(
+    "post",
+    "/api/forgetPassword",
+    data
+  )[0];
+};

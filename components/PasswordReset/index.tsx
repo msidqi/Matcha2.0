@@ -4,20 +4,25 @@ import Input from "@/components/Input";
 import guestRoute from "@/components/GuestRoute";
 import { useResetPassword } from "@/utils/requests/userRequests";
 import Modal from "../ui/Modal";
+import { useRouter } from "next/router";
 
 const ForgotPassword = (): JSX.Element => {
+  const router = useRouter();
   const { register, handleSubmit, getValues, errors } = useForm();
   const [showSuccessMessage, setShowSuccessMessage] = React.useState<boolean>(
     false
   );
+  const [passwordToken, setPasswordToken] = React.useState<string>("");
   const resetPasswordMutation = useResetPassword();
   const onSubmit = async (
-    data: { retryPassword: string; password: string; passwordToken: string },
+    data: { retryPassword: string; password: string },
     e?: React.BaseSyntheticEvent
   ) => {
     e?.preventDefault();
     try {
-      const result = await resetPasswordMutation.mutateAsync({ data });
+      const result = await resetPasswordMutation.mutateAsync({
+        data: { ...data, passwordToken },
+      });
       if (result.status === 200) {
         setShowSuccessMessage(true);
       }
@@ -25,6 +30,12 @@ const ForgotPassword = (): JSX.Element => {
       console.error(e);
     }
   };
+
+  // set passwordToken
+  React.useEffect(() => {
+    if (typeof router.query.t === "string") setPasswordToken(router.query.t);
+  }, []);
+
   return (
     <div className="bg-white sm:border rounded  max sm:shadow-md px-6 py-10 sm:p-10 max-w-xl m-auto w-full h-full sm:h-auto">
       <Modal
