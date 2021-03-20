@@ -18,8 +18,8 @@ const LogoSm = ({
   >
     <defs>
       <linearGradient id="b-linearGradient" x1="100%" x2="0%" y1="0%" y2="100%">
-        <stop offset="0%" stopColor="#FF7854" />
-        <stop offset="100%" stopColor="#FD267D" />
+        <stop offset="0%" stopColor="#33d398" />
+        <stop offset="100%" stopColor="#059668" />
       </linearGradient>
     </defs>
     <g fill="none" fillRule="evenodd">

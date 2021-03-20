@@ -6,8 +6,10 @@ import { Range } from "@/components/Range";
 import TagsDisplay from "@/components/TagsDisplay";
 import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
 import { useUser } from "../auth";
-import { useSuggestions, useSuggestion } from "@/utils/requests/suggestions";
+import { useSuggestions } from "@/utils/requests/suggestions";
 import { like, deleteLike } from "@/utils/requests/userRequests";
+import Select from "../Select";
+import { sortOptions, sortOrder } from "./selectOptions.json";
 // import { indexOf } from "@/utils/indexOf";
 
 interface FilterContainerProps {
@@ -15,7 +17,7 @@ interface FilterContainerProps {
   style?: CSSProperties;
 }
 
-const ROW_COUNT = 10;
+const ROW_COUNT = 4;
 
 const FiltersContainer: React.FC<FilterContainerProps> = ({
   children,
@@ -46,6 +48,8 @@ const FiltersContainer: React.FC<FilterContainerProps> = ({
 
 const ProfileListing = () => {
   const [showFilters, setShowFilters] = React.useState<boolean>(false);
+  const [tri, setTri] = React.useState<string>("");
+  const [triOrder, setTriOrder] = React.useState<string>("");
   const [ageRange, setAgeRange] = React.useState<[number, number]>([18, 22]);
   const [distanceRange, setDistanceRange] = React.useState<[number]>([1]);
   const [experienceRange, setExperienceRange] = React.useState<
@@ -55,6 +59,7 @@ const ProfileListing = () => {
     new Set(["Hello", "World", "1337", "42"])
   );
   const [isFilterActive, setIsFilterActive] = React.useState<boolean>(false);
+  const [numberOfSwipes, setNumberOfSwipes] = React.useState<number>(0);
   const [{ user }] = useUser();
   const { data, fetchNextPage, isFetching, error, isLoading } = useSuggestions({
     authorization: user?.authorization || "",
@@ -67,11 +72,12 @@ const ProfileListing = () => {
           tags: [...tagsSet],
         }
       : undefined,
+    tri: triOrder && tri ? { [`${tri}`]: `${triOrder}` } : undefined,
   });
   if (error) return <>suggestions error...</>;
   if (isLoading) return <>suggestions are loading...</>;
   const allSuggestedUsers = data?.pages.flatMap((page) => page.data).reverse();
-  console.log({ allSuggestedUsers }, data?.pageParams);
+  // console.log({ allSuggestedUsers }, data?.pageParams);
 
   const toggleFilters = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -97,12 +103,12 @@ const ProfileListing = () => {
       try {
         if (direction === "right") {
           //like
-          const result = await like({
+          await like({
             authorization: user.authorization,
             liker: user.data.userName,
             liked: nameToDelete,
           });
-          console.log("like result", result);
+          // console.log("like result", result);
         }
       } catch (e) {
         console.error(e);
@@ -115,6 +121,7 @@ const ProfileListing = () => {
   };
 
   const handleOutOfFrame = (nameToDelete: string) => {
+    setNumberOfSwipes((prev) => prev + 1);
     // data?.pages.splice(
     //   indexOf(data?.pages[0].data, (elem) => elem.userName === nameToDelete),
     //   1
@@ -127,6 +134,7 @@ const ProfileListing = () => {
         suggestedUsers={allSuggestedUsers}
         onSwiped={handleSwipe}
         onOutOfFrame={handleOutOfFrame}
+        endOfSuggestions={allSuggestedUsers?.length === numberOfSwipes}
       />
       <div className="my-2 mx-auto">
         <div
@@ -150,73 +158,98 @@ const ProfileListing = () => {
             disableFiltersDisplay={disableFiltersDisplay}
             style={!isFilterActive ? { filter: "grayscale(80%)" } : {}}
           >
-            <div className="w-full mb-4 mt-2 pr-4">
-              <Switch.Group
-                as="div"
-                className="flex items-center justify-between space-x-4"
-              >
-                <label>Enable Filters</label>
-                <Switch
-                  as="button"
-                  checked={isFilterActive}
-                  onChange={setIsFilterActive}
-                  className={`${
-                    isFilterActive ? "bg-green-400" : "bg-gray-200"
-                  } relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:shadow-outline`}
+            <div className="border-gray-200 border-2 p-4 rounded-md mb-4">
+              <div className="w-full mb-2 mt-2 pr-4 border-gray-200 border-2 p-4 rounded-2xl">
+                <Switch.Group
+                  as="div"
+                  className="flex items-center justify-between space-x-4"
                 >
-                  {({ checked }) => (
-                    <span
-                      className={`${
-                        checked ? "translate-x-5" : "translate-x-0"
-                      } inline-block w-5 h-5 transition duration-200 ease-in-out transform bg-white rounded-full`}
-                    />
-                  )}
-                </Switch>
-              </Switch.Group>
+                  <label>Enable Filters</label>
+                  <Switch
+                    as="button"
+                    checked={isFilterActive}
+                    onChange={setIsFilterActive}
+                    className={`${
+                      isFilterActive ? "bg-green-400" : "bg-gray-200"
+                    } relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:shadow-outline`}
+                  >
+                    {({ checked }) => (
+                      <span
+                        className={`${
+                          checked ? "translate-x-5" : "translate-x-0"
+                        } inline-block w-5 h-5 transition duration-200 ease-in-out transform bg-white rounded-full`}
+                      />
+                    )}
+                  </Switch>
+                </Switch.Group>
+              </div>
+
+              <div className="mb-2">
+                <Range
+                  label="Age"
+                  range={ageRange}
+                  setRange={setAgeRange}
+                  onRangeChange={(currentRange) =>
+                    console.log("age", currentRange)
+                  }
+                />
+              </div>
+              <div className="mb-2">
+                <Range
+                  label="Popularity range"
+                  max={100}
+                  min={0}
+                  unit="pt"
+                  range={experienceRange}
+                  setRange={setExperienceRange}
+                  onRangeChange={(currentRange) =>
+                    console.log("popularity range", currentRange)
+                  }
+                />
+              </div>
+              <div className="mb-2">
+                <Range
+                  label="Location"
+                  step={0.1}
+                  max={10}
+                  min={0}
+                  unit="km"
+                  range={distanceRange}
+                  setRange={setDistanceRange}
+                  onRangeChange={(currentRange) =>
+                    console.log("location", currentRange)
+                  }
+                />
+              </div>
+              <div className="mb-2">
+                <TagsDisplay
+                  tagsSet={tagsSet}
+                  setTagsSet={setTagsSet}
+                  variant="secondary"
+                />
+              </div>
             </div>
-            <div className="mb-2">
-              <Range
-                label="Age"
-                range={ageRange}
-                setRange={setAgeRange}
-                onRangeChange={(currentRange) =>
-                  console.log("age", currentRange)
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <Range
-                label="Popularity range"
-                max={100}
-                min={0}
-                unit="pt"
-                range={experienceRange}
-                setRange={setExperienceRange}
-                onRangeChange={(currentRange) =>
-                  console.log("popularity range", currentRange)
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <Range
-                label="Location"
-                step={0.1}
-                max={10}
-                min={0}
-                unit="km"
-                range={distanceRange}
-                setRange={setDistanceRange}
-                onRangeChange={(currentRange) =>
-                  console.log("location", currentRange)
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <TagsDisplay
-                tagsSet={tagsSet}
-                setTagsSet={setTagsSet}
-                variant="secondary"
-              />
+            <div className="border-gray-200 border-2 p-4 rounded-md">
+              <div className="mb-2">
+                <Select
+                  name="tri"
+                  initialValue={tri}
+                  placeholder="Select what to sort by"
+                  label="Sort by"
+                  options={sortOptions}
+                  onChange={(e) => setTri(e.target.value)}
+                />
+              </div>
+              <div className="mb-2">
+                <Select
+                  name="triOrder"
+                  initialValue={triOrder}
+                  placeholder="Select sort order"
+                  label="Sort order"
+                  options={sortOrder}
+                  onChange={(e) => setTriOrder(e.target.value)}
+                />
+              </div>
             </div>
           </FiltersContainer>
         </Transition>

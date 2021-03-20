@@ -1,0 +1,12 @@
+{
+  "sortOptions": [
+    { "label": "Age", "value": "age" },
+    { "label": "Experience", "value": "experience" },
+    { "label": "Distance", "value": "distance" },
+    { "label": "Tags", "value": "tags" }
+  ],
+  "sortOrder": [
+    { "label": "DESC", "value": "DESC" },
+    { "label": "ASC", "value": "ASC" }
+  ]
+}

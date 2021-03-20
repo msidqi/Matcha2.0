@@ -7,6 +7,7 @@ interface SelectProps {
   options: { value: string; label: string }[];
   register?: any;
   initialValue?: string;
+  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const Select = ({
@@ -16,6 +17,7 @@ const Select = ({
   placeholder,
   options,
   initialValue,
+  onChange,
 }: SelectProps): JSX.Element => {
   const hasDefaultValue = Boolean(initialValue);
   const [isDefault, setIsDefault] = React.useState<boolean>(!hasDefaultValue);
@@ -37,7 +39,10 @@ const Select = ({
         }`}
         placeholder={placeholder}
         defaultValue={defaultValue}
-        onChange={() => isDefault && setIsDefault(false)}
+        onChange={(e) => {
+          isDefault && setIsDefault(false);
+          onChange?.(e);
+        }}
       >
         <option value="default" disabled>
           Select your gender

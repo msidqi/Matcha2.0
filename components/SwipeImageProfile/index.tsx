@@ -1,9 +1,7 @@
 import React from "react";
 import PositionIcon from "@/components/ui/Icons/PositionIcon";
 import { Transition } from "@headlessui/react";
-import Tag from "@/components/Tag";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
-import { ProfileType } from "@/interfaces";
 import { formatDistance } from "@/utils/formatDistance";
 import { SuggestedUser } from "@/utils/requests/suggestions";
 import { useUser } from "../auth";
@@ -114,29 +112,25 @@ const SwipeImageProfile = ({
   );
 };
 
-export const SwipeCardContainer: React.FC = ({ children }) => {
-  return (
-    <article
-      style={{ height: "34rem" }}
-      className="bg-white absolute top-0 w-full sm:rounded-2xl"
-    >
-      {children}
-    </article>
-  );
-};
+export const SwipeCardContainer: React.FC = ({ children }) => (
+  <article
+    style={{ height: "34rem" }}
+    className="bg-white absolute top-0 w-full sm:rounded-2xl"
+  >
+    {children}
+  </article>
+);
 
-export const SuggestionEmptyCard: React.FC = () => {
-  return (
-    <SwipeCardContainer>
-      <div className="bg-green-400 sm:max-w-sm h-full w-full sm:rounded-2xl bg-cover bg-center flex justify-center items-center flex-col px-6">
-        <h1 className="text-2xl font-bold select-none">That's everyone !</h1>
-        <p className="select-none text-center">
-          You've seen everyone that fit your criterias. Change your filters or
-          check later.
-        </p>
-      </div>
-    </SwipeCardContainer>
-  );
-};
+export const SuggestionEmptyCard: React.FC = () => (
+  <SwipeCardContainer>
+    <div className="bg-green-400 sm:max-w-sm h-full w-full sm:rounded-2xl bg-cover bg-center flex justify-center items-center flex-col px-6">
+      <h1 className="text-2xl font-bold select-none">That's everyone !</h1>
+      <p className="select-none text-center">
+        You've seen everyone that fit your criterias. Change your filters or
+        check later.
+      </p>
+    </div>
+  </SwipeCardContainer>
+);
 
 export default SwipeImageProfile;

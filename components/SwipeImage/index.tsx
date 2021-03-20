@@ -3,9 +3,9 @@ import TinderCard from "react-tinder-card";
 import SwipeImageProfile, {
   SuggestionEmptyCard,
 } from "@/components/SwipeImageProfile";
-import LikeIcon from "@/components/ui/Icons/LikeIcon";
-import DislikeIcon from "@/components/ui/Icons/DislikeIcon";
-import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
+// import LikeIcon from "@/components/ui/Icons/LikeIcon";
+// import DislikeIcon from "@/components/ui/Icons/DislikeIcon";
+// import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 // import { ProfileType } from "@/interfaces";
 import { SuggestedUser } from "@/utils/requests/suggestions";
 // import dbData from "./db.json";
@@ -19,22 +19,24 @@ export type SwipeDirection = "left" | "right" | "up" | "down";
 
 function SwipeImage({
   suggestedUsers,
+  endOfSuggestions,
   onSwiped,
   onOutOfFrame,
 }: {
   suggestedUsers?: SuggestedUser[];
   onSwiped?: (name: string, direction: SwipeDirection) => void;
   onOutOfFrame?: (name: string, direction: SwipeDirection) => void;
+  endOfSuggestions: boolean;
 }) {
   // const [lastDirection, setLastDirection] = React.useState<string>("");
-  const [numberOfSwipes, setNumberOfSwipes] = React.useState<number>(0);
 
   if (!suggestedUsers) return <>Loading...</>;
-  const endOfSuggestions = suggestedUsers.length === numberOfSwipes;
   const swiped = (name: string, direction: SwipeDirection) => {
     // setLastDirection(direction);
-    setNumberOfSwipes((prev) => prev + 1);
     onSwiped?.(name, direction);
+  };
+  const leftScreen = (name: string, direction: SwipeDirection) => {
+    onOutOfFrame?.(name, direction);
   };
 
   /*const childRefs = useMemo(
@@ -90,8 +92,8 @@ function SwipeImage({
                 preventSwipe={["down", "up"]}
                 key={singleSuggestedUser.id}
                 onSwipe={(dir) => swiped(singleSuggestedUser.userName, dir)}
-                onCardLeftScreen={(direction: SwipeDirection) =>
-                  onOutOfFrame?.(singleSuggestedUser.userName, direction)
+                onCardLeftScreen={(dir) =>
+                  leftScreen(singleSuggestedUser.userName, dir)
                 }
               >
                 <SwipeImageProfile

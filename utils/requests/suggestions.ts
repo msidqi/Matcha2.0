@@ -10,9 +10,13 @@ interface UseSuggestionsProps {
   enabled?: boolean;
   row_count?: number;
   offset?: number;
-  tri?: {
-    age: number;
-  };
+  tri?: { [x: string]: string };
+  // tri?: {
+  //   age: string;
+  //   distance: string;
+  //   experience: string;
+  //   tags: string;
+  // };
   filter?: {
     age: number[];
     distance: number[];
@@ -43,7 +47,7 @@ export const useSuggestions = ({
   filter,
 }: UseSuggestionsProps & Authorization) => {
   return useInfiniteQuery(
-    ["suggestions", filter],
+    ["suggestions", filter, tri],
     ({ pageParam = 0 }) =>
       apiRequest<SuggestedUser[]>(
         "post",
@@ -63,6 +67,9 @@ export const useSuggestions = ({
     {
       enabled,
       keepPreviousData: true,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
       getNextPageParam: (lastPage) =>
         offset ?? JSON.parse(lastPage.config.data)?.offset + 1,
     }
