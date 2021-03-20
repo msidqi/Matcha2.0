@@ -444,9 +444,13 @@ interface ForgotPasswordProps {
 }
 
 export const forgotPasswordRequest = (data: ForgotPasswordProps) => {
-  return apiRequest<ForgotPasswordProps>(
-    "post",
-    "/api/forgetPassword",
-    data
-  )[0];
+  return apiRequest("post", "/api/forgetPassword", data)[0];
+};
+
+interface MailActivationProps {
+  mailToken: string;
+}
+
+export const mailActivationRequest = (data: MailActivationProps) => {
+  return apiRequest("post", "/api/mailActivation", data)[0];
 };

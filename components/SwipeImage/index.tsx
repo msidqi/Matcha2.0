@@ -1,6 +1,8 @@
 import React /*{ useMemo }*/ from "react";
 import TinderCard from "react-tinder-card";
-import SwipeImageProfile from "@/components/SwipeImageProfile";
+import SwipeImageProfile, {
+  SuggestionEmptyCard,
+} from "@/components/SwipeImageProfile";
 import LikeIcon from "@/components/ui/Icons/LikeIcon";
 import DislikeIcon from "@/components/ui/Icons/DislikeIcon";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
@@ -25,10 +27,13 @@ function SwipeImage({
   onOutOfFrame?: (name: string, direction: SwipeDirection) => void;
 }) {
   // const [lastDirection, setLastDirection] = React.useState<string>("");
+  const [numberOfSwipes, setNumberOfSwipes] = React.useState<number>(0);
 
   if (!suggestedUsers) return <>Loading...</>;
+  const endOfSuggestions = suggestedUsers.length === numberOfSwipes;
   const swiped = (name: string, direction: SwipeDirection) => {
     // setLastDirection(direction);
+    setNumberOfSwipes((prev) => prev + 1);
     onSwiped?.(name, direction);
   };
 
@@ -70,30 +75,34 @@ function SwipeImage({
     <>
       <div className="z-10 w-full sm:w-screen sm:max-w-sm">
         <section className="relative" style={{ height: "34rem" }}>
-          {suggestedUsers.map((singleSuggestedUser) => (
-            // <TinderCard
-            //   preventSwipe={["down", "up"]}
-            //   ref={childRefs[index]}
-            //   key={profile.userName}
-            //   onSwipe={(dir) => swiped(dir, profile.userName)}
-            //   onCardLeftScreen={(direction) =>
-            //     outOfFrame(profile.userName, direction)
-            //   }
-            // >
-            <TinderCard
-              preventSwipe={["down", "up"]}
-              key={singleSuggestedUser.id}
-              onSwipe={(dir) => swiped(singleSuggestedUser.userName, dir)}
-              onCardLeftScreen={(direction: SwipeDirection) =>
-                onOutOfFrame?.(singleSuggestedUser.userName, direction)
-              }
-            >
-              <SwipeImageProfile
-                profile={singleSuggestedUser}
-                // isCurrentlyShown={index === profiles.length - 1}
-              />
-            </TinderCard>
-          ))}
+          {!endOfSuggestions ? (
+            suggestedUsers.map((singleSuggestedUser) => (
+              // <TinderCard
+              //   preventSwipe={["down", "up"]}
+              //   ref={childRefs[index]}
+              //   key={profile.userName}
+              //   onSwipe={(dir) => swiped(dir, profile.userName)}
+              //   onCardLeftScreen={(direction) =>
+              //     outOfFrame(profile.userName, direction)
+              //   }
+              // >
+              <TinderCard
+                preventSwipe={["down", "up"]}
+                key={singleSuggestedUser.id}
+                onSwipe={(dir) => swiped(singleSuggestedUser.userName, dir)}
+                onCardLeftScreen={(direction: SwipeDirection) =>
+                  onOutOfFrame?.(singleSuggestedUser.userName, direction)
+                }
+              >
+                <SwipeImageProfile
+                  profile={singleSuggestedUser}
+                  // isCurrentlyShown={index === profiles.length - 1}
+                />
+              </TinderCard>
+            ))
+          ) : (
+            <SuggestionEmptyCard />
+          )}
         </section>
         {/* <section className="flex justify-evenly items-center pb-2 sm:mt-2 w-full sm:w-screen sm:max-w-sm">
           <div
