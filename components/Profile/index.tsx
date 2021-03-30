@@ -7,7 +7,12 @@ import { indexOf } from "@/utils/indexOf";
 import Link from "next/link";
 import { Transition } from "@headlessui/react";
 import Modal from "@/components/ui/Modal";
-import { useOtherUserInfosRequest } from "@/utils/requests/userRequests";
+import {
+  useOtherUserInfosRequest,
+  deleteLike,
+  block,
+  report,
+} from "@/utils/requests/userRequests";
 import { useUser } from "@/components/auth";
 import formatRelative from "date-fns/formatRelative";
 import { useRouter } from "next/router";
@@ -55,10 +60,62 @@ const ProfileDisplay = () => {
     )
   );
 
-  const blockUser = () => {};
-  const reportUser = () => {};
   if (isLoading) return <>loading...</>;
-  if (!profile || error) return <>error</>;
+  if (!profile || error || !user) return <>error</>;
+  const reportUser = async () => {
+    try {
+      const reported = profile.userName;
+      const reporter = user.data.userName;
+      const result = await report({
+        authorization: user.authorization,
+        reported,
+        reporter,
+      });
+      if (result.status === 200) {
+        console.log("reported user");
+      } else {
+        console.log("could not report user");
+      }
+    } catch (e) {
+      console.log("error reporting user", e);
+    }
+  };
+  const blockUser = async () => {
+    try {
+      const blocked = profile.userName;
+      const blocker = user.data.userName;
+      const result = await block({
+        authorization: user.authorization,
+        blocked,
+        blocker,
+      });
+      if (result.status === 200) {
+        console.log("blocked user");
+      } else {
+        console.log("could not block user");
+      }
+    } catch (e) {
+      console.log("error blocking user", e);
+    }
+  };
+  const unlikeUser = async () => {
+    try {
+      const liked = profile.userName;
+      const liker = user.data.userName;
+      const result = await deleteLike({
+        authorization: user.authorization,
+        liked,
+        liker,
+      });
+      if (result.status === 200) {
+        console.log("unliked user");
+      } else {
+        console.log("could not unlike user");
+      }
+    } catch (e) {
+      console.log("error unliking user", e);
+    }
+  };
   return (
     <>
       <article
@@ -101,10 +158,22 @@ const ProfileDisplay = () => {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-20"
               >
-                <div className=" w-64 bg-white rounded-xl text-center divide-y divide-gray-400 shadow-lg border border-gray-400">
-                  <div className="block w-full rounded-t py-2.5 px-4">
+                <div className=" w-64 bg-white rounded-lg text-center divide-y divide-gray-400 shadow-lg border border-gray-400">
+                  <div className="block w-full rounded-t py-2.5 px-4  text-sm">
                     {profile.userName} did something bad ?
                   </div>
+                  {!isMyProfile && (
+                    <Modal
+                      onAccept={unlikeUser}
+                      title="Delete like ?"
+                      buttonText="Unlike user"
+                      acceptText="Unlike"
+                      denyText="Cancel"
+                      variant="secondary"
+                      classNameButton="block w-full text-gray-400 py-2.5 uppercase hover:bg-gray-200 hover:text-gray-600"
+                      description={`you and ${profile.userName} wont be able to chat with each other, are you sure ?`}
+                    />
+                  )}
                   <Modal
                     onAccept={reportUser}
                     title="Report"
@@ -112,7 +181,7 @@ const ProfileDisplay = () => {
                     acceptText="Report"
                     denyText="Cancel"
                     variant="secondary"
-                    classNameButton="block w-full text-gray-400 py-2.5 uppercase hover:bg-gray-50"
+                    classNameButton="block w-full text-gray-400 py-2.5 uppercase hover:bg-gray-200 hover:text-gray-600"
                     description={`are you sure you want to report ${profile.userName} ?`}
                   />
                   <Modal
@@ -122,7 +191,7 @@ const ProfileDisplay = () => {
                     acceptText="Block"
                     denyText="Cancel"
                     variant="secondary"
-                    classNameButton="block w-full text-gray-400 py-2.5 uppercase rounded-xl hover:bg-gray-50"
+                    classNameButton="block w-full text-red-400 py-2.5 uppercase rounded-b-xl hover:bg-gray-200 hover:text-red-500"
                     description={`you and ${profile.userName} wont be able to see each other profile, are you sure ?`}
                   />
                 </div>

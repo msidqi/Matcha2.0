@@ -36,6 +36,7 @@ export type SuggestedUser = {
   id: number;
   orientation: "bisexual" | "heterosexual" | "homosexual";
   userName: string;
+  image: string;
 };
 
 export const useSuggestions = ({

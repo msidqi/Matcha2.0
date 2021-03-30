@@ -46,3 +46,11 @@ const useNotifications = (): {
 };
 
 export default useNotifications;
+
+/*
+The user received a “like”.
+• The user’s profile has been checked.
+• The user received a message.
+• A “liked” user “liked” back.
+• A connected user “unliked” you.
+*/

@@ -14,7 +14,7 @@ const ChatListSingle = ({
 }): JSX.Element => (
   <div
     onClick={onClick}
-    className={`relative flex justify-start items-center h-24 px-6 hover:bg-gray-50 ${
+    className={`relative flex justify-start items-center h-24 px-6 hover:bg-gray-50 cursor-pointer ${
       !isFirst ? "border-t border-gray-200" : ""
     }`}
   >
@@ -28,11 +28,7 @@ const ChatListSingle = ({
       />
     </div>
     <div className="pl-4 pr-2">
-      <h3 className="text-gray-700 font-bold">
-        <Link href={`/profile/${chatPreview.id}`}>
-          <a className="cursor-pointer">{chatPreview.userName}</a>
-        </Link>
-      </h3>
+      <h3 className="text-gray-700 font-bold">{chatPreview.userName}</h3>
       <p className="text-gray-500 text-sm">
         {chatPreview.messagePreview?.content || "Start a new conversation!"}
       </p>

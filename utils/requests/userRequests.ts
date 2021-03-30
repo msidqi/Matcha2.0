@@ -203,6 +203,28 @@ export const deleteBlock = ({
   }).then((res) => res.json());
 };
 
+interface ReportProps {
+  reporter: string;
+  reported: string;
+}
+
+export const report = ({
+  reporter,
+  reported,
+  authorization,
+}: ReportProps & Authorization) => {
+  return apiRequest(
+    "post",
+    "/api/report",
+    { reporter, reported },
+    {
+      headers: {
+        Authorization: authorization,
+      },
+    }
+  )[0];
+};
+
 export const getOtherUserInfosRequest = ({
   authorization,
   otherUserId,
@@ -287,7 +309,9 @@ export const useMessages = ({
       enabled: userId != undefined && userId !== -1,
       keepPreviousData: true,
       onSuccess,
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
       getNextPageParam: (lastPage) =>
         offset ?? JSON.parse(lastPage.config.data)?.offset + 1,
     }

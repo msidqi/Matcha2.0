@@ -10,6 +10,7 @@ import { TextMessage } from "@/interfaces";
 import { LoadingAnimation } from "@/components/ui/Icons/LoadingIcon";
 import { useSocketConnection } from "../Sockets";
 import { useChatUsers } from "../useChat";
+import Link from "next/link";
 
 type SocketMessageEventPayload = {
   to: string;
@@ -29,6 +30,7 @@ const scrollToBottom = (container: HTMLDivElement) => {
 
 // connectedUser 260
 // test2 261
+
 const ChatRoom = (): JSX.Element => {
   const [isAtBottom, setIsAtBottom] = React.useState<boolean>(true);
   const [message, setMessage] = React.useState<string>("");
@@ -39,6 +41,13 @@ const ChatRoom = (): JSX.Element => {
   const [messagesHistoryLocal, setMessagesHistoryLocal] = React.useState<
     TextMessage[]
   >([]);
+  const [
+    messagesGlobalHistoryLocal,
+    setMessagesGlobalHistoryLocal,
+  ] = React.useState<Map<number, TextMessage[]>>(
+    new Map<number, TextMessage[]>()
+  );
+  console.log("map", messagesGlobalHistoryLocal);
   const {
     data: messagesHistory,
     fetchNextPage: fetchNextMessages,
@@ -46,7 +55,13 @@ const ChatRoom = (): JSX.Element => {
   } = useMessages({
     authorization,
     userId: otherUser.id,
-    onSuccess: () => setMessagesHistoryLocal([]),
+    onSuccess: () => {
+      setMessagesHistoryLocal([]);
+      setMessagesGlobalHistoryLocal((prev) => {
+        prev.set(otherUser.id, []);
+        return prev;
+      });
+    },
   });
   // merge fetched messages and local messages
   const messagesHistoryPages: TextMessage[] = [
@@ -93,13 +108,26 @@ const ChatRoom = (): JSX.Element => {
     };
   }, []);
 
+  const addMesageToGlobalUserMessage = (
+    prev: typeof messagesGlobalHistoryLocal,
+    textMessage: TextMessage | TextMessage[]
+  ) => {
+    const otherUserMsgArray = prev.get(otherUser.id) || [];
+    if (Array.isArray(textMessage)) {
+      prev.set(otherUser.id, [...otherUserMsgArray, ...textMessage]);
+    } else {
+      prev.set(otherUser.id, [...otherUserMsgArray, textMessage]);
+    }
+    return prev;
+  };
+
   const onKeyEnterUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.keyCode === 13 && message && otherUser.id !== -1) {
       const newMessage: SocketMessageEventPayload = {
         to: otherUser.userName,
         message: message,
       };
-      // console.log("emit", newMessage);
+      console.log("emit", newMessage);
       socket?.emit(EVENT_KEY_MESSAGE_SEND, newMessage);
       setMessage("");
       const textMessage: TextMessage = {
@@ -108,6 +136,10 @@ const ChatRoom = (): JSX.Element => {
         sender: userData.id,
         receiver: otherUser.id,
       };
+      console.log("new message sent", newMessage);
+      setMessagesGlobalHistoryLocal((prev) =>
+        addMesageToGlobalUserMessage(prev, textMessage)
+      );
       setMessagesHistoryLocal((prev) => [...prev, textMessage]);
     }
   };
@@ -115,14 +147,25 @@ const ChatRoom = (): JSX.Element => {
   // connect with sockets
   React.useEffect(() => {
     if (socket && otherUser.id !== -1) {
+      // socket.off(EVENT_KEY_MESSAGE_RECIEVE);
       socket.on(EVENT_KEY_MESSAGE_RECIEVE, (data: MessageRecievedType[][]) => {
-        const messages: TextMessage[] = data.flat().map((elem) => ({
-          content: elem.message,
-          date: new Date(elem.date),
-          sender: otherUser.id,
-          receiver: userData.id,
-        }));
+        const messages: TextMessage[] = data
+          .flat()
+          .filter((elem) => {
+            console.log("filter", elem.from, otherUser.userName);
+            return elem.from === otherUser.userName;
+          })
+          .map((elem) => ({
+            content: elem.message,
+            date: new Date(elem.date),
+            sender: otherUser.id,
+            receiver: userData.id,
+          }));
+        console.log("new received message", messages);
         setMessagesHistoryLocal((prev) => [...prev, ...messages]);
+        setMessagesGlobalHistoryLocal((prev) =>
+          addMesageToGlobalUserMessage(prev, messages)
+        );
       });
       /*socket.on(EVENT_KEY_MESSAGE_RECIEVE, (data: any) =>
         console.log("EVENT_KEY_MESSAGE_RECIEVE", data)
@@ -132,7 +175,7 @@ const ChatRoom = (): JSX.Element => {
       socket.off(EVENT_KEY_CONNECT);
       socket.off(EVENT_KEY_MESSAGE_RECIEVE);
     }
-  }, [otherUser.id]);
+  }, [otherUser.id !== -1]);
 
   const isOtherUserMessage = (textMessage?: TextMessage) =>
     typeof textMessage?.sender === "number" &&
@@ -170,7 +213,13 @@ const ChatRoom = (): JSX.Element => {
           />
         </div>
         <div className="">
-          <h3 className="font-bold">{otherUser.userName}</h3>
+          <h3 className="text-gray-700 font-bold">
+            <Link href={`/profile/${otherUser.id}`}>
+              <a className="cursor-pointer hover:underline">
+                {otherUser.userName}
+              </a>
+            </Link>
+          </h3>
           <p className="text-gray-500 text-xs">{currentUser.lastConnected}</p>
         </div>
       </header>

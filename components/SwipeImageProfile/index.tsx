@@ -5,20 +5,15 @@ import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import { formatDistance } from "@/utils/formatDistance";
 import { SuggestedUser } from "@/utils/requests/suggestions";
 import { useUser } from "../auth";
-import { getImageWithUserId } from "@/utils/requests/userRequests";
 
 interface Props {
   profile: SuggestedUser;
   isCurrentlyShown?: boolean;
 }
 
-const PLACEHOLDER_IMAGE = "https://via.placeholder.com/400x600";
-
 const SwipeImageProfile = ({
-  profile: { userName, age, distance, gender, orientation, bio, id },
-  isCurrentlyShown,
+  profile: { userName, age, distance, gender, orientation, bio, image },
 }: Props) => {
-  const [image, setImage] = React.useState<string>("");
   const [state, setExpand] = React.useState<{
     expand: boolean;
     doExpand: boolean;
@@ -31,29 +26,6 @@ const SwipeImageProfile = ({
 
   if (loading) return <>Loading...</>;
   if (!user) return <>Error</>;
-
-  React.useEffect(() => {
-    const fetchImage = async () => {
-      try {
-        const result = await getImageWithUserId({
-          authorization: user.authorization,
-          id,
-        });
-        // remove body from fetch request of image
-        // console.log("getImageWithUserId", result);
-        if (result.status === 200) {
-          setImage(result.data.image);
-        } else {
-          setImage(PLACEHOLDER_IMAGE);
-        }
-      } catch (e) {
-        console.error(e);
-        setImage(PLACEHOLDER_IMAGE);
-      }
-    };
-
-    fetchImage();
-  }, []);
 
   const mainDetails = (
     <div
@@ -80,7 +52,7 @@ const SwipeImageProfile = ({
   return (
     <SwipeCardContainer>
       <div
-        style={{ background: `url(${image})` }}
+        style={{ backgroundImage: `url(data:image/jpg;base64,${image})` }}
         className="relative sm:max-w-sm h-full w-full sm:rounded-2xl bg-cover bg-center cursor-pointer"
       >
         <div
