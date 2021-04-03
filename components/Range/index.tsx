@@ -61,10 +61,14 @@ export const Range = ({
           max={MAX}
           values={range}
           onChange={(values) => {
-            const newValues = [...values];
+            const newValues: [number] | [number, number] =
+              typeof values[0] === "number" && typeof values[1] === "number"
+                ? [values[0], values[1]]
+                : typeof values[0] === "number"
+                ? [values[0]]
+                : [0, 0];
             setRange(newValues);
-            onRangeChange &&
-              onRangeChange(newValues as [number] | [number, number]);
+            onRangeChange && onRangeChange(newValues);
           }}
           renderTrack={({ props, children }) => (
             <div
