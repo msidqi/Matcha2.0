@@ -1,51 +1,16 @@
-import React, { CSSProperties } from "react";
+import React from "react";
 import SwipeImage from "@/components/SwipeImage";
 import type { SwipeDirection } from "@/components/SwipeImage";
-import { Transition, Switch } from "@headlessui/react";
-import { Range } from "@/components/Range";
-import TagsDisplay from "@/components/TagsDisplay";
+
 import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
 import SearchIcon from "@/components/ui/Icons/SearchIcon";
 import { useUser } from "../auth";
 import { useSuggestions } from "@/utils/requests/suggestions";
-import { like, deleteLike } from "@/utils/requests/userRequests";
-import Select from "../Select";
-import { sortOptions, sortOrder } from "./selectOptions.json";
+import { like } from "@/utils/requests/userRequests";
+import Settings from "@/components/ProfileListingSettings";
 // import { indexOf } from "@/utils/indexOf";
 
-interface SettingsContainerProps {
-  disableSettingsDisplay: () => void;
-  style?: CSSProperties;
-}
-
 const ROW_COUNT = 4;
-
-const SettingsContainer: React.FC<SettingsContainerProps> = ({
-  children,
-  disableSettingsDisplay,
-  style,
-}): JSX.Element => {
-  const handleBodyClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-  };
-
-  React.useEffect(() => {
-    window.addEventListener("click", disableSettingsDisplay);
-    return () => {
-      window.removeEventListener("click", disableSettingsDisplay);
-    };
-  }, []);
-
-  return (
-    <div
-      onClick={handleBodyClick}
-      style={{ ...style, maxWidth: "44rem" }}
-      className="absolute bottom-16 left-1/2 transform -translate-x-1/2 shadow-lg sm:rounded-md w-screen px-4 py-2 bg-white border-2 border-gray-100"
-    >
-      {children}
-    </div>
-  );
-};
 
 const ProfileListing = () => {
   const [showSearch, setShowSearch] = React.useState<boolean>(false);
@@ -84,10 +49,23 @@ const ProfileListing = () => {
           experience: experienceRange,
           tags: [...tagsSet],
         }
+      : isSearchActive
+      ? {
+          age: ageRangeS,
+          distance: distanceRangeS,
+          experience: experienceRangeS,
+          tags: [...tagsSetS],
+        }
       : undefined,
-    tri: triOrder && tri ? { [`${tri}`]: `${triOrder}` } : undefined,
+    tri:
+      isFilterActive && triOrder && tri
+        ? { [`${tri}`]: `${triOrder}` }
+        : isSearchActive && triOrderS && triS
+        ? { [`${triS}`]: `${triOrderS}` }
+        : undefined,
+    isSearch: isSearchActive,
   });
-  console.log("useSuggestions data", data);
+  console.log({ isSearchActive });
   if (error) return <>suggestions error...</>;
   if (isLoading) return <>suggestions are loading...</>;
   const allSuggestedUsers = data?.pages.flatMap((page) => page.data).reverse();
@@ -96,19 +74,25 @@ const ProfileListing = () => {
   const toggleFilters = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowFilters(!showFilters);
+    if (!showFilters) {
+      setShowSearch(false);
+    }
     if (showFilters) {
-      window.addEventListener("click", disableSettingsDisplay);
+      window.addEventListener("click", disableFilterDisplay);
     }
   };
 
-  const disableSettingsDisplay = () => {
+  const disableFilterDisplay = () => {
     setShowFilters(false);
-    window.removeEventListener("click", disableSettingsDisplay);
+    window.removeEventListener("click", disableFilterDisplay);
   };
 
   const toggleSearch = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowSearch(!showSearch);
+    if (!showSearch) {
+      setShowFilters(false);
+    }
     if (showSearch) {
       window.addEventListener("click", disableSearchDisplay);
     }
@@ -147,7 +131,7 @@ const ProfileListing = () => {
     }
   };
 
-  const handleOutOfFrame = (nameToDelete: string) => {
+  const handleOutOfFrame = (_nameToDelete: string) => {
     setNumberOfSwipes((prev) => prev + 1);
     // data?.pages.splice(
     //   indexOf(data?.pages[0].data, (elem) => elem.userName === nameToDelete),
@@ -177,249 +161,49 @@ const ProfileListing = () => {
           <SearchIcon />
         </div>
       </div>
-      <section className="z-20 relative">
-        <Transition
-          show={showFilters}
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-20"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-100"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-20"
-        >
-          <SettingsContainer
-            disableSettingsDisplay={disableSettingsDisplay}
-            style={!isFilterActive ? { filter: "grayscale(80%)" } : {}}
-          >
-            <div className="border-gray-200 border-2 p-4 rounded-md mb-4">
-              <div className="w-full mb-2 mt-2 pr-4 border-gray-200 border-2 p-4 rounded-2xl">
-                <Switch.Group
-                  as="div"
-                  className="flex items-center justify-between space-x-4"
-                >
-                  <label>Enable Filters</label>
-                  <Switch
-                    as="button"
-                    checked={isFilterActive}
-                    onChange={setIsFilterActive}
-                    className={`${
-                      isFilterActive ? "bg-green-400" : "bg-gray-200"
-                    } relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:shadow-outline`}
-                  >
-                    {({ checked }) => (
-                      <span
-                        className={`${
-                          checked ? "translate-x-5" : "translate-x-0"
-                        } inline-block w-5 h-5 transition duration-200 ease-in-out transform bg-white rounded-full`}
-                      />
-                    )}
-                  </Switch>
-                </Switch.Group>
-              </div>
-
-              <div className="mb-2">
-                <Range
-                  label="Age"
-                  range={ageRange}
-                  setRange={setAgeRange}
-                  onRangeChange={(currentRange) =>
-                    console.log("age", currentRange)
-                  }
-                />
-              </div>
-              <div className="mb-2">
-                <Range
-                  label="Popularity range"
-                  max={100}
-                  min={0}
-                  unit="pt"
-                  range={experienceRange}
-                  setRange={setExperienceRange}
-                  onRangeChange={(currentRange) =>
-                    console.log("popularity range", currentRange)
-                  }
-                />
-              </div>
-              <div className="mb-2">
-                <Range
-                  label="Location"
-                  step={0.1}
-                  max={10}
-                  min={0}
-                  unit="km"
-                  range={distanceRange}
-                  setRange={setDistanceRange}
-                  onRangeChange={(currentRange) =>
-                    console.log("location", currentRange)
-                  }
-                />
-              </div>
-              <div className="mb-2">
-                <TagsDisplay
-                  tagsSet={tagsSet}
-                  setTagsSet={setTagsSet}
-                  variant="secondary"
-                />
-              </div>
-            </div>
-            <div className="border-gray-200 border-2 p-4 rounded-md">
-              <div className="mb-2">
-                <Select
-                  name="tri"
-                  initialValue={tri}
-                  placeholder="Select what to sort by"
-                  label="Sort by"
-                  options={sortOptions}
-                  onChange={(e) => setTri(e.target.value)}
-                />
-              </div>
-              <div className="mb-2">
-                <Select
-                  name="triOrder"
-                  initialValue={triOrder}
-                  placeholder="Select sort order"
-                  label="Sort order"
-                  options={sortOrder}
-                  onChange={(e) => setTriOrder(e.target.value)}
-                />
-              </div>
-            </div>
-          </SettingsContainer>
-        </Transition>
-      </section>
+      <Settings
+        {...{
+          settingsName: "Filters",
+          showSettings: showFilters,
+          isSettingActive: isFilterActive,
+          setIsSettingActive: setIsFilterActive,
+          tri,
+          setTri,
+          triOrder,
+          setTriOrder,
+          ageRange,
+          setAgeRange,
+          distanceRange,
+          setDistanceRange,
+          experienceRange,
+          setExperienceRange,
+          tagsSet,
+          setTagsSet,
+          disableSettingsDisplay: disableFilterDisplay,
+        }}
+      />
+      <Settings
+        {...{
+          settingsName: "Search",
+          showSettings: showSearch,
+          isSettingActive: isSearchActive,
+          setIsSettingActive: setIsSearchActive,
+          tri: triS,
+          setTri: setTriS,
+          triOrder: triOrderS,
+          setTriOrder: setTriOrderS,
+          ageRange: ageRangeS,
+          setAgeRange: setAgeRangeS,
+          distanceRange: distanceRangeS,
+          setDistanceRange: setDistanceRangeS,
+          experienceRange: experienceRangeS,
+          setExperienceRange: setExperienceRangeS,
+          tagsSet: tagsSetS,
+          setTagsSet: setTagsSetS,
+          disableSettingsDisplay: disableSearchDisplay,
+        }}
+      />
     </>
   );
 };
 export default ProfileListing;
-
-const Settings = ({
-  showSettings,
-  isSettingActive,
-  setIsSettingActive,
-  disableSettingsDisplay,
-  ageRange,
-  setAgeRange,
-  experienceRange,
-  setExperienceRange,
-  distanceRange,
-  setDistanceRange,
-  tagsSet,
-  setTagsSet,
-  tri,
-  setTri,
-  triOrder,
-  setTriOrder,
-}) => {
-  return (
-    <section className="z-20 relative">
-      <Transition
-        show={showSettings}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-20"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-100"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-20"
-      >
-        <SettingsContainer
-          disableSettingsDisplay={disableSettingsDisplay}
-          style={!isSettingActive ? { Setting: "grayscale(80%)" } : {}}
-        >
-          <div className="border-gray-200 border-2 p-4 rounded-md mb-4">
-            <div className="w-full mb-2 mt-2 pr-4 border-gray-200 border-2 p-4 rounded-2xl">
-              <Switch.Group
-                as="div"
-                className="flex items-center justify-between space-x-4"
-              >
-                <label>Enable Settings</label>
-                <Switch
-                  as="button"
-                  checked={isSettingActive}
-                  onChange={setIsSettingActive}
-                  className={`${
-                    isSettingActive ? "bg-green-400" : "bg-gray-200"
-                  } relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:shadow-outline`}
-                >
-                  {({ checked }) => (
-                    <span
-                      className={`${
-                        checked ? "translate-x-5" : "translate-x-0"
-                      } inline-block w-5 h-5 transition duration-200 ease-in-out transform bg-white rounded-full`}
-                    />
-                  )}
-                </Switch>
-              </Switch.Group>
-            </div>
-
-            <div className="mb-2">
-              <Range
-                label="Age"
-                range={ageRange}
-                setRange={setAgeRange}
-                onRangeChange={(currentRange) =>
-                  console.log("age", currentRange)
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <Range
-                label="Popularity range"
-                max={100}
-                min={0}
-                unit="pt"
-                range={experienceRange}
-                setRange={setExperienceRange}
-                onRangeChange={(currentRange) =>
-                  console.log("popularity range", currentRange)
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <Range
-                label="Location"
-                step={0.1}
-                max={10}
-                min={0}
-                unit="km"
-                range={distanceRange}
-                setRange={setDistanceRange}
-                onRangeChange={(currentRange) =>
-                  console.log("location", currentRange)
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <TagsDisplay
-                tagsSet={tagsSet}
-                setTagsSet={setTagsSet}
-                variant="secondary"
-              />
-            </div>
-          </div>
-          <div className="border-gray-200 border-2 p-4 rounded-md">
-            <div className="mb-2">
-              <Select
-                name="tri"
-                initialValue={tri}
-                placeholder="Select what to sort by"
-                label="Sort by"
-                options={sortOptions}
-                onChange={(e) => setTri(e.target.value)}
-              />
-            </div>
-            <div className="mb-2">
-              <Select
-                name="triOrder"
-                initialValue={triOrder}
-                placeholder="Select sort order"
-                label="Sort order"
-                options={sortOrder}
-                onChange={(e) => setTriOrder(e.target.value)}
-              />
-            </div>
-          </div>
-        </SettingsContainer>
-      </Transition>
-    </section>
-  );
-};

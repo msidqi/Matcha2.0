@@ -23,6 +23,7 @@ interface UseSuggestionsProps {
     experience: number[];
     tags: string[];
   };
+  isSearch?: boolean;
 }
 
 export type SuggestedUser = {
@@ -46,13 +47,14 @@ export const useSuggestions = ({
   offset,
   tri,
   filter,
+  isSearch,
 }: UseSuggestionsProps & Authorization) => {
   return useInfiniteQuery(
-    ["suggestions", filter, tri],
+    [isSearch ? "research" : "suggestions", filter, tri],
     ({ pageParam = 0 }) =>
       apiRequest<SuggestedUser[]>(
         "post",
-        "/api/suggestions",
+        `/api/${isSearch ? "research" : "suggestions"}`,
         {
           offset: pageParam,
           row_count,

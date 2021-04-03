@@ -24,7 +24,7 @@ const ChatList = (): JSX.Element => {
     if (newOtherUser.id !== otherUser.id) addOtherUsers(newOtherUser);
     if (listRoom !== "room") toggleListAndRoom("room");
   };
-
+  console.log("match data", data?.[0]);
   const selectDefaultUser = () => {
     let isUserAlreadySelected = false;
     // select user from query params
