@@ -46,7 +46,7 @@ const Signin = (): JSX.Element => {
           placeholder="Enter your password"
         />
         <div className="text-right text-sm sm:text-base">
-          <Link href="/password-reset">
+          <Link href="/forgot-password">
             <a className="text-gray-400 underline bold">
               Forgot your password ?
             </a>

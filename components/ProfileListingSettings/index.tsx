@@ -61,7 +61,7 @@ const Settings = ({
           disableSettingsDisplay={disableSettingsDisplay}
           style={!isSettingActive ? { filter: "grayscale(80%)" } : {}}
         >
-          <div className="w-full mb-2 mt-2 py-4 px-2 border-gray-200 border-2 rounded-md">
+          <div className="sm:px-2 sm:mb-2  sm:border-2 w-full py-4 px-4 border-gray-200 rounded-md">
             <Switch.Group
               as="div"
               className="flex items-center justify-between space-x-4"
@@ -87,7 +87,7 @@ const Settings = ({
               </Switch>
             </Switch.Group>
           </div>
-          <div className="border-gray-200 border-2 p-4 rounded-md mb-4">
+          <div className="border-gray-200 border-2 p-4 rounded-md">
             <div className="mb-2">
               <Range
                 label="Age"
@@ -187,7 +187,7 @@ const SettingsContainer: React.FC<SettingsContainerProps> = ({
     <div
       onClick={handleBodyClick}
       style={{ ...style, maxWidth: "44rem" }}
-      className="absolute bottom-16 left-1/2 transform -translate-x-1/2 shadow-lg sm:rounded-md w-screen px-4 py-2 bg-white border-2 border-gray-100"
+      className="sm:absolute sm:bottom-16 sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:p-4 sm:shadow-md sm:rounded-md border-2 sm:border-gray-100 w-screen bg-white"
     >
       {children}
     </div>
