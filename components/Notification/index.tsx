@@ -1,9 +1,6 @@
 import { NotificationType } from "@/interfaces";
 
-const getNotificationView = ({
-  type,
-  notifier,
-}: Pick<NotificationType, "type" | "notifier">) => {
+const NotificationView = ({ type, notifier }: NotificationType) => {
   switch (type) {
     case "empty":
       return <p>No new notification</p>;
@@ -24,11 +21,10 @@ const getNotificationView = ({
   }
 };
 
-const Notification = ({ type, notifier }: NotificationType): JSX.Element => {
-  const main = getNotificationView({ type, notifier });
+const Notification = (props: NotificationType): JSX.Element => {
   return (
     <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-      {main}
+      <NotificationView {...props} />
     </div>
   );
 };
