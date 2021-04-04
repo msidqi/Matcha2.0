@@ -179,10 +179,13 @@ function Navbar(): JSX.Element {
                 aria-labelledby="user-menu"
               >
                 {notifications.length === 0 ? (
-                  <Notification type="empty" key="empty-notification" />
+                  <Notification type="noNew" key="empty-notification" />
                 ) : (
                   notifications.map((elem, index) => (
-                    <Notification key={`notification-${index}`} {...elem} />
+                    <>
+                      {console.log("elem notif", elem)}
+                      <Notification key={`notification-${index}`} {...elem} />
+                    </>
                   ))
                 )}
               </div>

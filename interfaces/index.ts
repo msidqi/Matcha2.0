@@ -88,6 +88,7 @@ export type NotificationType =
         bio: string | null;
         age: number;
       };
-      type: "consult";
+      type: "consult" | "match" | "like" | "unlike" | "message";
     }
-  | { type: "empty" };
+  | { type: "empty"; notifier: undefined }
+  | { type: "noNew"; notifier: undefined };
