@@ -90,5 +90,5 @@ export type NotificationType =
       };
       type: "consult" | "match" | "like" | "unlike" | "message";
     }
-  | { type: "empty"; notifier: undefined }
-  | { type: "noNew"; notifier: undefined };
+  | { type: "empty" }
+  | { type: "noNew" };
