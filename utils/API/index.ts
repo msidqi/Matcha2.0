@@ -1,11 +1,12 @@
-import axios, { AxiosResponse } from "axios";
-import type { AxiosRequestConfig } from "axios";
+import axios from "axios";
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
 
-export class ApiRequestError {
+export class ApiRequestError extends Error {
   name = "ApiRequestError";
   message: string;
 
   constructor(message: string) {
+    super();
     this.message = message;
   }
 }
@@ -16,14 +17,14 @@ export function apiRequest<T = any>(
   method: "get" | "delete",
   path: string,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<T>>;
+): [Promise<AxiosResponse<T>>, any];
 
 export function apiRequest<T = any>(
   method: "post" | "put" | "patch",
   path: string,
   data?: any,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<T>>;
+): [Promise<AxiosResponse<T>>, any];
 
 export function apiRequest<T = any>(
   method: Methods,
@@ -32,7 +33,24 @@ export function apiRequest<T = any>(
   options?: any
 ) {
   if (!axios[method]) throw new ApiRequestError("Not valid apiRequest Method");
-  if (method === "get" || method === "delete")
-    return axios[method]<T>(path, data);
-  return axios[method]<T>(path, data, options);
+
+  let cancel;
+  if (method === "get" || method === "delete") {
+    const s = axios[method]<T>(path, {
+      ...data,
+      cancelToken: new axios.CancelToken(function executor(c) {
+        cancel = c;
+      }),
+    });
+    return [s, cancel];
+  }
+  return [
+    axios[method]<T>(path, data, {
+      ...options,
+      cancelToken: new axios.CancelToken(function executor(c) {
+        cancel = c;
+      }),
+    }),
+    cancel,
+  ];
 }

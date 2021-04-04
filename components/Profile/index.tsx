@@ -1,43 +1,128 @@
 import React from "react";
-import { ProfileType } from "@/interfaces";
 import Tag from "@/components/Tag";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import DropDownIcon from "@/components/ui/Icons/DropDownIcon";
 import PositionIcon from "@/components/ui/Icons/PositionIcon";
-import { getSexePreference } from "@/utils/getSexePreference";
 import { indexOf } from "@/utils/indexOf";
 import Link from "next/link";
 import { Transition } from "@headlessui/react";
 import Modal from "@/components/ui/Modal";
+import {
+  useOtherUserInfosRequest,
+  deleteLike,
+  block,
+  report,
+} from "@/utils/requests/userRequests";
+import { useUser } from "@/components/auth";
+import formatRelative from "date-fns/formatRelative";
+import { useRouter } from "next/router";
+import { Image } from "@/components/auth/classes";
 
-interface ProfileProps {
-  profile: ProfileType;
-}
+export type ImageType = { src: string; isProfilePicture: 1 | 0 };
 
-export type ImageType = { src: string; isProfilePicture: boolean };
-
-const ProfileDisplay = ({ profile }: ProfileProps) => {
+const ProfileDisplay = () => {
+  const router = useRouter();
+  const [otherUserId, setOtherUserId] = React.useState<number | undefined>();
+  const [isMyProfile, setIsMyProfile] = React.useState<boolean>(false);
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
-  const { userName, tags, distance, gender, bio, orientation, age } = profile;
-  const images: ImageType[] = [
-    { src: "/profile.jpg", isProfilePicture: false },
-    { src: "/profile_jap.jpg", isProfilePicture: true },
-    { src: "/profile_liz.jpg", isProfilePicture: false },
-    { src: "/profile_saf.jpg", isProfilePicture: false },
-    { src: "/profile_eva.jpg", isProfilePicture: false },
-  ];
-  const isConnected = true;
-  const lastConnected = "2h ago";
+  const [{ user }] = useUser();
+  const { data: profile, isLoading, error } = useOtherUserInfosRequest({
+    authorization: user?.authorization,
+    otherUserId,
+  });
+
+  React.useEffect(() => {
+    const userID = router.query.userID;
+    if (userID && typeof userID === "string") {
+      const userIDNumber = parseInt(userID);
+      setOtherUserId(userIDNumber);
+      if (userIDNumber === user?.data.id) setIsMyProfile(true);
+    }
+  }, [router.query.userID]);
+
+  const distance = "1.2 km";
+  let isConnected = false;
+  const getLastConnected = React.useCallback(() => {
+    const lastSeenDate = new Date(profile?.lastSeen || "");
+    return isNaN(lastSeenDate.getTime())
+      ? ""
+      : `last seen ${formatRelative(lastSeenDate, new Date())}`;
+  }, [profile?.lastSeen]);
+  Image;
   const [mainPicIndex, setMainPicIndex] = React.useState<number>(
-    indexOf<ImageType>(images, (img) => img.isProfilePicture) ?? 0
+    Math.max(
+      0,
+      profile
+        ? indexOf<Image>(profile.images as Image[], (img) =>
+            Boolean(img.isProfilePicture)
+          )
+        : 0
+    )
   );
 
-  const blockUser = () => {};
-  const reportUser = () => {};
+  if (isLoading) return <>loading...</>;
+  if (!profile || error || !user) return <>error</>;
+  const reportUser = async () => {
+    try {
+      const reported = profile.userName;
+      const reporter = user.data.userName;
+      const result = await report({
+        authorization: user.authorization,
+        reported,
+        reporter,
+      });
+      if (result.status === 200) {
+        console.log("reported user");
+      } else {
+        console.log("could not report user");
+      }
+    } catch (e) {
+      console.log("error reporting user", e);
+    }
+  };
+  const blockUser = async () => {
+    try {
+      const blocked = profile.userName;
+      const blocker = user.data.userName;
+      const result = await block({
+        authorization: user.authorization,
+        blocked,
+        blocker,
+      });
+      if (result.status === 200) {
+        console.log("blocked user");
+      } else {
+        console.log("could not block user");
+      }
+    } catch (e) {
+      console.log("error blocking user", e);
+    }
+  };
+  const unlikeUser = async () => {
+    try {
+      const liked = profile.userName;
+      const liker = user.data.userName;
+      const result = await deleteLike({
+        authorization: user.authorization,
+        liked,
+        liker,
+      });
+      if (result.status === 200) {
+        console.log("unliked user");
+      } else {
+        console.log("could not unlike user");
+      }
+    } catch (e) {
+      console.log("error unliking user", e);
+    }
+  };
   return (
     <>
-      <article className="w-full max-w-4xl flex flex-col sm:flex-row justify-center bg-white sm:shadow-lg p-0 sm:px-6 sm:py-4 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8">
-        <section className="min-w-1/4 relative">
+      <article
+        style={{ height: "min-content" }}
+        className="max-w-4xl bg-white sm:shadow-lg p-0 sm:px-6 sm:py-4 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8"
+      >
+        <section className="flex justify-around flex-wrap relative mb-4">
           {/* ------ main picture ------ */}
           <div
             className="sm:max-w-sm sm:w-80 w-full"
@@ -46,64 +131,79 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
             <picture>
               <source
                 media="(min-width:650px)"
-                srcSet={images[mainPicIndex].src}
+                srcSet={profile.images[mainPicIndex].src}
               />
               <img
-                src={images[mainPicIndex].src}
+                src={profile.images[mainPicIndex].src}
                 alt="profile picture"
                 className="h-full w-full object-cover sm:rounded-2xl "
               />
             </picture>
           </div>
-          <div className="absolute top-4 left-2">
-            <div
-              className="cursor-pointer inline"
-              onClick={() => setShowDropDown(!showDropDown)}
-            >
-              <DropDownIcon className="shadow rounded-xl" />
-            </div>
-            <Transition
-              show={showDropDown}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-20"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-100"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-20"
-            >
-              <div className=" w-64 bg-white rounded-xl text-center divide-y divide-gray-400 shadow-lg border border-gray-400">
-                <div className="block w-full rounded-t py-2.5 px-4">
-                  {userName} did something bad ?
-                </div>
-                <Modal
-                  onAccept={reportUser}
-                  title="Report"
-                  buttonText="Report"
-                  acceptText="Report"
-                  denyText="Cancel"
-                  classNameButton="block w-full text-gray-400 py-2.5 uppercase hover:bg-gray-50"
-                  description={`are you sure you want to report ${userName} ?`}
-                />
-                <Modal
-                  onAccept={blockUser}
-                  title="Block"
-                  buttonText="Block"
-                  acceptText="Block"
-                  denyText="Cancel"
-                  classNameButton="block w-full text-gray-400 py-2.5 uppercase rounded-xl hover:bg-gray-50"
-                  description={`you and ${userName} wont be able to see each other profile, are you sure ?`}
-                />
+          {/* report and block drop down */}
+          {!isMyProfile && (
+            <div className="absolute top-4 left-2">
+              <div
+                className="cursor-pointer inline"
+                onClick={() => setShowDropDown(!showDropDown)}
+              >
+                <DropDownIcon className="shadow rounded-xl" />
               </div>
-            </Transition>
-          </div>
-        </section>
-        <section className="sm:flex">
+              <Transition
+                show={showDropDown}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-20"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-100"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-20"
+              >
+                <div className=" w-64 bg-white rounded-lg text-center divide-y divide-gray-400 shadow-lg border border-gray-400">
+                  <div className="block w-full rounded-t py-2.5 px-4  text-sm">
+                    {profile.userName} did something bad ?
+                  </div>
+                  {!isMyProfile && (
+                    <Modal
+                      onAccept={unlikeUser}
+                      title="Delete like ?"
+                      buttonText="Unlike user"
+                      acceptText="Unlike"
+                      denyText="Cancel"
+                      variant="secondary"
+                      classNameButton="block w-full text-gray-400 py-2.5 uppercase hover:bg-gray-200 hover:text-gray-600"
+                      description={`you and ${profile.userName} wont be able to chat with each other, are you sure ?`}
+                    />
+                  )}
+                  <Modal
+                    onAccept={reportUser}
+                    title="Report"
+                    buttonText="Report"
+                    acceptText="Report"
+                    denyText="Cancel"
+                    variant="secondary"
+                    classNameButton="block w-full text-gray-400 py-2.5 uppercase hover:bg-gray-200 hover:text-gray-600"
+                    description={`are you sure you want to report ${profile.userName} ?`}
+                  />
+                  <Modal
+                    onAccept={blockUser}
+                    title="Block"
+                    buttonText="Block"
+                    acceptText="Block"
+                    denyText="Cancel"
+                    variant="secondary"
+                    classNameButton="block w-full text-red-400 py-2.5 uppercase rounded-b-xl hover:bg-gray-200 hover:text-red-500"
+                    description={`you and ${profile.userName} wont be able to see each other profile, are you sure ?`}
+                  />
+                </div>
+              </Transition>
+            </div>
+          )}
           {/* ------ other images container ------ */}
-          <div className="sm:w-24 flex justify-evenly sm:block sm:py-0 py-2">
-            {images.map((img, index) => (
+          <div className="flex-none sm:w-24 flex justify-evenly sm:block sm:py-0 py-2">
+            {profile.images.map((img, index) => (
               <li
                 key={index}
-                className="block p-0.5 w-16 sm:w-20 h-24 mx-auto"
+                className="block p-0.5 w-16 sm:w-20 h-24 ml-auto mr-0"
                 onClick={() => setMainPicIndex(index)}
               >
                 <article
@@ -126,15 +226,19 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
               </li>
             ))}
           </div>
+        </section>
+
+        <section className="flex-grow">
           {/* ------ profile information ------ */}
-          <div>
-            <div className="px-2 py-2 w-full sm:border-b sm:border-gray-200 divide-y sm:divide-y-0 divide-gray-200 divide-solide">
-              <div className="text-center mb-4 sm:mb-6 px-2 sm:px-0">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-gray-600 text-base ">
-                    <span className="text-xl font-bold">{userName}</span> {age}
-                  </h4>
-                  <Link href="/messages">
+          <div className="px-2 py-2 w-full divide-y sm:divide-y-0 divide-gray-200 divide-solide">
+            <div className="text-center mb-4 sm:mb-6 px-2 sm:px-0">
+              <div className="flex justify-between items-center">
+                <h4 className="text-gray-600 text-base ">
+                  <span className="text-xl font-bold">{profile.userName}</span>{" "}
+                  {profile.age}
+                </h4>
+                {!isMyProfile && (
+                  <Link href={`/messages?user=${profile.id}`}>
                     <a
                       style={{ transition: "all .15s ease" }}
                       className="bg-green-400 uppercase font-bold hover:shadow-md text-white rounded text-xs px-4 py-2 outline-none focus:outline-none"
@@ -142,51 +246,59 @@ const ProfileDisplay = ({ profile }: ProfileProps) => {
                       Message
                     </a>
                   </Link>
-                </div>
-                <div className="flex justify-start items-center">
-                  <div
-                    className={`rounded-full mr-1 ${
-                      isConnected
-                        ? "bg-green-400 w-2.5 h-2.5"
-                        : "border-gray-200 border w-2.5 h-2.5"
-                    }`}
-                  />
-                  <p className="text-gray-500 text-xs">
-                    {isConnected ? "connected" : lastConnected}
-                  </p>
-                </div>
-                <div className="mt-4 sm:mt-0">
-                  <AvatarIcon className="inline-block" />{" "}
-                  <p className="text-sm inline-block text-gray-400">
-                    {gender}, {getSexePreference(gender, orientation)}
-                  </p>
-                </div>
-                <div className="">
-                  <PositionIcon
-                    width="12"
-                    height="12"
-                    className="inline-block mr-1"
-                  />
-                  <p className="text-sm inline-block text-gray-400">{`${distance} km`}</p>
-                </div>
+                )}
               </div>
+              {!isMyProfile && (
+                <div className="flex justify-start items-center">
+                  <>
+                    <div
+                      className={`rounded-full mr-1 ${
+                        isConnected
+                          ? "bg-green-400 w-2.5 h-2.5"
+                          : "border-gray-200 border w-2.5 h-2.5"
+                      }`}
+                    />
+                    <p className="text-gray-500 text-xs">
+                      {isConnected ? "connected" : getLastConnected()}
+                    </p>
+                  </>
+                </div>
+              )}
+              <div className="mt-4 sm:mt-0">
+                <AvatarIcon className="inline-block" />{" "}
+                <p className="text-sm inline-block text-gray-400">
+                  {`${profile.gender}, ${profile.orientation}`}
+                </p>
+              </div>
+              <div>
+                <PositionIcon
+                  width="12"
+                  height="12"
+                  className="inline-block mr-1"
+                />
+                <p className="text-sm inline-block text-gray-400">{distance}</p>
+              </div>
+            </div>
+            {profile.bio && (
               <div className="text-center mb-4 sm:mx-4">
                 <h4 className="text-gray-600 text-base font-medium my-2">
                   About:
                 </h4>
-                <p className="text-gray-500 text-sm max-w-md">{bio}</p>
+                <p className="text-gray-500 text-sm max-w-md">{profile.bio}</p>
               </div>
+            )}
+            {profile.tags.length > 0 && (
               <div className="text-center  sm:mx-4">
                 <h4 className="text-gray-600 text-base font-medium my-2">
                   Interests:
                 </h4>
                 <div className="mt-1">
-                  {tags.map((tagName: string, i) => (
+                  {profile.tags.map((tagName: string, i) => (
                     <Tag key={`tag-${i}`} tagName={tagName} />
                   ))}
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
       </article>

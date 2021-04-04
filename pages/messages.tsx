@@ -1,16 +1,12 @@
+import React from "react";
 import Layout from "@/components/ui/Layout";
-import ChatRoom from "@/components/ChatRoom";
-import CharList from "@/components/CharList";
+import withAuth from "@/components/WithAuth";
+import Chat from "@/components/Chat";
 
-const index = (): JSX.Element => {
-  return (
-    <Layout>
-      <div className="flex h-full">
-        <CharList />
-        <ChatRoom />
-      </div>
-    </Layout>
-  );
-};
+const index = (): JSX.Element => (
+  <Layout>
+    <Chat />
+  </Layout>
+);
 
-export default index;
+export default withAuth(index);

@@ -1,204 +1,209 @@
-import React, { CSSProperties } from "react";
+import React from "react";
 import SwipeImage from "@/components/SwipeImage";
-import { Transition, Switch } from "@headlessui/react";
-import { Range } from "@/components/Range";
-import TagsDisplay from "@/components/TagsDisplay";
+import type { SwipeDirection } from "@/components/SwipeImage";
+
 import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
-import { useQuery } from "react-query";
-import axios from "axios";
+import SearchIcon from "@/components/ui/Icons/SearchIcon";
 import { useUser } from "../auth";
+import { useSuggestions } from "@/utils/requests/suggestions";
+import { like } from "@/utils/requests/userRequests";
+import Settings from "@/components/ProfileListingSettings";
+// import { indexOf } from "@/utils/indexOf";
 
-interface FilterContainerProps {
-  disableFiltersDisplay: () => void;
-  applyFilter: () => void;
-  style?: CSSProperties;
-}
-
-const FiltersContainer: React.FC<FilterContainerProps> = ({
-  children,
-  disableFiltersDisplay,
-  applyFilter,
-  style,
-}): JSX.Element => {
-  const handleBodyClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-  };
-
-  React.useEffect(() => {
-    window.addEventListener("click", disableFiltersDisplay);
-    return () => {
-      window.removeEventListener("click", disableFiltersDisplay);
-      // applyFilter();
-    };
-  }, []);
-
-  return (
-    <div
-      onClick={handleBodyClick}
-      style={{ ...style, maxWidth: "44rem" }}
-      className="absolute top-0 left-1/2 transform -translate-x-1/2 shadow-lg sm:rounded-md w-screen px-4 py-2 bg-white border-2 border-gray-100 z-10"
-    >
-      {children}
-    </div>
-  );
-};
+const ROW_COUNT = 4;
 
 const ProfileListing = () => {
-  const [isEnabledFilters, setIsEnabledFilters] = React.useState<boolean>(
-    false
-  );
-  const [showFilters, setShowFilters] = React.useState<boolean>(false);
-  const [tagsFilter, setTagsFilter] = React.useState<string[]>([]);
-  const [ageRange, setAgeRange] = React.useState<[number, number]>([18, 22]);
-  const [popularityRange, setPopularityRange] = React.useState<
+  const [showSearch, setShowSearch] = React.useState<boolean>(false);
+  const [triS, setTriS] = React.useState<string>("");
+  const [triOrderS, setTriOrderS] = React.useState<string>("");
+  const [ageRangeS, setAgeRangeS] = React.useState<[number, number]>([18, 22]);
+  const [distanceRangeS, setDistanceRangeS] = React.useState<[number]>([1]);
+  const [experienceRangeS, setExperienceRangeS] = React.useState<
     [number, number]
   >([0, 30]);
-  const [distanceRange, setDistanceRange] = React.useState<[number]>([1]);
-  const [{ user, loggedIn }] = useUser();
-  console.log("user?.getAuthorization()", user?.getAuthorization?.());
-  const { isLoading, error, data } = useQuery(
-    "suggestions",
-    () =>
-      axios.post(
-        "/api/suggestions",
-        { offset: 0, row_count: 2 },
-        {
-          headers: {
-            Authorization: user?.getAuthorization?.(),
-          },
-        }
-      ),
-    { enabled: loggedIn }
+  const [tagsSetS, setTagsSetS] = React.useState<Set<string>>(
+    new Set(["Hello", "World", "1337", "42"])
   );
+  const [isSearchActive, setIsSearchActive] = React.useState<boolean>(false);
+  const [showFilters, setShowFilters] = React.useState<boolean>(false);
+  const [tri, setTri] = React.useState<string>("");
+  const [triOrder, setTriOrder] = React.useState<string>("");
+  const [ageRange, setAgeRange] = React.useState<[number, number]>([18, 22]);
+  const [distanceRange, setDistanceRange] = React.useState<[number]>([1]);
+  const [experienceRange, setExperienceRange] = React.useState<
+    [number, number]
+  >([0, 30]);
+  const [tagsSet, setTagsSet] = React.useState<Set<string>>(
+    new Set(["Hello", "World", "1337", "42"])
+  );
+  const [isFilterActive, setIsFilterActive] = React.useState<boolean>(false);
+  const [numberOfSwipes, setNumberOfSwipes] = React.useState<number>(0);
+  const [{ user }] = useUser();
+  const { data, fetchNextPage, isFetching, error, isLoading } = useSuggestions({
+    authorization: user?.authorization || "",
+    row_count: ROW_COUNT,
+    filter: isFilterActive
+      ? {
+          age: ageRange,
+          distance: distanceRange,
+          experience: experienceRange,
+          tags: [...tagsSet],
+        }
+      : isSearchActive
+      ? {
+          age: ageRangeS,
+          distance: distanceRangeS,
+          experience: experienceRangeS,
+          tags: [...tagsSetS],
+        }
+      : undefined,
+    tri:
+      isFilterActive && triOrder && tri
+        ? { [`${tri}`]: `${triOrder}` }
+        : isSearchActive && triOrderS && triS
+        ? { [`${triS}`]: `${triOrderS}` }
+        : undefined,
+    isSearch: isSearchActive,
+  });
+  console.log({ isSearchActive });
+  if (error) return <>suggestions error...</>;
+  if (isLoading) return <>suggestions are loading...</>;
+  const allSuggestedUsers = data?.pages.flatMap((page) => page.data).reverse();
+  // console.log({ allSuggestedUsers }, data?.pageParams);
 
-  console.log(isLoading, error, data);
-  const toggleFilters = (event: React.MouseEvent) => {
+  const toggleFilters = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setShowFilters(!showFilters);
-    event.stopPropagation();
+    if (!showFilters) {
+      setShowSearch(false);
+    }
     if (showFilters) {
-      window.addEventListener("click", disableFiltersDisplay);
+      window.addEventListener("click", disableFilterDisplay);
     }
   };
 
-  const disableFiltersDisplay = () => {
+  const disableFilterDisplay = () => {
     setShowFilters(false);
-    window.removeEventListener("click", disableFiltersDisplay);
+    window.removeEventListener("click", disableFilterDisplay);
   };
 
-  const applyFilter = () => {
-    if (isEnabledFilters) {
-      console.log(
-        "apply filter with these settings\n",
-        "tags",
-        tagsFilter,
-        "age",
-        ageRange,
-        "popularity",
-        popularityRange,
-        "distance",
-        distanceRange
-      );
+  const toggleSearch = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowSearch(!showSearch);
+    if (!showSearch) {
+      setShowFilters(false);
+    }
+    if (showSearch) {
+      window.addEventListener("click", disableSearchDisplay);
     }
   };
-  console.log("isEnabledFilters", isEnabledFilters);
+
+  const disableSearchDisplay = () => {
+    setShowSearch(false);
+    window.removeEventListener("click", disableSearchDisplay);
+  };
+
+  const handleSwipe = async (
+    nameToDelete: string,
+    direction: SwipeDirection
+  ) => {
+    if (
+      typeof nameToDelete === "string" &&
+      typeof user?.data.userName === "string"
+    ) {
+      try {
+        if (direction === "right") {
+          //like
+          await like({
+            authorization: user.authorization,
+            liker: user.data.userName,
+            liked: nameToDelete,
+          });
+          // console.log("like result", result);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    if (!isFetching) {
+      fetchNextPage();
+      // setOffset((prev) => prev + 1);
+    }
+  };
+
+  const handleOutOfFrame = (_nameToDelete: string) => {
+    setNumberOfSwipes((prev) => prev + 1);
+    // data?.pages.splice(
+    //   indexOf(data?.pages[0].data, (elem) => elem.userName === nameToDelete),
+    //   1
+    // ); // find index and delete suggestion from data
+  };
 
   return (
     <>
-      <button
-        className="my-4 mx-auto transform transition duration-300 hover:scale-110 bg-white rounded-full shadow-md h-12 w-12 sm:h-14 sm:w-14 flex justify-center items-center cursor-pointer"
-        onClick={toggleFilters}
-      >
-        <SettingsIcon />
-      </button>
-      <section className="relative z-10">
-        <Transition
-          show={showFilters}
-          enter="transition ease-out duration-100"
-          enterFrom="transform opacity-0 scale-20"
-          enterTo="transform opacity-100 scale-100"
-          leave="transition ease-in duration-100"
-          leaveFrom="transform opacity-100 scale-100"
-          leaveTo="transform opacity-0 scale-20"
+      <SwipeImage
+        suggestedUsers={allSuggestedUsers}
+        onSwiped={handleSwipe}
+        onOutOfFrame={handleOutOfFrame}
+        endOfSuggestions={allSuggestedUsers?.length === numberOfSwipes}
+      />
+      <div className="my-2 mx-auto flex justify-center">
+        <div
+          className="m-2 transform transition duration-300 hover:scale-110 bg-white rounded-full shadow-md h-12 w-12 sm:h-14 sm:w-14 flex justify-center items-center cursor-pointer"
+          onClick={toggleFilters}
         >
-          <FiltersContainer
-            applyFilter={applyFilter}
-            disableFiltersDisplay={disableFiltersDisplay}
-            style={!isEnabledFilters ? { filter: "grayscale(80%)" } : {}}
-          >
-            <div className="w-full mb-4 mt-2 pr-4">
-              <Switch.Group
-                as="div"
-                className="flex items-center justify-between space-x-4"
-              >
-                <label>Enable Filters</label>
-                <Switch
-                  as="button"
-                  checked={isEnabledFilters}
-                  onChange={setIsEnabledFilters}
-                  className={`${
-                    isEnabledFilters ? "bg-green-400" : "bg-gray-200"
-                  } relative inline-flex flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-2 border-transparent rounded-full cursor-pointer w-11 focus:outline-none focus:shadow-outline`}
-                >
-                  {({ checked }) => (
-                    <span
-                      className={`${
-                        checked ? "translate-x-5" : "translate-x-0"
-                      } inline-block w-5 h-5 transition duration-200 ease-in-out transform bg-white rounded-full`}
-                    />
-                  )}
-                </Switch>
-              </Switch.Group>
-            </div>
-            <div className="mb-2">
-              <Range
-                label="Age"
-                range={ageRange}
-                setRange={setAgeRange}
-                onRangeChange={(currentRange) =>
-                  console.log("age", currentRange)
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <Range
-                label="Popularity range"
-                max={100}
-                min={0}
-                unit="pt"
-                range={popularityRange}
-                setRange={setPopularityRange}
-                onRangeChange={(currentRange) =>
-                  console.log("popularity range", currentRange)
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <Range
-                label="Location"
-                step={0.1}
-                max={10}
-                min={0}
-                unit="km"
-                range={distanceRange}
-                setRange={setDistanceRange}
-                onRangeChange={(currentRange) =>
-                  console.log("location", currentRange)
-                }
-              />
-            </div>
-            <div className="mb-2">
-              <TagsDisplay
-                onTagChange={(_, all) => setTagsFilter(all)}
-                initialTags={["Hello", "World", "1337", "42"]}
-                variant="secondary"
-              />
-            </div>
-          </FiltersContainer>
-        </Transition>
-      </section>
-      <SwipeImage />
+          <SettingsIcon />
+        </div>
+        <div
+          className="m-2 transform transition duration-300 hover:scale-110 bg-white rounded-full shadow-md h-12 w-12 sm:h-14 sm:w-14 flex justify-center items-center cursor-pointer"
+          onClick={toggleSearch}
+        >
+          <SearchIcon />
+        </div>
+      </div>
+      <Settings
+        {...{
+          settingsName: "Filters",
+          showSettings: showFilters,
+          isSettingActive: isFilterActive,
+          setIsSettingActive: setIsFilterActive,
+          tri,
+          setTri,
+          triOrder,
+          setTriOrder,
+          ageRange,
+          setAgeRange,
+          distanceRange,
+          setDistanceRange,
+          experienceRange,
+          setExperienceRange,
+          tagsSet,
+          setTagsSet,
+          disableSettingsDisplay: disableFilterDisplay,
+        }}
+      />
+      <Settings
+        {...{
+          settingsName: "Search",
+          showSettings: showSearch,
+          isSettingActive: isSearchActive,
+          setIsSettingActive: setIsSearchActive,
+          tri: triS,
+          setTri: setTriS,
+          triOrder: triOrderS,
+          setTriOrder: setTriOrderS,
+          ageRange: ageRangeS,
+          setAgeRange: setAgeRangeS,
+          distanceRange: distanceRangeS,
+          setDistanceRange: setDistanceRangeS,
+          experienceRange: experienceRangeS,
+          setExperienceRange: setExperienceRangeS,
+          tagsSet: tagsSetS,
+          setTagsSet: setTagsSetS,
+          disableSettingsDisplay: disableSearchDisplay,
+        }}
+      />
     </>
   );
 };
-
 export default ProfileListing;

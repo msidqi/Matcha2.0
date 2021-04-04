@@ -3,27 +3,27 @@ import React from "react";
 interface TextBubleProps {
   text: string;
   isCurrentUser: boolean;
-  group: "top" | "middle" | "bottom" | "single";
+  chatBubblePosition: "top" | "middle" | "bottom" | "single";
 }
 
 const TextBuble = ({
   text,
   isCurrentUser,
-  group,
+  chatBubblePosition,
 }: TextBubleProps): JSX.Element => {
   let classes = isCurrentUser
     ? "bg-green-400 text-white mr-0 ml-auto"
     : "bg-gray-200 text-gray-500 ml-0 mr-auto";
   classes += ` ${
-    group === "top"
+    chatBubblePosition === "top"
       ? `rounded-b${isCurrentUser ? "r" : "l"}-md rounded-b${
           !isCurrentUser ? "r" : "l"
         }-xl`
-      : group === "bottom"
+      : chatBubblePosition === "bottom"
       ? `rounded-t${isCurrentUser ? "r" : "l"}-md rounded-t${
           !isCurrentUser ? "r" : "l"
         }-xl`
-      : group === "middle"
+      : chatBubblePosition === "middle"
       ? `${
           isCurrentUser
             ? "rounded-l-xl rounded-r-md"

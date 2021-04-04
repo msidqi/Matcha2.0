@@ -1,30 +1,94 @@
-// import axios from "axios";
 import React from "react";
 import TextBuble from "@/components/ChatTextBuble";
-import { io } from "socket.io-client";
-import ArrowBack from "../ui/Icons/ArrowBack";
+import ArrowBack from "@/components/ui/Icons/ArrowBack";
 import { debounce } from "@/utils/debounce";
-// import ArrowBack from "@/components/ui/Icons/ArrowBack";
+import { currentUser } from "./data.json";
+import { useUser } from "@/components/auth";
+import { User } from "@/components/auth/classes";
+import { useMessages } from "@/utils/requests/userRequests";
+import { TextMessage } from "@/interfaces";
+import { LoadingAnimation } from "@/components/ui/Icons/LoadingIcon";
+import { useSocketConnection } from "../Sockets";
+import { useChatUsers } from "../useChat";
+import Link from "next/link";
 
-interface TextMessage {
-  date: Date;
-  text: string;
-  me: boolean;
-}
+type SocketMessageEventPayload = {
+  to: string;
+  message: string;
+};
 
-interface ChatProps {
-  onClickBack?: () => void;
-}
+const EVENT_KEY_MESSAGE_SEND = "message";
+const EVENT_KEY_MESSAGE_RECIEVE = "message";
+const EVENT_KEY_CONNECT = "connect";
+/*const EVENT_KEY_RESPONSE_CONNECTED_USER = "responseConnectedUser";
+const EVENT_KEY_CHECK_CONNECTED_USER = "checkConnectedUser";*/
+type MessageRecievedType = { from: string; message: string; date: string };
 
-const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
+const scrollToBottom = (container: HTMLDivElement) => {
+  container.scrollTop = container.scrollHeight;
+};
+
+// connectedUser 260
+// test2 261
+
+const ChatRoom = (): JSX.Element => {
   const [isAtBottom, setIsAtBottom] = React.useState<boolean>(true);
+  const [message, setMessage] = React.useState<string>("");
+  const [state] = useUser();
+  const { socket } = useSocketConnection();
+  const { otherUser, toggleListAndRoom, listRoom } = useChatUsers();
+  const { authorization, data: userData }: User = state.user!;
+  const [messagesHistoryLocal, setMessagesHistoryLocal] = React.useState<
+    TextMessage[]
+  >([]);
+  const [
+    messagesGlobalHistoryLocal,
+    setMessagesGlobalHistoryLocal,
+  ] = React.useState<Map<number, TextMessage[]>>(
+    new Map<number, TextMessage[]>()
+  );
+  console.log("map", messagesGlobalHistoryLocal);
+  const {
+    data: messagesHistory,
+    fetchNextPage: fetchNextMessages,
+    isLoading: isLoadingMessages,
+  } = useMessages({
+    authorization,
+    userId: otherUser.id,
+    onSuccess: () => {
+      setMessagesHistoryLocal([]);
+      setMessagesGlobalHistoryLocal((prev) => {
+        prev.set(otherUser.id, []);
+        return prev;
+      });
+    },
+  });
+  // merge fetched messages and local messages
+  const messagesHistoryPages: TextMessage[] = [
+    ...(messagesHistory?.pages
+      .flatMap((singlePage) => singlePage.data)
+      .reverse() || []),
+    ...messagesHistoryLocal,
+  ];
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
+  // scroll to bottom of chat box
+  React.useEffect(() => {
+    chatContainerRef.current && scrollToBottom(chatContainerRef.current);
+  }, [messagesHistoryLocal, chatContainerRef]);
+
+  /*React.useEffect(() => {
+    (async () => {
+      fetchNextMessages();
+      console.log("all messages 2", messagesHistory?.pages);
+    })();
+  }, [isLoadingMessages]);*/
 
   /* -- scroll to bottom && set onscroll event -- */
   React.useEffect(() => {
+    let _mount = true;
+
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
+      scrollToBottom(chatContainerRef.current);
       chatContainerRef.current.onscroll = debounce(() => {
         if (
           chatContainerRef.current &&
@@ -32,94 +96,130 @@ const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
             chatContainerRef.current.clientHeight ===
             chatContainerRef.current.scrollHeight
         ) {
-          setIsAtBottom(true);
+          _mount && setIsAtBottom(true);
         } else if (isAtBottom) {
-          setIsAtBottom(false);
+          _mount && setIsAtBottom(false);
         }
       }, 100);
     }
+
+    return () => {
+      _mount = false;
+    };
   }, []);
 
+  const addMesageToGlobalUserMessage = (
+    prev: typeof messagesGlobalHistoryLocal,
+    textMessage: TextMessage | TextMessage[]
+  ) => {
+    const otherUserMsgArray = prev.get(otherUser.id) || [];
+    if (Array.isArray(textMessage)) {
+      prev.set(otherUser.id, [...otherUserMsgArray, ...textMessage]);
+    } else {
+      prev.set(otherUser.id, [...otherUserMsgArray, textMessage]);
+    }
+    return prev;
+  };
+
+  const onKeyEnterUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.keyCode === 13 && message && otherUser.id !== -1) {
+      const newMessage: SocketMessageEventPayload = {
+        to: otherUser.userName,
+        message: message,
+      };
+      console.log("emit", newMessage);
+      socket?.emit(EVENT_KEY_MESSAGE_SEND, newMessage);
+      setMessage("");
+      const textMessage: TextMessage = {
+        content: message,
+        date: new Date(),
+        sender: userData.id,
+        receiver: otherUser.id,
+      };
+      console.log("new message sent", newMessage);
+      setMessagesGlobalHistoryLocal((prev) =>
+        addMesageToGlobalUserMessage(prev, textMessage)
+      );
+      setMessagesHistoryLocal((prev) => [...prev, textMessage]);
+    }
+  };
+
+  // connect with sockets
   React.useEffect(() => {
-    const socket = io("http://localhost:3001");
-    console.log(socket);
-  }, [io]);
+    if (socket && otherUser.id !== -1) {
+      // socket.off(EVENT_KEY_MESSAGE_RECIEVE);
+      socket.on(EVENT_KEY_MESSAGE_RECIEVE, (data: MessageRecievedType[][]) => {
+        const messages: TextMessage[] = data
+          .flat()
+          .filter((elem) => {
+            console.log("filter", elem.from, otherUser.userName);
+            return elem.from === otherUser.userName;
+          })
+          .map((elem) => ({
+            content: elem.message,
+            date: new Date(elem.date),
+            sender: otherUser.id,
+            receiver: userData.id,
+          }));
+        console.log("new received message", messages);
+        setMessagesHistoryLocal((prev) => [...prev, ...messages]);
+        setMessagesGlobalHistoryLocal((prev) =>
+          addMesageToGlobalUserMessage(prev, messages)
+        );
+      });
+      /*socket.on(EVENT_KEY_MESSAGE_RECIEVE, (data: any) =>
+        console.log("EVENT_KEY_MESSAGE_RECIEVE", data)
+      );
+      socket.emit(EVENT_KEY_CHECK_CONNECTED_USER, otherUser.id);*/
+    } else if (socket) {
+      socket.off(EVENT_KEY_CONNECT);
+      socket.off(EVENT_KEY_MESSAGE_RECIEVE);
+    }
+  }, [otherUser.id !== -1]);
 
-  const currentUser = { name: "Mouad", lastConnected: "connected 2h ago" };
-  const textMessages: TextMessage[] = [
-    {
-      me: true,
-      text: "Hello world Hello world Hello world ",
-      date: new Date(),
-    },
-    { me: false, text: "user2", date: new Date() },
-    { me: true, text: "user3", date: new Date() },
-    {
-      me: false,
-      text: "Lorem ipsum dolor sit, amet ",
-      date: new Date(),
-    },
-    {
-      me: false,
-      text: "consectetur adipisicing elit",
-      date: new Date(),
-    },
-    {
-      me: false,
-      text: "Distinctio inventore esse odio omnis repellendus autem est",
-      date: new Date(),
-    },
-    { me: true, text: "Hey, How are you doing!", date: new Date() },
-    { me: true, text: "beatae nostrum accusamus, laborum", date: new Date() },
-    { me: true, text: "totam sit accusantium tenetur", date: new Date() },
-    { me: true, text: "quidem corporis veniam", date: new Date() },
-    { me: false, text: "another text", date: new Date() },
-    { me: true, text: "some text", date: new Date() },
-    { me: false, text: "another text", date: new Date() },
-    { me: true, text: "some text", date: new Date() },
-    { me: false, text: "another text", date: new Date() },
-    { me: true, text: "some text", date: new Date() },
-    { me: false, text: "another text", date: new Date() },
-    { me: true, text: "some text", date: new Date() },
-    { me: false, text: "another text", date: new Date() },
-    { me: true, text: "some text", date: new Date() },
-    { me: false, text: "another text", date: new Date() },
-    { me: true, text: "some text", date: new Date() },
-    { me: false, text: "another text", date: new Date() },
-    { me: true, text: "some text", date: new Date() },
-    { me: false, text: "another text", date: new Date() },
-  ];
+  const isOtherUserMessage = (textMessage?: TextMessage) =>
+    typeof textMessage?.sender === "number" &&
+    textMessage.sender === otherUser.id;
 
-  const groupPosition = (index: number) => {
+  const chatBubblePosition = (index: number) => {
     const context = [
-      textMessages[index - 1]?.me,
-      textMessages[index]?.me,
-      textMessages[index + 1]?.me,
+      isOtherUserMessage(messagesHistoryPages[index - 1]),
+      isOtherUserMessage(messagesHistoryPages[index]),
+      isOtherUserMessage(messagesHistoryPages[index + 1]),
     ];
     if (context[0] !== context[1] && context[1] === context[2]) return "top";
     if (context[0] === context[1] && context[1] !== context[2]) return "bottom";
     if (context[0] === context[1] && context[1] === context[2]) return "middle";
     return "single";
   };
+
   return (
-    <div className="bg-white p-2 pb-14 h-full  relative w-full sm:w-7/12 sm:border-r sm:border-gray-200">
+    <div
+      className={`bg-white p-2 pb-14 h-full relative w-full sm:block sm:w-7/12 sm:border-r sm:border-gray-200 ${
+        listRoom === "room" ? "" : "hidden"
+      }`}
+    >
       <header className="p-2 pb-0 flex justify-start items-center w-full mb-5">
-        {onClickBack && (
-          <button
-            className="sm:hidden rounded-full bg-gray-200 w-8 h-8 flex items-center justify-center"
-            onClick={onClickBack}
-          >
-            <ArrowBack color="#fff" />
-          </button>
-        )}
+        <button
+          className="sm:hidden rounded-full bg-gray-200 w-8 h-8 flex items-center justify-center"
+          onClick={() => toggleListAndRoom("list")}
+        >
+          <ArrowBack color="#fff" />
+        </button>
         <div className="rounded-full h-14 w-14 overflow-hidden mx-2">
           <img
-            src="/profile.jpg"
+            src={otherUser.image?.src ?? "/profile.jpg"}
             className="object-cover object-center h-full w-full"
           />
         </div>
         <div className="">
-          <h3 className="font-bold">{currentUser.name}</h3>
+          <h3 className="text-gray-700 font-bold">
+            <Link href={`/profile/${otherUser.id}`}>
+              <a className="cursor-pointer hover:underline">
+                {otherUser.userName}
+              </a>
+            </Link>
+          </h3>
           <p className="text-gray-500 text-xs">{currentUser.lastConnected}</p>
         </div>
       </header>
@@ -127,18 +227,28 @@ const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
       <section
         ref={chatContainerRef}
         id="chatbox"
-        className="w-full pb-2 px-4 h-full overflow-y-auto"
+        className="w-full pb-2 px-4 h-full overflow-y-auto relative "
         style={{ height: "calc(100% - 5.3rem)" }}
       >
-        {textMessages.map(({ me, text }, index) => (
-          <div key={index} className="block w-full my-0.5">
-            <TextBuble
-              text={text}
-              isCurrentUser={me}
-              group={groupPosition(index)}
-            />
+        {isLoadingMessages ? (
+          <div className="flex justify-center items-center h-full">
+            <LoadingAnimation height="30" width="30" />
           </div>
-        ))}
+        ) : messagesHistoryPages.length === 0 ? (
+          <div className="text-center absolute bottom-10 transform -translate-x-1/2 left-1/2">
+            <p className="text-gray-400">Start a new conversation !</p>
+          </div>
+        ) : (
+          messagesHistoryPages.map((message, index) => (
+            <div key={index} className="block w-full my-0.5">
+              <TextBuble
+                text={message.content}
+                isCurrentUser={!isOtherUserMessage(message)}
+                chatBubblePosition={chatBubblePosition(index)}
+              />
+            </div>
+          ))
+        )}
       </section>
       {/* chat input section --start-- */}
       <section
@@ -147,8 +257,12 @@ const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
         }`}
       >
         <input
+          // ref={messageInputRef}
+          onKeyUp={onKeyEnterUp}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           className="bg-gray-100 rounded-3xl py-2 px-3 w-full placeholder-gray-400 focus:outline-none sm:focus:ring focus:border-blue-300"
-          placeholder="type something"
+          placeholder="Type your message"
         />
       </section>
       <style jsx>{`
@@ -166,4 +280,4 @@ const Chat = ({ onClickBack }: ChatProps): JSX.Element => {
   );
 };
 
-export default Chat;
+export default ChatRoom;

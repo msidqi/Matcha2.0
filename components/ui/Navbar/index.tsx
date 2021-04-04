@@ -5,6 +5,10 @@ import { Transition } from "@headlessui/react";
 import Logo from "@/components/ui/Icons/Logo";
 import LogoSm from "@/components/ui/Icons/LogoSm";
 import { useUser } from "@/components/auth";
+import links from "./links.json";
+import guestLinks from "./guestLinks.json";
+import Notification from "@/components/Notification";
+import useNotifications from "@/components/useNotifications";
 
 function Navbar(): JSX.Element {
   const [showMenu, setShowMenu] = React.useState<boolean>(false);
@@ -13,20 +17,60 @@ function Navbar(): JSX.Element {
   );
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
   const router = useRouter();
+  const {
+    notifications,
+    makeNotificationsSeen,
+    newNotificationsNumber,
+  } = useNotifications();
+  const [{ loggedIn, user }, { logout, loading }] = useUser();
+  const pathname = router.pathname;
 
-  const [{ loggedIn }, { logout }] = useUser();
-
-  const handleLogout = () => {
-    logout();
-    router.push("/");
+  const handleNotificationIconClick = () => {
+    // console.log("handleNotificationIconClick");
+    // if (!showNotifications) makeNotificationsSeen();
+    setShowNotifications(!showNotifications);
   };
 
-  const pathname = router.pathname;
-  const links: { href: string; label: string }[] = [
-    { label: "Dashboard", href: "/dashboard" },
-    { label: "Messages", href: "/messages" },
-    { label: "Settings", href: "/settings" },
-  ];
+  const renderLink = (textSize: "sm" | "base") => (
+    link: { href: string; label: string },
+    index: number
+  ) => {
+    const isCurrentLink = link.href === pathname;
+    return (
+      <Link href={link.href} key={`l-${index}`}>
+        <a
+          className={`${
+            isCurrentLink
+              ? "bg-gray-900 text-white"
+              : "text-gray-300 hover:bg-gray-700 hover:text-white"
+          }  block px-3 py-2 rounded-md text-base font-medium`}
+        >
+          {link.label}
+        </a>
+      </Link>
+    );
+  };
+
+  const renderLinks = (
+    link: { href: string; label: string },
+    index: number
+  ) => {
+    const isCurrentLink = link.href === pathname;
+    return (
+      <Link href={link.href} key={`l-${index}`}>
+        <a
+          className={`${
+            isCurrentLink
+              ? "bg-gray-900 text-white"
+              : "text-gray-300 hover:bg-gray-700 hover:text-white"
+          }  block px-3 py-2 rounded-md text-sm font-medium`}
+        >
+          {link.label}
+        </a>
+      </Link>
+    );
+  };
+
   return (
     <nav className="bg-gray-800 fixed top-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
@@ -34,12 +78,9 @@ function Navbar(): JSX.Element {
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              onBlur={() => setShowMenu(false)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
               aria-expanded="false"
             >
-              <span className="sr-only">Open main menu</span>
-
               <svg
                 className={`${showMenu ? "hidden" : "block"} h-6 w-6`}
                 xmlns="http://www.w3.org/2000/svg"
@@ -84,32 +125,26 @@ function Navbar(): JSX.Element {
             </div>
             <div className="hidden sm:block sm:ml-6">
               <div className="flex space-x-4">
-                {links.map((link, index) => {
-                  const isCurrentLink = link.href === pathname;
-                  return (
-                    <Link href={link.href} key={`l-${index}`}>
-                      <a
-                        className={`${
-                          isCurrentLink
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                        }  text-white px-3 py-2 rounded-md text-sm font-medium`}
-                      >
-                        {link.label}
-                      </a>
-                    </Link>
-                  );
-                })}
+                {loggedIn
+                  ? links.map(renderLinks)
+                  : guestLinks.map(renderLinks)}
               </div>
             </div>
           </div>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 z-40">
             {loggedIn && (
               <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                onBlur={() => setShowNotifications(false)}
-                className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                onClick={handleNotificationIconClick}
+                className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white relative"
               >
+                {console.log({ newNotificationsNumber })}
+                {Boolean(newNotificationsNumber) && (
+                  <div className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center absolute top-0 left-0">
+                    <p className="text-white text-xs m-0">
+                      {newNotificationsNumber}
+                    </p>
+                  </div>
+                )}
                 <span className="sr-only">View notifications</span>
                 <svg
                   className="h-6 w-6"
@@ -143,15 +178,13 @@ function Navbar(): JSX.Element {
                 aria-orientation="vertical"
                 aria-labelledby="user-menu"
               >
-                <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <p>Notification number 0</p>
-                </div>
-                <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <p>Notification number 1</p>
-                </div>
-                <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <p>Notification number 2</p>
-                </div>
+                {notifications.length === 0 ? (
+                  <Notification type="empty" key="empty-notification" />
+                ) : (
+                  notifications.map((elem, index) => (
+                    <Notification key={`notification-${index}`} {...elem} />
+                  ))
+                )}
               </div>
             </Transition>
             <div className="ml-3 relative">
@@ -159,17 +192,19 @@ function Navbar(): JSX.Element {
                 <div>
                   <button
                     onClick={() => setShowDropDown(!showDropDown)}
-                    onBlur={() => setShowDropDown(false)}
                     className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
                     id="user-menu"
                     aria-haspopup="true"
                   >
-                    <span className="sr-only">Open user menu</span>
-                    <img
-                      className="h-8 w-8 rounded-full"
-                      src="/profile.jpg"
-                      alt=""
-                    />
+                    {loading ? (
+                      "Loading..."
+                    ) : (
+                      <img
+                        className="h-8 w-8 rounded-full object-cover"
+                        src={user?.ProfileImageSrc}
+                        alt=""
+                      />
+                    )}
                   </button>
                 </div>
               )}
@@ -190,33 +225,34 @@ function Navbar(): JSX.Element {
                 >
                   {loggedIn ? (
                     <>
-                      <a
-                        href="/profile-edit"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                      >
-                        Profile
-                      </a>
-                      <a
-                        href="/settings"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                      >
-                        Settings
-                      </a>
-                      <a
-                        onClick={handleLogout}
-                        href="/"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      <Link href={`/profile/${user?.data.id || ""}`}>
+                        <a
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                        >
+                          View my profile
+                        </a>
+                      </Link>
+                      <Link href="/profile-edit">
+                        <a
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                        >
+                          Settings
+                        </a>
+                      </Link>
+                      <button
+                        onClick={logout}
+                        className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                       >
                         Sign out
-                      </a>
+                      </button>
                     </>
                   ) : (
                     <a
                       href="/signin"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-red-700 hover:bg-gray-100"
                       role="menuitem"
                     >
                       Sign in
@@ -231,22 +267,9 @@ function Navbar(): JSX.Element {
 
       <div className={`${showMenu ? "block" : "hidden"} sm:hidden`}>
         <div className="px-2 pt-2 pb-3 space-y-1">
-          {links.map((link, index) => {
-            const isCurrentLink = link.href === pathname;
-            return (
-              <Link href={link.href} key={`l-${index}`}>
-                <a
-                  className={`${
-                    isCurrentLink
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                  }  block px-3 py-2 rounded-md text-base font-medium`}
-                >
-                  {link.label}
-                </a>
-              </Link>
-            );
-          })}
+          {loggedIn
+            ? links.map(renderLink("mobile"))
+            : guestLinks.map(renderLink("mobile"))}
         </div>
       </div>
     </nav>

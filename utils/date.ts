@@ -9,5 +9,7 @@ export const formatDate = (date: string | Date) => {
   return `${toformat.getDate()} ${toformat.toLocaleString("default", {
     month: "short",
   })}`;
-  return;
 };
+
+export const isValidDate = (date: Date) =>
+  date instanceof Date && !isNaN(date.getTime());

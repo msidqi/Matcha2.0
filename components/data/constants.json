@@ -4,8 +4,8 @@
     { "label": "Female", "value": "female" }
   ],
   "orientation": [
-    { "label": "Male", "value": "male" },
-    { "label": "Female", "value": "female" },
-    { "label": "Both", "value": "both" }
+    { "label": "Homosexual", "value": "homosexual" },
+    { "label": "Heterosexual", "value": "heterosexual" },
+    { "label": "Bisexual", "value": "bisexual" }
   ]
 }

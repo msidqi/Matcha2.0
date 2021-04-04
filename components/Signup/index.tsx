@@ -2,10 +2,14 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Input from "@/components/Input";
+import guestRoute from "../GuestRoute";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import DateInput from "../DateInput";
 
 const Signup = (): JSX.Element => {
   const { register, handleSubmit } = useForm();
-
+  const router = useRouter();
   const onSubmit = async (data: {
     userName: string;
     password: string;
@@ -13,16 +17,15 @@ const Signup = (): JSX.Element => {
     lastName: string;
     email: string;
   }) => {
-    console.log(data);
     try {
       const result = await axios.post("/api/signup", data);
-      console.log(result);
+      if (result.status === 200) router.push("/signin");
     } catch (e) {
       console.error(e);
     }
   };
   return (
-    <div className="bg-white sm:border rounded max sm:shadow-md px-6 py-10 sm:p-10 max-w-xl m-auto sm:mt-8 mb-8">
+    <div className="bg-white sm:border rounded  max sm:shadow-md px-6 py-10 sm:p-10 max-w-xl m-auto w-full h-full sm:h-auto">
       <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">
         Create an Account
       </h3>
@@ -52,6 +55,7 @@ const Signup = (): JSX.Element => {
             className="w-full sm:w-1/2 sm:pr-2"
           />
         </div>
+        <DateInput label="Your Birthday" name="birthDate" register={register} />
         <Input
           name="email"
           type="email"
@@ -62,17 +66,27 @@ const Signup = (): JSX.Element => {
         <Input
           name="password"
           label="Password"
+          type="password"
           register={register}
           placeholder="Enter your password"
         />
         <input
-          className="bg-blue-500 hover:bg-gray-800 text-white p-2 rounded"
+          className="bg-green-500 hover:bg-green-400 text-white p-2 rounded"
           type="submit"
           value="Signup"
         />
       </form>
+      <div className="text-center mt-4 text-sm sm:text-base">
+        <span className="text-gray-400">
+          Already have an account ?{" "}
+          <Link href="/signin">
+            <a className="underline bold">Sign in instead</a>
+          </Link>
+          .
+        </span>
+      </div>
     </div>
   );
 };
 
-export default Signup;
+export default guestRoute(Signup);

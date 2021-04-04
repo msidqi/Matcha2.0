@@ -1,28 +1,36 @@
-import React, {
-  FC,
-  useReducer,
-  useEffect,
-  useContext,
-  createContext,
-  useState,
-} from "react";
-import axios from "axios";
-import { userReducer } from "./index";
-import {
+import * as React from "react";
+import { userReducer } from ".";
+import { User } from "./classes";
+import type {
   UserState,
   ActionsAndState,
-  User,
   LogoutAction,
   LoginAction,
+  SetUserAction,
+  UserInput,
 } from "./types";
-import { apiRequest } from "@/utils/API";
+import {
+  LOGIN_ERROR_MESSAGE,
+  USERDATA_ERROR_MESSAGE,
+  LOGOUT_ERROR_MESSAGE,
+  UserError,
+} from "./errors";
+import { Canceler } from "axios";
+import {
+  getUserInfoRequest,
+  generateAccessToken,
+  signInUserRequest,
+  logoutUserRequest,
+} from "@/utils/requests/userRequests";
+import { useRouter } from "next/router";
+import guestRoutes from "./guestRoutes.json";
 
 const initialUserState: UserState = {
   user: undefined,
   loggedIn: false,
 };
 
-const userContext = createContext<[UserState, ActionsAndState]>([
+const userContext = React.createContext<[UserState, ActionsAndState]>([
   initialUserState,
   {
     login: async () => {
@@ -31,88 +39,125 @@ const userContext = createContext<[UserState, ActionsAndState]>([
     logout: async () => {
       return;
     },
+    setUser: () => {
+      return;
+    },
     loading: false,
+    error: null,
   },
 ]);
 
 export const useUser = (): [UserState, ActionsAndState] =>
-  useContext(userContext);
+  React.useContext(userContext);
 
-export const UserProvider: FC = ({ children }): JSX.Element => {
-  const [state, dispatch] = useReducer(userReducer, initialUserState);
-  const [loading, setLoading] = useState(true);
+export const UserProvider: React.FC = ({ children }): JSX.Element => {
+  const [state, dispatch] = React.useReducer(userReducer, initialUserState);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<UserError | null>(null);
+  const router = useRouter();
 
-  const fetchUserData = async () => {
-    try {
-      const response = await apiRequest<{ accessToken: string }>(
-        "get",
-        "/api/generateAccessToken"
-      );
-      console.log("/api/generateAccessToken", response.data);
-      if (response.status === 200) {
-        const user = new User({
-          accessToken: response.data.accessToken,
+  React.useEffect(() => {
+    let cancel: Canceler | undefined;
+    (async function fetchUserData() {
+      try {
+        setLoading(true);
+        setError(null);
+        /* -------- get access token ------- */
+        const [
+          accessTokenRequest,
+          cancelAccessTokenReq,
+        ] = generateAccessToken();
+        cancel = cancelAccessTokenReq;
+        const response = await accessTokenRequest;
+        if (response.status !== 200)
+          throw new UserError(USERDATA_ERROR_MESSAGE);
+        const { accessToken } = response.data;
+        const user = state.user
+          ? state.user.addProperties({ accessToken })
+          : new User({
+              accessToken,
+            });
+        /* -------- get user data ------- */
+        const [userInfoRequest, cancelInfoReq] = getUserInfoRequest({
+          authorization: user.authorization,
         });
-        console.log("getAuthorization", user.getAuthorization());
-        const result = await apiRequest("get", "/api/userInfos", {
-          headers: {
-            Authorization: user.getAuthorization(),
-          },
-        });
-        console.log("userInfos", result);
-
-        dispatch({ type: "login", payload: { user } });
+        cancel = cancelInfoReq;
+        const result = await userInfoRequest;
+        if (result.status !== 200) throw new UserError(USERDATA_ERROR_MESSAGE);
+        /* -------- update global user state ------- */
+        user.addProperties({ ...result.data });
+        dispatch({ type: "SET_USER", payload: { user } });
+      } catch (e) {
+        setError(e);
+        dispatch({ type: "LOGOUT" });
+        console.log(router.pathname);
+        if (!guestRoutes.includes(router.pathname)) router.push("/signin");
+        console.error(e);
+      } finally {
+        setLoading(false);
       }
-    } catch (e) {
-      console.error(e);
-    }
-    loading && setLoading(false);
-  };
+    })();
 
-  useEffect(() => {
-    fetchUserData();
-    // return cancel request
+    return () => cancel?.();
   }, []);
 
   const login: LoginAction = async (userData): Promise<void> => {
     try {
       setLoading(true);
-      const result = await apiRequest<{ accessToken: string; message: string }>(
-        "post",
-        "/api/signIn",
-        userData,
-        { withCredentials: true }
-      );
-      if (result.status === 200) {
-        const newUserValue = new User({
-          username: userData.userName,
-          accessToken: result.data.accessToken,
-          firstname: "string",
-          lastname: "string",
-          email: "string",
-        });
-        dispatch({ type: "login", payload: { user: newUserValue } });
-      }
-      console.log(result);
+      setError(null);
+      /* -------- login user ------- */
+      const response = await signInUserRequest({ userData })[0];
+      if (response.status !== 200) throw new UserError(LOGIN_ERROR_MESSAGE);
+      const newUserValue = new User({
+        userName: userData.userName,
+        accessToken: response.data.accessToken,
+      });
+      /* -------- get user data ------- */
+      const result = await getUserInfoRequest({
+        authorization: newUserValue.authorization,
+      })[0];
+      if (result.status !== 200) throw new UserError(LOGIN_ERROR_MESSAGE);
+      /* -------- update global user state ------- */
+      newUserValue.addProperties({ ...result.data });
+      dispatch({ type: "LOGIN", payload: { user: newUserValue } });
+      // console.log("/api/signIn result.data", result.data);
     } catch (e) {
+      setError(e);
       console.error(e);
+    } finally {
+      setLoading(false);
     }
-    loading && setLoading(false);
   };
 
   const logout: LogoutAction = async (): Promise<void> => {
     try {
       setLoading(true);
-      const result = await axios.post<{ message: string }>("/api/logout");
-      if (result.status === 200) dispatch({ type: "logout" });
+      setError(null);
+      const result = await logoutUserRequest({
+        authorization: state.user?.authorization || "",
+        userName: state.user?.data.userName || "",
+      })[0];
+      if (result.status !== 200) throw new UserError(LOGOUT_ERROR_MESSAGE);
+      dispatch({ type: "LOGOUT" });
     } catch (e) {
+      setError(e);
       console.error(e);
+    } finally {
+      setLoading(false);
     }
-    loading && setLoading(false);
+  };
+
+  const setUser: SetUserAction = (userData: Partial<UserInput>) => {
+    const user = state.user
+      ? state.user?.addProperties(userData)
+      : new User(userData);
+    dispatch({ type: "SET_USER", payload: { user } });
   };
 
   return (
-    <userContext.Provider value={[{ ...state }, { login, logout, loading }]}>
+    <userContext.Provider
+      value={[{ ...state }, { login, logout, setUser, loading, error }]}
+    >
       {children}
     </userContext.Provider>
   );

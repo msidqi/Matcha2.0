@@ -5,16 +5,12 @@ export const userReducer = (
   action: UserDispatchActions
 ): UserState => {
   switch (action.type) {
-    case "login":
-      return {
-        ...state,
-        ...{
-          user: action.payload.user,
-          loggedIn: true,
-        },
-      };
-    case "logout":
-      return { ...state, ...{ user: undefined, loggedIn: false } };
+    case "LOGIN":
+      return { ...state, user: action.payload.user, loggedIn: true };
+    case "LOGOUT":
+      return { ...state, user: undefined, loggedIn: false };
+    case "SET_USER":
+      return { ...state, user: action.payload.user, loggedIn: true };
     default:
       return state;
   }
