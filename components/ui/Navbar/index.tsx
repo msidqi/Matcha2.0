@@ -19,7 +19,7 @@ function Navbar(): JSX.Element {
   const router = useRouter();
   const {
     notifications,
-    makeNotificationsSeen,
+    // makeNotificationsSeen,
     newNotificationsNumber,
   } = useNotifications();
   const [{ loggedIn, user }, { logout, loading }] = useUser();
@@ -43,27 +43,9 @@ function Navbar(): JSX.Element {
             isCurrentLink
               ? "bg-gray-900 text-white"
               : "text-gray-300 hover:bg-gray-700 hover:text-white"
-          }  block px-3 py-2 rounded-md text-base font-medium`}
-        >
-          {link.label}
-        </a>
-      </Link>
-    );
-  };
-
-  const renderLinks = (
-    link: { href: string; label: string },
-    index: number
-  ) => {
-    const isCurrentLink = link.href === pathname;
-    return (
-      <Link href={link.href} key={`l-${index}`}>
-        <a
-          className={`${
-            isCurrentLink
-              ? "bg-gray-900 text-white"
-              : "text-gray-300 hover:bg-gray-700 hover:text-white"
-          }  block px-3 py-2 rounded-md text-sm font-medium`}
+          }  block px-3 py-2 rounded-md ${
+            textSize === "sm" ? "text-sm" : "text-base"
+          } font-medium`}
         >
           {link.label}
         </a>
@@ -126,8 +108,8 @@ function Navbar(): JSX.Element {
             <div className="hidden sm:block sm:ml-6">
               <div className="flex space-x-4">
                 {loggedIn
-                  ? links.map(renderLinks)
-                  : guestLinks.map(renderLinks)}
+                  ? links.map(renderLink("base"))
+                  : guestLinks.map(renderLink("base"))}
               </div>
             </div>
           </div>
@@ -179,10 +161,13 @@ function Navbar(): JSX.Element {
                 aria-labelledby="user-menu"
               >
                 {notifications.length === 0 ? (
-                  <Notification type="empty" key="empty-notification" />
+                  <Notification type="noNew" key="empty-notification" />
                 ) : (
                   notifications.map((elem, index) => (
-                    <Notification key={`notification-${index}`} {...elem} />
+                    <>
+                      {console.log("elem notif", elem)}
+                      <Notification key={`notification-${index}`} {...elem} />
+                    </>
                   ))
                 )}
               </div>
@@ -268,8 +253,8 @@ function Navbar(): JSX.Element {
       <div className={`${showMenu ? "block" : "hidden"} sm:hidden`}>
         <div className="px-2 pt-2 pb-3 space-y-1">
           {loggedIn
-            ? links.map(renderLink("mobile"))
-            : guestLinks.map(renderLink("mobile"))}
+            ? links.map(renderLink("sm"))
+            : guestLinks.map(renderLink("sm"))}
         </div>
       </div>
     </nav>

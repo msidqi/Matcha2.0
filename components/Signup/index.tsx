@@ -25,7 +25,7 @@ const Signup = (): JSX.Element => {
     }
   };
   return (
-    <div className="bg-white sm:border rounded  max sm:shadow-md px-6 py-10 sm:p-10 max-w-xl m-auto w-full h-full sm:h-auto">
+    <div className="bg-white sm:border sm:rounded  max sm:shadow-md px-6 py-10 sm:p-10 max-w-xl m-auto w-full h-full sm:overflow-y-auto overflow-y-scroll sm:h-auto">
       <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">
         Create an Account
       </h3>

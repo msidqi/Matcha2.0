@@ -3,7 +3,7 @@ import PasswordReset from "@/components/PasswordReset";
 import Layout from "@/components/ui/Layout";
 
 const index = (): JSX.Element => (
-  <Layout>
+  <Layout background>
     <PasswordReset />
   </Layout>
 );

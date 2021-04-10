@@ -15,6 +15,29 @@ module.exports = {
         "1/2": "50%",
         "3/4": "75%",
       },
+      backgroundImage: (theme) => ({
+        mainBackgroundImage:
+          "linear-gradient(0deg, rgba(0, 0, 0, 0.7), rgba(25, 25, 25, 0.3)), url(https://images.unsplash.com/photo-1585581279446-63f96788f724?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=3150&q=80)",
+      }),
+      keyframes: {
+        shift: {
+          "0%, 100%": { backgroundPositionX: "100%" },
+          "50%": { backgroundPositionX: "0%" },
+        },
+        shiftTablet: {
+          "0%, 100%": { backgroundPositionX: "60%" },
+          "50%": { backgroundPositionX: "40%" },
+        },
+        wiggle: {
+          "0%, 100%": { transform: "rotate(-3deg)" },
+          "50%": { transform: "rotate(3deg)" },
+        },
+      },
+      animation: {
+        backgroundShift: "shift 30s ease-in-out infinite",
+        backgroundShiftTablet: "shiftTablet 30s ease-in-out infinite",
+        wiggle: "wiggle 1s ease-in-out infinite",
+      },
     },
   },
   variants: {},
