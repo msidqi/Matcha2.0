@@ -3,9 +3,9 @@ import Signup from "@/components/Signup";
 import Layout from "@/components/ui/Layout";
 
 const index = (): JSX.Element => (
-    <Layout>
-      <Signup />
-    </Layout>
-)
+  <Layout background>
+    <Signup />
+  </Layout>
+);
 
 export default index;

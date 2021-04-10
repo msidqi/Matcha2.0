@@ -3,7 +3,7 @@ import ForgotPassword from "@/components/ForgotPassword";
 import Layout from "@/components/ui/Layout";
 
 const index = (): JSX.Element => (
-  <Layout>
+  <Layout background>
     <ForgotPassword />
   </Layout>
 );
