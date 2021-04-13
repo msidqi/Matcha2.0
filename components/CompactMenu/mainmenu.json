@@ -1,0 +1,17 @@
+{
+  "menuContent": [],
+  "menuList": [
+    {
+      "key": "images",
+      "label": "Profile Pictures"
+    },
+    {
+      "key": "personal",
+      "label": "Personal Info"
+    },
+    {
+      "key": "account",
+      "label": "Account Info"
+    }
+  ]
+}
