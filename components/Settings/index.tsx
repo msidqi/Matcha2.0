@@ -1,7 +1,9 @@
-// import axios from "axios";
 import React from "react";
 import CompactMenu from "@/components/CompactMenu";
 import { menuList } from "@/components/CompactMenu/mainmenu.json";
+import SettingsImages from "@/components/SettingsImages";
+import SettingsPersonalInfo from "@/components/SettingsPersonalInfo";
+import SettingsAccount from "@/components/SettingsAccount";
 
 const Settings = (): JSX.Element => {
   return (
@@ -9,9 +11,9 @@ const Settings = (): JSX.Element => {
       <CompactMenu
         mainMenuItems={menuList}
         contentMenuContentItems={{
-          images: "Hello",
-          personal: "World",
-          account: "Goodbye",
+          images: <SettingsImages />,
+          personal: <SettingsPersonalInfo />,
+          account: <SettingsAccount />,
         }}
       />
     </div>
