@@ -114,11 +114,17 @@ const ImageSettings = () => {
   return (
     <>
       {/* ------ profile images section ------ */}
-      <section className="md:w-5/12 w-full mb-10">
-        <section className="flex md:justify-start justify-center">
+      <section className="w-full mb-10">
+      <div className="w-full border-b border-gray-300 py-4 px-6 mb-4" >
+      <h4 className="text-lg font-semibold">
+          Change your images
+        </h4>
+        <p className="text-sm text-gray-500">You can upload new images for your profile or change your profile picture by selecting one from your list of uploaded images.</p>
+      </div>
+        <section className="">
           {/* ------ main picture ------ */}
           {
-            <div className="w-80" style={{ height: "30rem" }}>
+            <div className="w-80 m-auto" style={{ height: "30rem" }}>
               <picture>
                 <source
                   media="(min-width:650px)"
@@ -133,11 +139,11 @@ const ImageSettings = () => {
             </div>
           }
           {/* ------ other images container ------ */}
-          <div className="w-24 block sm:py-0">
+          <div className="w-full block sm:py-0 flex justify-center gap-2 my-4 flex-wrap">
             {user.data.images.map((img, index) => (
               <li
                 key={index}
-                className="block pr-0 p-0.5 w-20 h-24 mx-auto cursor-pointer"
+                className="block pr-0 p-0.5 w-20 h-24 cursor-pointer mx-2"
                 onClick={() => handleProfileImageChange(index)}
               >
                 <article
@@ -170,7 +176,7 @@ const ImageSettings = () => {
             ))}
             {/* ------ add new image ------ */}
             {user.data.images.length < 5 && (
-              <li className="block pr-0 p-0.5 w-20 h-24 mx-auto relative">
+              <li className="block pr-0 p-0.5 w-20 h-24 relative  mx-2">
                 <article
                   tabIndex={0}
                   className="w-full h-full rounded border-gray-200 border-4"

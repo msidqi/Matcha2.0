@@ -63,9 +63,9 @@ const SettingsPersonalInfo = () => {
   const checkKeyDown = (e: any) => e.code === "Enter" && e.preventDefault();
 
   return (
-    <section className="md:w-7/12 w-full flex flex-col space-y-10 ">
+    <section className="p-6 w-full flex flex-col space-y-10 ">
       <div>
-        <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">
+        <h3 className="my-4 text-2xl font-semibold mt-0">
           Change your informations
         </h3>
         <form
