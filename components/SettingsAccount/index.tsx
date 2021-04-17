@@ -27,11 +27,14 @@ const SettingsAccount = () => {
 
   if (!user || loading) return <>Loading...</>;
   return (
-    <section className="p-6  w-full flex flex-col space-y-10 ">
-      <div>
-        <h3 className="my-4 text-2xl font-semibold mt-0">
-          Change your password
-        </h3>
+    <section className="w-full flex flex-col">
+        <div className="w-full border-b border-gray-300 py-4 px-6 mb-4" >
+      <h4 className="text-lg font-semibold">
+      Change your password
+        </h4>
+        <p className="text-sm text-gray-500">You can upload new images for your profile or change your profile picture by selecting one from your list of uploaded images.</p>
+      </div>
+      <div className="p-6  ">
         <form
           className="space-y-5"
           onSubmit={handlePasswordSubmit(onPasswordSubmit)}
