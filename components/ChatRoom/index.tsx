@@ -201,10 +201,10 @@ const ChatRoom = (): JSX.Element => {
     >
       <header className="p-2 pb-0 flex justify-start items-center w-full mb-5">
         <button
-          className="sm:hidden rounded-full bg-gray-200 w-8 h-8 flex items-center justify-center"
+          className="sm:hidden mr-2 rounded-full"
           onClick={() => toggleListAndRoom("list")}
         >
-          <ArrowBack color="#fff" />
+          <ArrowBack />
         </button>
         <div className="rounded-full h-14 w-14 overflow-hidden mx-2">
           <img

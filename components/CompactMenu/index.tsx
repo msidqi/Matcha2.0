@@ -2,6 +2,7 @@ import * as React from "react";
 import type { MainMenuItemType } from "./types";
 import { useMenu, MenuProvider } from "./context";
 import ArrowRightIcon from "@/components/ui/Icons/ArrowRightIcon";
+import ArrowBack from "@/components/ui/Icons/ArrowBack";
 
 interface CompactMenuProps {
   mainMenuTitle?: string;
@@ -59,8 +60,11 @@ const Title = ({
   return (
     <div className="bg-white h-14 w-full border-b border-gray-300 py-2 px-4 flex items-center">
       {showBackOnMobile && (
-        <button className="sm:hidden" onClick={() => menuSetView("main")}>
-          back
+        <button
+          className="sm:hidden mr-2 rounded-full"
+          onClick={() => menuSetView("main")}
+        >
+          <ArrowBack />
         </button>
       )}
       <h1 className="font-bold text-black text-xl">{title}</h1>
