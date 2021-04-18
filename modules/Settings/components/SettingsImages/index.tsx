@@ -128,7 +128,7 @@ const ImageSettings = () => {
             picture by selecting one from your list of uploaded images.
           </p>
         </div>
-        <section className="p-4 sm:p-6">
+        <section className="py-4 px-2 sm:p-6">
           {/* ------ main picture ------ */}
           {
             <div className="w-80 max-w-full m-auto" style={{ height: "30rem" }}>
@@ -146,7 +146,7 @@ const ImageSettings = () => {
             </div>
           }
           {/* ------ other images container ------ */}
-          <div className="w-full block sm:py-0 flex justify-center gap-2 my-4 flex-wrap">
+          <div className="w-full sm:py-0 flex justify-center gap-2 my-4 flex-wrap">
             {user.data.images.map((img, index) => (
               <li
                 key={index}

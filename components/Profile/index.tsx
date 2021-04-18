@@ -17,6 +17,7 @@ import { useUser } from "@/components/auth";
 import formatRelative from "date-fns/formatRelative";
 import { useRouter } from "next/router";
 import { Image } from "@/components/auth/classes";
+import LoadingRing from "@/components/ui/Icons/LoadingRing";
 
 export type ImageType = { src: string; isProfilePicture: 1 | 0 };
 
@@ -60,7 +61,12 @@ const ProfileDisplay = () => {
     )
   );
 
-  if (isLoading) return <>loading...</>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center">
+        <LoadingRing color="#33d398" />
+      </div>
+    );
   if (!profile || error || !user) return <>error</>;
   const reportUser = async () => {
     try {
@@ -120,12 +126,12 @@ const ProfileDisplay = () => {
     <>
       <article
         style={{ height: "min-content" }}
-        className="max-w-4xl bg-white sm:shadow-lg p-0 sm:px-6 sm:py-4 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8"
+        className="w-96 max-w-full bg-white sm:shadow-lg pb-6 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8"
       >
-        <section className="flex justify-around flex-wrap relative mb-4">
+        <section className="relative mb-4">
           {/* ------ main picture ------ */}
           <div
-            className="sm:max-w-sm sm:w-80 w-full"
+            className="max-w-full sm:w-96 w-full  mx-auto"
             style={{ height: "30rem" }}
           >
             <picture>
@@ -136,7 +142,7 @@ const ProfileDisplay = () => {
               <img
                 src={profile.images[mainPicIndex].src}
                 alt="profile picture"
-                className="h-full w-full object-cover sm:rounded-2xl "
+                className="h-full w-full object-cover sm:rounded-t"
               />
             </picture>
           </div>
@@ -199,11 +205,11 @@ const ProfileDisplay = () => {
             </div>
           )}
           {/* ------ other images container ------ */}
-          <div className="flex-none sm:w-24 flex justify-evenly sm:block sm:py-0 py-2">
+          <div className="w-full sm:py-0 flex justify-center gap-2 my-2 flex-wrap">
             {profile.images.map((img, index) => (
               <li
                 key={index}
-                className="block p-0.5 w-16 sm:w-20 h-24 ml-auto mr-0"
+                className="block p-0.5 w-20 h-24 mx-2"
                 onClick={() => setMainPicIndex(index)}
               >
                 <article
@@ -230,12 +236,12 @@ const ProfileDisplay = () => {
 
         <section className="flex-grow">
           {/* ------ profile information ------ */}
-          <div className="px-2 py-2 w-full divide-y sm:divide-y-0 divide-gray-200 divide-solide">
-            <div className="text-center mb-4 sm:mb-6 px-2 sm:px-0">
+          <div className="px-6 w-full ">
+            <div className="mb-2">
               <div className="flex justify-between items-center">
                 <h4 className="text-gray-600 text-base ">
-                  <span className="text-xl font-bold">{profile.userName}</span>{" "}
-                  {profile.age}
+                  <span className="text-3xl font-bold">{profile.userName}</span>{" "}
+                  <span className="text-lg">{profile.age}</span>
                 </h4>
                 {!isMyProfile && (
                   <Link href={`/messages?user=${profile.id}`}>
@@ -280,19 +286,17 @@ const ProfileDisplay = () => {
               </div>
             </div>
             {profile.bio && (
-              <div className="text-center mb-4 sm:mx-4">
-                <h4 className="text-gray-600 text-base font-medium my-2">
-                  About:
-                </h4>
+              <div className="mb-2">
+                <h4 className="text-gray-600 text-base font-medium">About:</h4>
                 <p className="text-gray-500 text-sm max-w-md">{profile.bio}</p>
               </div>
             )}
             {profile.tags.length > 0 && (
-              <div className="text-center  sm:mx-4">
-                <h4 className="text-gray-600 text-base font-medium my-2">
+              <div>
+                <h4 className="text-gray-600 text-base font-medium">
                   Interests:
                 </h4>
-                <div className="mt-1">
+                <div className="mt-1 text-center  ">
                   {profile.tags.map((tagName: string, i) => (
                     <Tag key={`tag-${i}`} tagName={tagName} />
                   ))}

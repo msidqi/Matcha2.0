@@ -8,7 +8,6 @@ import { useUser } from "../auth";
 
 interface Props {
   profile: SuggestedUser;
-  isCurrentlyShown?: boolean;
 }
 
 const SwipeImageProfile = ({
@@ -60,24 +59,14 @@ const SwipeImageProfile = ({
           className="bg-white px-2 py-2 border-gray-200 border-2 rounded-xl  m-auto mb-0 cursor-pointer w-11/12 absolute bottom-2 left-2/4 transform -translate-x-1/2"
         >
           {mainDetails}
-          <Transition
-            show={state.expand}
-            enter="transition ease-out duration-100"
-            enterFrom="transform scale-y-50"
-            enterTo="transform scale-y-100"
-            leave="transition ease-in duration-75"
-            leaveFrom="transform scale-y-100"
-            leaveTo="transform scale-y-50"
-          >
-            {bio && (
-              <>
-                <h4 className="text-gray-600 text-base font-medium mt-2">
-                  About:
-                </h4>
-                <p className="text-gray-500 text-sm">{bio}</p>
-              </>
-            )}
-          </Transition>
+          {bio && state.expand && (
+            <>
+              <h4 className="text-gray-600 text-base font-medium mt-2">
+                About:
+              </h4>
+              <p className="text-gray-500 text-sm">{bio}</p>
+            </>
+          )}
         </div>
       </div>
     </SwipeCardContainer>

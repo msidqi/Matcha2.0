@@ -8,7 +8,7 @@ import { useUser } from "../auth";
 import { useSuggestions } from "@/utils/requests/suggestions";
 import { like } from "@/utils/requests/userRequests";
 import Settings from "@/components/ProfileListingSettings";
-// import { indexOf } from "@/utils/indexOf";
+import LoadingRing from "@/components/ui/Icons/LoadingRing";
 
 const ROW_COUNT = 4;
 
@@ -65,9 +65,14 @@ const ProfileListing = () => {
         : undefined,
     isSearch: isSearchActive,
   });
-  console.log({ isSearchActive });
+
   if (error) return <>suggestions error...</>;
-  if (isLoading) return <>suggestions are loading...</>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center">
+        <LoadingRing color="#33d398" />
+      </div>
+    );
   const allSuggestedUsers = data?.pages.flatMap((page) => page.data).reverse();
   // console.log({ allSuggestedUsers }, data?.pageParams);
 
@@ -139,6 +144,46 @@ const ProfileListing = () => {
     // ); // find index and delete suggestion from data
   };
 
+  const filterProps = {
+    settingsName: "Filters",
+    showSettings: showFilters,
+    isSettingActive: isFilterActive,
+    setIsSettingActive: setIsFilterActive,
+    tri,
+    setTri,
+    triOrder,
+    setTriOrder,
+    ageRange,
+    setAgeRange,
+    distanceRange,
+    setDistanceRange,
+    experienceRange,
+    setExperienceRange,
+    tagsSet,
+    setTagsSet,
+    disableSettingsDisplay: disableFilterDisplay,
+  };
+
+  const searchProps = {
+    settingsName: "Search",
+    showSettings: showSearch,
+    isSettingActive: isSearchActive,
+    setIsSettingActive: setIsSearchActive,
+    tri: triS,
+    setTri: setTriS,
+    triOrder: triOrderS,
+    setTriOrder: setTriOrderS,
+    ageRange: ageRangeS,
+    setAgeRange: setAgeRangeS,
+    distanceRange: distanceRangeS,
+    setDistanceRange: setDistanceRangeS,
+    experienceRange: experienceRangeS,
+    setExperienceRange: setExperienceRangeS,
+    tagsSet: tagsSetS,
+    setTagsSet: setTagsSetS,
+    disableSettingsDisplay: disableSearchDisplay,
+  };
+
   return (
     <>
       <SwipeImage
@@ -161,48 +206,8 @@ const ProfileListing = () => {
           <SearchIcon />
         </div>
       </div>
-      <Settings
-        {...{
-          settingsName: "Filters",
-          showSettings: showFilters,
-          isSettingActive: isFilterActive,
-          setIsSettingActive: setIsFilterActive,
-          tri,
-          setTri,
-          triOrder,
-          setTriOrder,
-          ageRange,
-          setAgeRange,
-          distanceRange,
-          setDistanceRange,
-          experienceRange,
-          setExperienceRange,
-          tagsSet,
-          setTagsSet,
-          disableSettingsDisplay: disableFilterDisplay,
-        }}
-      />
-      <Settings
-        {...{
-          settingsName: "Search",
-          showSettings: showSearch,
-          isSettingActive: isSearchActive,
-          setIsSettingActive: setIsSearchActive,
-          tri: triS,
-          setTri: setTriS,
-          triOrder: triOrderS,
-          setTriOrder: setTriOrderS,
-          ageRange: ageRangeS,
-          setAgeRange: setAgeRangeS,
-          distanceRange: distanceRangeS,
-          setDistanceRange: setDistanceRangeS,
-          experienceRange: experienceRangeS,
-          setExperienceRange: setExperienceRangeS,
-          tagsSet: tagsSetS,
-          setTagsSet: setTagsSetS,
-          disableSettingsDisplay: disableSearchDisplay,
-        }}
-      />
+      <Settings {...filterProps} />
+      <Settings {...searchProps} />
     </>
   );
 };

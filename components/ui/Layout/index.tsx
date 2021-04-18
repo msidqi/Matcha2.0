@@ -10,7 +10,7 @@ const Layout: FC<{ background?: boolean }> = ({
     <main
       className={`overflow-x-hidden ${
         background
-          ? "bg-mainBackgroundImage bg-cover bg-center animate-backgroundShiftTablet xl:animate-backgroundShift"
+          ? "bg-gray-900 bg-mainBackgroundImage bg-cover bg-center animate-backgroundShiftTablet xl:animate-backgroundShift"
           : ""
       }`}
     >

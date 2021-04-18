@@ -14,7 +14,7 @@ const Title = ({
     <div className="bg-white h-14 w-full border-b border-gray-300 py-2 px-4 flex items-center">
       {showBackOnMobile && (
         <button
-          className="sm:hidden mr-2 rounded-full"
+          className="sm:hidden mr-2 rounded-full cursor-pointer hover:bg-green-50 p-1"
           onClick={() => menuSetView("main")}
         >
           <ArrowBack />
