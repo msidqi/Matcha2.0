@@ -77,7 +77,7 @@ const SettingsPersonalInfo = () => {
           See and change your personal informations.
         </p>
       </div>
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <form
           onSubmit={handleSubmit(onSubmit)}
           onKeyDown={(e) => checkKeyDown(e)}

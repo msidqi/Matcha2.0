@@ -128,10 +128,10 @@ const ImageSettings = () => {
             picture by selecting one from your list of uploaded images.
           </p>
         </div>
-        <section className="p-6">
+        <section className="p-4 sm:p-6">
           {/* ------ main picture ------ */}
           {
-            <div className="w-80 m-auto" style={{ height: "30rem" }}>
+            <div className="w-80 max-w-full m-auto" style={{ height: "30rem" }}>
               <picture>
                 <source
                   media="(min-width:650px)"
@@ -140,7 +140,7 @@ const ImageSettings = () => {
                 <img
                   src={user.data.images[mainPicIndex]?.src}
                   alt="profile picture"
-                  className="h-full w-full object-cover rounded-2xl sm:rounded-none"
+                  className="h-full w-full object-cover rounded-2xl"
                 />
               </picture>
             </div>

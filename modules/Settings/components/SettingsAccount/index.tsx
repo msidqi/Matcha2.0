@@ -42,7 +42,7 @@ const SettingsAccount = () => {
           See and change your account informations.
         </p>
       </div>
-      <div className="p-6 ">
+      <div className="p-4 sm:p-6">
         <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
           <Input
             name="email"
