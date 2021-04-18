@@ -1,6 +1,10 @@
 import * as React from "react";
-import type { MenuType, MainMenuItemType, MenuView } from "./types";
-import { menuReducer } from "./reducer";
+import type {
+  MenuType,
+  MainMenuItemType,
+  MenuView,
+} from "@/modules/Menu/components/CompactMenu/types";
+import { menuReducer } from "@/modules/Menu/components/CompactMenu/reducer";
 
 const initialMenu: MenuType = {
   current: {

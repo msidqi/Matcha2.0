@@ -1,9 +1,9 @@
 import React from "react";
-import CompactMenu from "@/components/CompactMenu";
-import { menuList } from "@/components/CompactMenu/mainmenu.json";
-import SettingsImages from "@/components/SettingsImages";
-import SettingsPersonalInfo from "@/components/SettingsPersonalInfo";
-import SettingsAccount from "@/components/SettingsAccount";
+import CompactMenu from "@/modules/Menu/components/CompactMenu";
+import { menuList } from "./mainmenu.json";
+import SettingsImages from "@/modules/Settings/components/SettingsImages";
+import SettingsPersonalInfo from "@/modules/Settings/components/SettingsPersonalInfo";
+import SettingsAccount from "@/modules/Settings/components/SettingsAccount";
 
 const Settings = (): JSX.Element => {
   return (

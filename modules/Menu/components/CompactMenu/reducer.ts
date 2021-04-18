@@ -1,4 +1,7 @@
-import type { MenuType, MenuDispatchActions } from "./types";
+import type {
+  MenuType,
+  MenuDispatchActions,
+} from "@/modules/Menu/components/CompactMenu/types";
 
 export const menuReducer = (
   state: MenuType,

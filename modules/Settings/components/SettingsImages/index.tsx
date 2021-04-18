@@ -1,5 +1,5 @@
 import React from "react";
-import { useUser } from "../auth";
+import { useUser } from "@/components/auth";
 import PlusIcon from "@/components/ui/Icons/PlusIcon";
 import DeleteIcon from "@/components/ui/Icons/DeleteIcon";
 import { indexOf } from "@/utils/indexOf";
