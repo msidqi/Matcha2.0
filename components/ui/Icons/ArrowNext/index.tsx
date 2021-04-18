@@ -9,7 +9,7 @@ interface ArrowNextProps {
 const ArrowNext = ({
   height = "20",
   width = "20",
-  color = "#33d398",
+  color = "#fff",
 }: ArrowNextProps): JSX.Element => (
   <svg
     height={height}

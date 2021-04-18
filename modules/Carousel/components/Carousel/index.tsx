@@ -5,6 +5,7 @@ interface CarouselProps {
   nextArrow: React.ReactElement;
   items: React.ReactElement[];
   containerClassName?: string;
+  style?: React.CSSProperties;
 }
 
 const Carousel: React.FC<CarouselProps> = ({
@@ -12,6 +13,7 @@ const Carousel: React.FC<CarouselProps> = ({
   prevArrow,
   nextArrow,
   containerClassName,
+  style,
 }) => {
   const [index, setIndex] = React.useState(0);
 
@@ -24,10 +26,10 @@ const Carousel: React.FC<CarouselProps> = ({
     nextArrow && items.length && index != items.length - 1
   );
   return (
-    <div className={`relative ${containerClassName ?? "h-44"}`}>
+    <div style={style} className={`relative ${containerClassName ?? "h-44"}`}>
       {hidePrevArrow && (
         <div
-          className="absolute top-1/2 left-1 transform -translate-y-1/2"
+          className="absolute top-1/2 left-1 transform -translate-y-1/2 z-10"
           onClick={onPrevClick}
         >
           {prevArrow}
@@ -35,7 +37,7 @@ const Carousel: React.FC<CarouselProps> = ({
       )}
       {hideNextArrow && (
         <div
-          className="absolute top-1/2 right-1 transform -translate-y-1/2"
+          className="absolute top-1/2 right-1 transform -translate-y-1/2 z-10"
           onClick={onNextClick}
         >
           {nextArrow}

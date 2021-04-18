@@ -9,7 +9,7 @@ interface ArrowPrevProps {
 const ArrowPrev = ({
   height = "20",
   width = "20",
-  color = "#33d398",
+  color = "#fff",
 }: ArrowPrevProps): JSX.Element => (
   <svg
     height={height}

@@ -3,7 +3,6 @@ import Tag from "@/components/Tag";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import DropDownIcon from "@/components/ui/Icons/DropDownIcon";
 import PositionIcon from "@/components/ui/Icons/PositionIcon";
-import { indexOf } from "@/utils/indexOf";
 import Link from "next/link";
 import { Transition } from "@headlessui/react";
 import Modal from "@/components/ui/Modal";
@@ -16,8 +15,10 @@ import {
 import { useUser } from "@/components/auth";
 import formatRelative from "date-fns/formatRelative";
 import { useRouter } from "next/router";
-import { Image } from "@/components/auth/classes";
 import LoadingRing from "@/components/ui/Icons/LoadingRing";
+import Carousel from "@/modules/Carousel/components/Carousel";
+import ArrowNext from "@/components/ui/Icons/ArrowNext";
+import ArrowPrev from "@/components/ui/Icons/ArrowPrev";
 
 export type ImageType = { src: string; isProfilePicture: 1 | 0 };
 
@@ -49,17 +50,6 @@ const ProfileDisplay = () => {
       ? ""
       : `last seen ${formatRelative(lastSeenDate, new Date())}`;
   }, [profile?.lastSeen]);
-  Image;
-  const [mainPicIndex, setMainPicIndex] = React.useState<number>(
-    Math.max(
-      0,
-      profile
-        ? indexOf<Image>(profile.images as Image[], (img) =>
-            Boolean(img.isProfilePicture)
-          )
-        : 0
-    )
-  );
 
   if (isLoading)
     return (
@@ -122,6 +112,7 @@ const ProfileDisplay = () => {
       console.log("error unliking user", e);
     }
   };
+
   return (
     <>
       <article
@@ -130,22 +121,37 @@ const ProfileDisplay = () => {
       >
         <section className="relative mb-4">
           {/* ------ main picture ------ */}
-          <div
-            className="max-w-full sm:w-96 w-full  mx-auto"
+
+          <Carousel
             style={{ height: "30rem" }}
-          >
-            <picture>
-              <source
-                media="(min-width:650px)"
-                srcSet={profile.images[mainPicIndex].src}
-              />
-              <img
-                src={profile.images[mainPicIndex].src}
-                alt="profile picture"
-                className="h-full w-full object-cover sm:rounded-t"
-              />
-            </picture>
-          </div>
+            containerClassName="bg-red-50 w-96"
+            prevArrow={
+              <button className="cursor-pointer rounded-full bg-gray-400 bg-opacity-10 pl-0 p-1">
+                <ArrowPrev />
+              </button>
+            }
+            nextArrow={
+              <button className="cursor-pointer rounded-full bg-gray-400 bg-opacity-10 pr-0 p-1">
+                <ArrowNext />
+              </button>
+            }
+            items={profile.images.map((img, index) => (
+              <div
+                className="max-w-full sm:w-96 w-full  mx-auto"
+                style={{ height: "30rem" }}
+                key={`image-${index}`}
+              >
+                <picture>
+                  <source media="(min-width:650px)" srcSet={img.src} />
+                  <img
+                    src={img.src}
+                    alt="profile picture"
+                    className="h-full w-full object-cover sm:rounded-t"
+                  />
+                </picture>
+              </div>
+            ))}
+          />
           {/* report and block drop down */}
           {!isMyProfile && (
             <div className="absolute top-4 left-2">
@@ -204,34 +210,6 @@ const ProfileDisplay = () => {
               </Transition>
             </div>
           )}
-          {/* ------ other images container ------ */}
-          <div className="w-full sm:py-0 flex justify-center gap-2 my-2 flex-wrap">
-            {profile.images.map((img, index) => (
-              <li
-                key={index}
-                className="block p-0.5 w-20 h-24 mx-2"
-                onClick={() => setMainPicIndex(index)}
-              >
-                <article
-                  tabIndex={0}
-                  className="w-full h-full rounded outline-none"
-                >
-                  <img
-                    alt="upload preview"
-                    src={img.src}
-                    className={`${
-                      index === mainPicIndex ? "ring ring-green-400" : ""
-                    } w-full h-full object-cover rounded`}
-                    style={
-                      index === mainPicIndex
-                        ? {}
-                        : { filter: "brightness(60%)" }
-                    }
-                  />
-                </article>
-              </li>
-            ))}
-          </div>
         </section>
 
         <section className="flex-grow">
