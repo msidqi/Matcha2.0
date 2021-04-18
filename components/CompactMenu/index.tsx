@@ -22,9 +22,9 @@ const CompactMenuContainer: React.FC<CompactMenuProps> = ({
   mainMenuItems,
   contentMenuContentItems,
 }) => {
-  const { getCurrentItem, menuHistoryPush } = useMenu();
+  const { getCurrentItem, menuHistoryPush, view } = useMenu();
   const currentItem = getCurrentItem();
-
+  console.log("view", view);
   // set default menu picked
   React.useEffect(() => {
     mainMenuItems.length > 0 && menuHistoryPush(mainMenuItems[0]);
@@ -35,7 +35,9 @@ const CompactMenuContainer: React.FC<CompactMenuProps> = ({
       <MainMenu
         title={mainMenuTitle}
         items={mainMenuItems}
-        className="flex-auto w-4/12 bg-white border-r border-gray-200"
+        className={`flex-auto w-4/12 bg-white border-r border-gray-200 sm:block ${
+          view === "main" ? "" : "hidden"
+        }`}
       />
       <MainMenuContent>
         {currentItem?.key && contentMenuContentItems[currentItem.key]}
@@ -46,11 +48,25 @@ const CompactMenuContainer: React.FC<CompactMenuProps> = ({
 
 // -----------------------------------
 
-const Title = ({ title }: { title: string }) => (
-  <div className="bg-white h-14 w-full border-b border-gray-300 py-2 px-4 flex items-center">
-    <h1 className="font-bold text-black text-xl">{title}</h1>
-  </div>
-);
+const Title = ({
+  title,
+  showBackOnMobile = true,
+}: {
+  title: string;
+  showBackOnMobile?: boolean;
+}) => {
+  const { menuSetView } = useMenu();
+  return (
+    <div className="bg-white h-14 w-full border-b border-gray-300 py-2 px-4 flex items-center">
+      {showBackOnMobile && (
+        <button className="sm:hidden" onClick={() => menuSetView("main")}>
+          back
+        </button>
+      )}
+      <h1 className="font-bold text-black text-xl">{title}</h1>
+    </div>
+  );
+};
 
 // -----------------------------------
 interface MainMenuProps {
@@ -60,18 +76,23 @@ interface MainMenuProps {
 }
 
 const MainMenu: React.FC<MainMenuProps> = ({ title, items, className }) => {
-  const { getCurrentItem, menuHistoryPush } = useMenu();
+  const { getCurrentItem, menuHistoryPush, menuSetView } = useMenu();
   const currentItem = getCurrentItem();
+
+  const onItemClick = (item: MainMenuItemType) => {
+    menuSetView("content");
+    menuHistoryPush(item);
+  };
 
   return (
     <section className={className}>
-      {title && <Title title={title} />}
+      {title && <Title title={title} showBackOnMobile={false} />}
       {items.map((item, index) => (
         <MainMenuItem
           {...item}
           isCurrent={item.key === currentItem?.key}
           key={`menuItem-${index}`}
-          onItemClick={() => /*menuSetCurrent(item)*/ menuHistoryPush(item)}
+          onItemClick={() => onItemClick(item)}
         />
       ))}
     </section>
@@ -107,13 +128,16 @@ const MainMenuItem: React.FC<MainMenuItemProps> = ({
 };
 
 // -----------------------------------
-interface MainMenuContentProps {}
 
-const MainMenuContent: React.FC<MainMenuContentProps> = ({ children }) => {
-  const menu = useMenu();
-  const currentItem = menu.getCurrentItem();
+const MainMenuContent: React.FC = ({ children }) => {
+  const { view, getCurrentItem } = useMenu();
+  const currentItem = getCurrentItem();
   return (
-    <section className="flex-auto w-7/12 bg-white">
+    <section
+      className={`flex-auto w-7/12 bg-white sm:block ${
+        view === "content" ? "" : "hidden"
+      }`}
+    >
       {currentItem?.label && <Title title={currentItem.label} />}
       {children}
     </section>

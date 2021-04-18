@@ -15,6 +15,8 @@ export const menuReducer = (
     }
     case "SET_CURRENT":
       return { ...state, current: action.payload.item };
+    case "SET_VIEW":
+      return { ...state, view: action.payload.view };
     default:
       return state;
   }

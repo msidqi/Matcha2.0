@@ -9,6 +9,7 @@ import { useUser } from "@/components/auth";
 import { useForm } from "react-hook-form";
 import { useUpdateUserData } from "@/utils/requests/userRequests";
 import { genders, orientation } from "@/components/data/constants.json";
+import LoadingRing from "@/components/ui/Icons/LoadingRing";
 
 type DataType = {
   userName: string;
@@ -26,25 +27,25 @@ const SettingsPersonalInfo = () => {
   );
   const updateUserMutation = useUpdateUserData();
 
-  if (!user || loading) return <>Loading...</>;
-
   /* ------ set fetched user data in the editable fields ------ */
   React.useEffect(() => {
-    const { data } = user;
-    setValue("email", data.email);
-    setValue("firstName", data.firstName);
-    setValue("lastName", data.lastName);
-    setValue("userName", data.userName);
-    setValue("bio", data.bio);
-    setValue("gender", data.gender?.toLowerCase());
-    setValue("orientation", data.orientation?.toLowerCase());
-    setValue(
-      "birthDate",
-      data.birthDate instanceof Date && !isNaN(data.birthDate.getTime())
-        ? data.birthDate.toISOString().split("T")[0]
-        : data.birthDate
-    );
-    setTagsSet(new Set(data.tags));
+    if (user) {
+      const { data } = user;
+      setValue("email", data.email);
+      setValue("firstName", data.firstName);
+      setValue("lastName", data.lastName);
+      setValue("userName", data.userName);
+      setValue("bio", data.bio);
+      setValue("gender", data.gender?.toLowerCase());
+      setValue("orientation", data.orientation?.toLowerCase());
+      setValue(
+        "birthDate",
+        data.birthDate instanceof Date && !isNaN(data.birthDate.getTime())
+          ? data.birthDate.toISOString().split("T")[0]
+          : data.birthDate
+      );
+      setTagsSet(new Set(data.tags));
+    }
   }, [user]);
 
   const onSubmit = async (submitedData: DataType) => {
@@ -62,13 +63,19 @@ const SettingsPersonalInfo = () => {
 
   const checkKeyDown = (e: any) => e.code === "Enter" && e.preventDefault();
 
+  if (!user || loading)
+    return (
+      <div className="flex justify-center items-center h-96">
+        <LoadingRing color="#33d398" />
+      </div>
+    );
   return (
     <section className="w-full flex flex-col">
-       <div className="w-full border-b border-gray-300 py-4 px-6 mb-4" >
-      <h4 className="text-lg font-semibold">
-          Change your informations
-        </h4>
-        <p className="text-sm text-gray-500">You can upload new images for your profile or change your profile picture by selecting one from your list of uploaded images.</p>
+      <div className="w-full border-b border-gray-300 py-4 px-6">
+        <h4 className="text-lg font-semibold">Change your informations</h4>
+        <p className="text-sm text-gray-500">
+          See and change your personal informations.
+        </p>
       </div>
       <div className="p-6">
         <form
@@ -76,13 +83,6 @@ const SettingsPersonalInfo = () => {
           onKeyDown={(e) => checkKeyDown(e)}
           className="flex flex-col space-y-5"
         >
-          <Input
-            name="email"
-            type="email"
-            label="Email"
-            register={register}
-            placeholder="example@email.com"
-          />
           <Input
             name="userName"
             label="User name"

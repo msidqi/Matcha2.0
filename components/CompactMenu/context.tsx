@@ -1,5 +1,5 @@
 import * as React from "react";
-import type { MenuType, MainMenuItemType } from "./types";
+import type { MenuType, MainMenuItemType, MenuView } from "./types";
 import { menuReducer } from "./reducer";
 
 const initialMenu: MenuType = {
@@ -8,11 +8,12 @@ const initialMenu: MenuType = {
     label: "",
   },
   history: [],
-  view: "full",
+  view: "content",
   menuHistoryPush: () => {},
   menuHistoryPop: () => {},
   getCurrentItem: () => undefined,
   menuSetCurrent: () => {},
+  menuSetView: () => {},
 };
 
 const MenuContext = React.createContext(initialMenu);
@@ -36,6 +37,9 @@ export const MenuProvider: React.FC = ({ children }) => {
   const menuSetCurrent = (item: MainMenuItemType) =>
     dispatch({ type: "SET_CURRENT", payload: { item } });
 
+  const menuSetView = (view: MenuView) =>
+    dispatch({ type: "SET_VIEW", payload: { view } });
+
   return (
     <MenuContext.Provider
       value={{
@@ -44,6 +48,7 @@ export const MenuProvider: React.FC = ({ children }) => {
         getCurrentItem,
         menuHistoryPush,
         menuHistoryPop,
+        menuSetView,
       }}
     >
       {children}

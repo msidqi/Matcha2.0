@@ -1,6 +1,6 @@
 import React from "react";
 import { useUser } from "../auth";
-import PlusIcon from "../ui/Icons/PlusIcon";
+import PlusIcon from "@/components/ui/Icons/PlusIcon";
 import DeleteIcon from "@/components/ui/Icons/DeleteIcon";
 import { indexOf } from "@/utils/indexOf";
 import { Image } from "@/components/auth/classes";
@@ -10,6 +10,7 @@ import {
   deleteUserImageRequest,
   getProfilePictureNameRequest,
 } from "@/utils/requests/userRequests";
+import LoadingRing from "@/components/ui/Icons/LoadingRing";
 
 const ImageSettings = () => {
   const [{ user }, { setUser, loading }] = useUser();
@@ -29,7 +30,12 @@ const ImageSettings = () => {
     }
   }, [user]);
 
-  if (!user || loading) return <>Loading...</>;
+  if (!user || loading)
+    return (
+      <div className="flex justify-center items-center h-96">
+        <LoadingRing color="#33d398" />
+      </div>
+    );
 
   const handleImageDelete = async (indexToDelete: number) => {
     const {
@@ -115,13 +121,14 @@ const ImageSettings = () => {
     <>
       {/* ------ profile images section ------ */}
       <section className="w-full mb-10">
-      <div className="w-full border-b border-gray-300 py-4 px-6 mb-4" >
-      <h4 className="text-lg font-semibold">
-          Change your images
-        </h4>
-        <p className="text-sm text-gray-500">You can upload new images for your profile or change your profile picture by selecting one from your list of uploaded images.</p>
-      </div>
-        <section className="">
+        <div className="w-full border-b border-gray-300 py-4 px-6">
+          <h4 className="text-lg font-semibold">Change your images</h4>
+          <p className="text-sm text-gray-500">
+            You can upload new images for your profile or change your profile
+            picture by selecting one from your list of uploaded images.
+          </p>
+        </div>
+        <section className="p-6">
           {/* ------ main picture ------ */}
           {
             <div className="w-80 m-auto" style={{ height: "30rem" }}>
