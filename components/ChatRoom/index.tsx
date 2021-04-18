@@ -201,16 +201,18 @@ const ChatRoom = (): JSX.Element => {
     >
       <header className="p-2 pb-0 flex justify-start items-center w-full mb-5">
         <button
-          className="sm:hidden rounded-full bg-gray-200 w-8 h-8 flex items-center justify-center"
+          className="sm:hidden mr-2 rounded-full cursor-pointer hover:bg-green-50 p-1"
           onClick={() => toggleListAndRoom("list")}
         >
-          <ArrowBack color="#fff" />
+          <ArrowBack />
         </button>
         <div className="rounded-full h-14 w-14 overflow-hidden mx-2">
-          <img
-            src={otherUser.image?.src ?? "/profile.jpg"}
-            className="object-cover object-center h-full w-full"
-          />
+          {otherUser.image?.src && (
+            <img
+              src={otherUser.image?.src}
+              className="object-cover object-center h-full w-full"
+            />
+          )}
         </div>
         <div className="">
           <h3 className="text-gray-700 font-bold">

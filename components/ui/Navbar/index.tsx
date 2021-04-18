@@ -218,7 +218,7 @@ function Navbar(): JSX.Element {
                           View my profile
                         </a>
                       </Link>
-                      <Link href="/profile-edit">
+                      <Link href="/settings">
                         <a
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           role="menuitem"

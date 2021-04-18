@@ -1,4 +1,5 @@
 /* eslint-disable */
+const plugin = require("tailwindcss/plugin");
 
 module.exports = {
   future: {
@@ -41,5 +42,28 @@ module.exports = {
     },
   },
   variants: {},
-  plugins: [require("@tailwindcss/forms")],
+  plugins: [
+    require("@tailwindcss/forms"),
+    plugin(function ({ addUtilities, theme, config }) {
+      const themeColors = theme("colors");
+      const individualBorderColors = Object.keys(themeColors).map(
+        (colorName) => ({
+          [`.border-b-${colorName}`]: {
+            borderBottomColor: themeColors[colorName],
+          },
+          [`.border-t-${colorName}`]: {
+            borderTopColor: themeColors[colorName],
+          },
+          [`.border-l-${colorName}`]: {
+            borderLeftColor: themeColors[colorName],
+          },
+          [`.border-r-${colorName}`]: {
+            borderRightColor: themeColors[colorName],
+          },
+        })
+      );
+
+      addUtilities(individualBorderColors);
+    }),
+  ],
 };
