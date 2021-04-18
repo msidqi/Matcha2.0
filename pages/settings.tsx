@@ -1,6 +1,7 @@
 import React from "react";
 import Layout from "@/components/ui/Layout";
 import Settings from "@/components/Settings";
+import withAuth from "@/components/WithAuth";
 
 const index = (): JSX.Element => (
   <Layout>
@@ -8,4 +9,4 @@ const index = (): JSX.Element => (
   </Layout>
 );
 
-export default index;
+export default withAuth(index);
