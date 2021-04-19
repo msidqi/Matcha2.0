@@ -9,6 +9,7 @@ import { useSuggestions } from "@/utils/requests/suggestions";
 import { like } from "@/utils/requests/userRequests";
 import Settings from "@/components/ProfileListingSettings";
 import LoadingRing from "@/components/ui/Icons/LoadingRing";
+import { CgArrowLeftR } from "react-icons/cg";
 
 const ROW_COUNT = 4;
 
@@ -208,9 +209,14 @@ const ProfileListing = () => {
       </div>
       <Settings {...filterProps} />
       <Settings {...searchProps} />
+      herer
       <SwipeImageHints />
     </>
   );
 };
 
 export default ProfileListing;
+
+const SwipeImageHints = () => {
+  return <CgArrowLeftR />;
+};

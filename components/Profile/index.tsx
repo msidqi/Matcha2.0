@@ -124,7 +124,7 @@ const ProfileDisplay = () => {
 
           <Carousel
             style={{ height: "30rem" }}
-            containerClassName="bg-red-50 w-96"
+            containerClassName="bg-red-50 w-96 max-w-full"
             prevArrow={
               <button className="cursor-pointer">
                 <ArrowPrev />
@@ -137,7 +137,7 @@ const ProfileDisplay = () => {
             }
             items={profile.images.map((img, index) => (
               <div
-                className="max-w-full sm:w-96 w-full  mx-auto"
+                className="w-96 max-w-full mx-auto"
                 style={{ height: "30rem" }}
                 key={`image-${index}`}
               >
