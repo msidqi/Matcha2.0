@@ -208,7 +208,9 @@ const ProfileListing = () => {
       </div>
       <Settings {...filterProps} />
       <Settings {...searchProps} />
+      <SwipeImageHints />
     </>
   );
 };
+
 export default ProfileListing;
