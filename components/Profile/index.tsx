@@ -218,7 +218,7 @@ const ProfileDisplay = () => {
             <div className="mb-2">
               <div className="flex justify-between items-center">
                 <h4 className="text-gray-600 text-base ">
-                  <span className="text-3xl font-bold">{profile.userName}</span>{" "}
+                  <span className="text-2xl font-bold">{profile.userName}</span>{" "}
                   <span className="text-lg">{profile.age}</span>
                 </h4>
                 {!isMyProfile && (
