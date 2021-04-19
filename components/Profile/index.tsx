@@ -126,12 +126,12 @@ const ProfileDisplay = () => {
             style={{ height: "30rem" }}
             containerClassName="bg-red-50 w-96"
             prevArrow={
-              <button className="cursor-pointer rounded-full bg-gray-400 bg-opacity-10 pl-0 p-1">
+              <button className="cursor-pointer">
                 <ArrowPrev />
               </button>
             }
             nextArrow={
-              <button className="cursor-pointer rounded-full bg-gray-400 bg-opacity-10 pr-0 p-1">
+              <button className="cursor-pointer">
                 <ArrowNext />
               </button>
             }

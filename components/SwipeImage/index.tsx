@@ -33,7 +33,7 @@ function SwipeImage({
           {!endOfSuggestions ? (
             suggestedUsers.map((singleSuggestedUser) => (
               <TinderCard
-                preventSwipe={["down", "up"]}
+                preventSwipe={["down"]}
                 key={singleSuggestedUser.id}
                 onSwipe={(dir) => swiped(singleSuggestedUser.userName, dir)}
                 onCardLeftScreen={(dir) =>
