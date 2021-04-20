@@ -1,5 +1,5 @@
 import React from "react";
-import Tag from "@/components/Tag";
+import Tag from "@/components/ui/Tag";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import DropDownIcon from "@/components/ui/Icons/DropDownIcon";
 import PositionIcon from "@/components/ui/Icons/PositionIcon";

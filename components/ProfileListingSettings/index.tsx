@@ -1,8 +1,8 @@
 import React, { CSSProperties } from "react";
 import { Transition, Switch } from "@headlessui/react";
-import { Range } from "@/components/Range";
+import { Range } from "@/components/ui/Range";
 import TagsDisplay from "@/components/TagsDisplay";
-import Select from "@/components/Select";
+import Select from "@/components/ui/Select";
 import { sortOptions, sortOrder } from "./selectOptions.json";
 
 interface SettingsProps {

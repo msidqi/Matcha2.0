@@ -1,8 +1,8 @@
 import React from "react";
-import Input from "@/components/Input";
+import Input from "@/components/ui/Input";
 import Button from "@/components/Button";
-import Select from "@/components/Select";
-import DateInput from "@/components/DateInput";
+import Select from "@/components/ui/Select";
+import DateInput from "@/components/ui/DateInput";
 import TagsDisplay from "@/components/TagsDisplay";
 import Bio from "@/components/Bio";
 import { useUser } from "@/components/auth";

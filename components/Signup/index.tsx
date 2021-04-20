@@ -1,11 +1,11 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import Input from "@/components/Input";
+import Input from "@/components/ui/Input";
 import guestRoute from "../GuestRoute";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import DateInput from "../DateInput";
+import DateInput from "../ui/DateInput";
 
 const Signup = (): JSX.Element => {
   const { register, handleSubmit } = useForm();

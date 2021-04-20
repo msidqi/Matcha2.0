@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import Input from "@/components/Input";
+import Input from "@/components/ui/Input";
 import { useUser } from "@/components/auth";
 import guestRoute from "@/components/GuestRoute";
 import Link from "next/link";

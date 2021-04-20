@@ -1,5 +1,5 @@
 import React, { useState, ReactNode } from "react";
-import Tag from "@/components/Tag";
+import Tag from "@/components/ui/Tag";
 
 interface TagsDisplayProps {
   variant?: string;
