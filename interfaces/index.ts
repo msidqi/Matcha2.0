@@ -92,3 +92,7 @@ export type NotificationType =
     }
   | { type: "empty" }
   | { type: "noNew" };
+
+export type LikeHistoryItemType = {
+  [x: string]: string;
+};

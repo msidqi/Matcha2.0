@@ -30,7 +30,6 @@ const scrollToBottom = (container: HTMLDivElement) => {
 
 // connectedUser 260
 // test2 261
-
 const ChatRoom = (): JSX.Element => {
   const [isAtBottom, setIsAtBottom] = React.useState<boolean>(true);
   const [message, setMessage] = React.useState<string>("");
@@ -259,7 +258,6 @@ const ChatRoom = (): JSX.Element => {
         }`}
       >
         <input
-          // ref={messageInputRef}
           onKeyUp={onKeyEnterUp}
           value={message}
           onChange={(e) => setMessage(e.target.value)}

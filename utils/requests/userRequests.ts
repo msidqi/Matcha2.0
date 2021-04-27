@@ -1,10 +1,16 @@
 import { apiRequest } from "@/utils/API";
 import { UserInput } from "@/components/auth";
 import { useMutation, useInfiniteQuery, useQuery } from "react-query";
-import { Orientation, TextMessage, OtherUserProfileType } from "@/interfaces";
+import {
+  Orientation,
+  TextMessage,
+  OtherUserProfileType,
+  LikeHistoryItemType,
+} from "@/interfaces";
 import { Image } from "@/components/auth/classes";
 import config from "@/config";
 import getPosition from "../getPosition";
+
 interface Authorization {
   authorization: string;
 }
@@ -477,4 +483,44 @@ interface MailActivationProps {
 
 export const mailActivationRequest = (data: MailActivationProps) => {
   return apiRequest("post", "/api/mailActivation", data)[0];
+};
+
+interface useUserHistory {
+  userId?: number;
+  offset?: number;
+  row_count?: number;
+  onSuccess?: () => void;
+}
+
+export const useUserHistory = ({
+  authorization,
+  row_count = 12,
+  offset,
+  userId,
+  onSuccess,
+}: useMessagesProps & Authorization) => {
+  return useInfiniteQuery(
+    ["likesHistory", userId],
+    ({ pageParam = 0 }) =>
+      apiRequest<LikeHistoryItemType[]>(
+        "post",
+        "/api/likesHistory",
+        { userId, offset: pageParam, row_count },
+        {
+          headers: {
+            Authorization: authorization,
+          },
+        }
+      )[0],
+    {
+      enabled: userId != undefined && userId !== -1,
+      keepPreviousData: true,
+      onSuccess,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      getNextPageParam: (lastPage) =>
+        offset ?? JSON.parse(lastPage.config.data)?.offset + 1,
+    }
+  );
 };

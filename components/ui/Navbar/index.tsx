@@ -226,6 +226,14 @@ function Navbar(): JSX.Element {
                           Settings
                         </a>
                       </Link>
+                      <Link href="/history">
+                        <a
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                        >
+                          Likes history
+                        </a>
+                      </Link>
                       <button
                         onClick={logout}
                         className="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
