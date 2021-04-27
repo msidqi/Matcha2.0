@@ -1,5 +1,5 @@
 import React from "react";
-import Input from "@/components/Input";
+import Input from "@/components/ui/Input";
 import Button from "@/components/Button";
 import { useUpdateUserData } from "@/utils/requests/userRequests";
 import { useUser } from "@/components/auth";

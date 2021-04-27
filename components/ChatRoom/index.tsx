@@ -50,7 +50,7 @@ const ChatRoom = (): JSX.Element => {
   console.log("map", messagesGlobalHistoryLocal);
   const {
     data: messagesHistory,
-    fetchNextPage: fetchNextMessages,
+    // fetchNextPage: fetchNextMessages,
     isLoading: isLoadingMessages,
   } = useMessages({
     authorization,

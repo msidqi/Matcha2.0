@@ -1,6 +1,5 @@
 import React from "react";
 import PositionIcon from "@/components/ui/Icons/PositionIcon";
-import { Transition } from "@headlessui/react";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import { formatDistance } from "@/utils/formatDistance";
 import { SuggestedUser } from "@/utils/requests/suggestions";

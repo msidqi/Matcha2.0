@@ -20,6 +20,8 @@ interface RangeProps {
     | React.Dispatch<React.SetStateAction<[number, number]>>;
 }
 
+type setRangeType = (value: [number] | [number, number]) => void;
+
 export const Range = ({
   onColor: activeColor,
   offColor: inactive,
@@ -67,7 +69,7 @@ export const Range = ({
                 : typeof values[0] === "number"
                 ? [values[0]]
                 : [0, 0];
-            setRange(newValues);
+            (setRange as setRangeType)(newValues);
             onRangeChange && onRangeChange(newValues);
           }}
           renderTrack={({ props, children }) => (

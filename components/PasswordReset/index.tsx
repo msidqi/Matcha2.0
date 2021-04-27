@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import Input from "@/components/Input";
+import Input from "@/components/ui/Input";
 import guestRoute from "@/components/GuestRoute";
 import { useResetPassword } from "@/utils/requests/userRequests";
 import Modal from "../ui/Modal";

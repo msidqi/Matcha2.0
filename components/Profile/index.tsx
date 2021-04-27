@@ -1,5 +1,5 @@
 import React from "react";
-import Tag from "@/components/Tag";
+import Tag from "@/components/ui/Tag";
 import AvatarIcon from "@/components/ui/Icons/AvatarIcon";
 import DropDownIcon from "@/components/ui/Icons/DropDownIcon";
 import PositionIcon from "@/components/ui/Icons/PositionIcon";
@@ -124,20 +124,20 @@ const ProfileDisplay = () => {
 
           <Carousel
             style={{ height: "30rem" }}
-            containerClassName="bg-red-50 w-96"
+            containerClassName="bg-red-50 w-96 max-w-full"
             prevArrow={
-              <button className="cursor-pointer rounded-full bg-gray-400 bg-opacity-10 pl-0 p-1">
+              <button className="cursor-pointer">
                 <ArrowPrev />
               </button>
             }
             nextArrow={
-              <button className="cursor-pointer rounded-full bg-gray-400 bg-opacity-10 pr-0 p-1">
+              <button className="cursor-pointer">
                 <ArrowNext />
               </button>
             }
             items={profile.images.map((img, index) => (
               <div
-                className="max-w-full sm:w-96 w-full  mx-auto"
+                className="w-96 max-w-full mx-auto"
                 style={{ height: "30rem" }}
                 key={`image-${index}`}
               >
@@ -218,7 +218,7 @@ const ProfileDisplay = () => {
             <div className="mb-2">
               <div className="flex justify-between items-center">
                 <h4 className="text-gray-600 text-base ">
-                  <span className="text-3xl font-bold">{profile.userName}</span>{" "}
+                  <span className="text-2xl font-bold">{profile.userName}</span>{" "}
                   <span className="text-lg">{profile.age}</span>
                 </h4>
                 {!isMyProfile && (

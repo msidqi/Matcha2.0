@@ -1,14 +1,14 @@
 import React from "react";
 import SwipeImage from "@/components/SwipeImage";
 import type { SwipeDirection } from "@/components/SwipeImage";
-
 import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
 import SearchIcon from "@/components/ui/Icons/SearchIcon";
-import { useUser } from "../auth";
+import { useUser } from "@/components/auth";
 import { useSuggestions } from "@/utils/requests/suggestions";
 import { like } from "@/utils/requests/userRequests";
 import Settings from "@/components/ProfileListingSettings";
 import LoadingRing from "@/components/ui/Icons/LoadingRing";
+import SwipeImageHints from "@/components/SwipeImageHints";
 
 const ROW_COUNT = 4;
 
@@ -208,7 +208,9 @@ const ProfileListing = () => {
       </div>
       <Settings {...filterProps} />
       <Settings {...searchProps} />
+      <SwipeImageHints />
     </>
   );
 };
+
 export default ProfileListing;

@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import React from "react";
-import Select from "@/components/Select";
+import Select from "@/components/ui/Select";
 import Bio from "@/components/Bio";
 import TagsDisplay from "@/components/TagsDisplay";
 import ImageUpload from "@/components/ImageUpload";
-import DateInput from "@/components/DateInput";
+import DateInput from "@/components/ui/DateInput";
 import getPosition from "@/utils/getPosition";
 import { genders, orientation } from "@/components/data/constants.json";
 import { ImagePreviewProps } from "@/interfaces";
