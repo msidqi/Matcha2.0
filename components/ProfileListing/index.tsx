@@ -9,10 +9,12 @@ import { like } from "@/utils/requests/userRequests";
 import Settings from "@/components/ProfileListingSettings";
 import LoadingRing from "@/components/ui/Icons/LoadingRing";
 import SwipeImageHints from "@/components/SwipeImageHints";
+import { useRouter } from "next/router";
 
 const ROW_COUNT = 4;
 
 const ProfileListing = () => {
+  const router = useRouter();
   const [showSearch, setShowSearch] = React.useState<boolean>(false);
   const [triS, setTriS] = React.useState<string>("");
   const [triOrderS, setTriOrderS] = React.useState<string>("");
@@ -110,7 +112,8 @@ const ProfileListing = () => {
 
   const handleSwipe = async (
     nameToDelete: string,
-    direction: SwipeDirection
+    direction: SwipeDirection,
+    payload?: { userId: number }
   ) => {
     if (
       typeof nameToDelete === "string" &&
@@ -124,7 +127,8 @@ const ProfileListing = () => {
             liker: user.data.userName,
             liked: nameToDelete,
           });
-          // console.log("like result", result);
+        } else if (direction === "up" && typeof payload?.userId == "number") {
+          router.push(`/profile/${payload.userId}`);
         }
       } catch (e) {
         console.error(e);
