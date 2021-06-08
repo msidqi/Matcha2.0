@@ -17,11 +17,12 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
+    "noImplicitThis": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }
   },
   "exclude": ["node_modules"],
-  "include": ["**/*.ts", "**/*.tsx", "utils/debounce.js"]
+  "include": ["**/*.ts", "**/*.tsx", "utils/debounce.ts"]
 }

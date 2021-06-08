@@ -9,8 +9,12 @@ export type SwipeDirection = "left" | "right" | "up" | "down";
 
 interface SwipeImageProps {
   suggestedUsers?: SuggestedUser[];
-  onSwiped?: (name: string, direction: SwipeDirection) => void;
-  onOutOfFrame?: (name: string, direction: SwipeDirection) => void;
+  onSwiped?: (name: string, direction: SwipeDirection, payload?: any) => void;
+  onOutOfFrame?: (
+    name: string,
+    direction: SwipeDirection,
+    payload?: any
+  ) => void;
   endOfSuggestions: boolean;
 }
 
@@ -21,10 +25,10 @@ function SwipeImage({
   onOutOfFrame,
 }: SwipeImageProps) {
   if (!suggestedUsers) return <>Loading...</>;
-  const swiped = (name: string, direction: SwipeDirection) =>
-    onSwiped?.(name, direction);
-  const leftScreen = (name: string, direction: SwipeDirection) =>
-    onOutOfFrame?.(name, direction);
+  const swiped = (name: string, direction: SwipeDirection, payload?: any) =>
+    onSwiped?.(name, direction, payload);
+  const leftScreen = (name: string, direction: SwipeDirection, payload?: any) =>
+    onOutOfFrame?.(name, direction, payload);
 
   return (
     <>
@@ -35,9 +39,15 @@ function SwipeImage({
               <TinderCard
                 preventSwipe={["down"]}
                 key={singleSuggestedUser.id}
-                onSwipe={(dir) => swiped(singleSuggestedUser.userName, dir)}
+                onSwipe={(dir) =>
+                  swiped(singleSuggestedUser.userName, dir, {
+                    userId: singleSuggestedUser.id,
+                  })
+                }
                 onCardLeftScreen={(dir) =>
-                  leftScreen(singleSuggestedUser.userName, dir)
+                  leftScreen(singleSuggestedUser.userName, dir, {
+                    userId: singleSuggestedUser.id,
+                  })
                 }
               >
                 <SwipeImageProfile profile={singleSuggestedUser} />

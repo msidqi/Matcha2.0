@@ -22,7 +22,11 @@ import ArrowPrev from "@/components/ui/Icons/ArrowPrev";
 
 export type ImageType = { src: string; isProfilePicture: 1 | 0 };
 
-const ProfileDisplay = () => {
+interface ProfileDisplayProps {
+  onUserNameChange?: (name: string) => void;
+}
+
+const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
   const router = useRouter();
   const [otherUserId, setOtherUserId] = React.useState<number | undefined>();
   const [isMyProfile, setIsMyProfile] = React.useState<boolean>(false);
@@ -41,6 +45,14 @@ const ProfileDisplay = () => {
       if (userIDNumber === user?.data.id) setIsMyProfile(true);
     }
   }, [router.query.userID]);
+
+  React.useEffect(
+    function onProfileChange() {
+      if (typeof profile?.userName == "string")
+        onUserNameChange?.(profile.userName);
+    },
+    [profile, onUserNameChange]
+  );
 
   const distance = "1.2 km";
   let isConnected = false;
