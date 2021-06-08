@@ -73,7 +73,7 @@ interface UpdateUserDataProps {
     retryPassword: string;
     tags: string[];
     images: File[];
-    profilPicture: string;
+    profilePictureName: string;
   }>;
 }
 

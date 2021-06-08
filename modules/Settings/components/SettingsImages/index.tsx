@@ -56,9 +56,6 @@ const ImageSettings = () => {
         });
         if (result.status !== 200)
           throw new Error("could not get profile image name");
-        console.log("getProfilePictureNameRequest", result.data);
-        // result.data.
-        // images[0].isProfilePicture = 1;
       } else {
         console.log("is not main profile pic");
       }
@@ -101,7 +98,7 @@ const ImageSettings = () => {
   const handleProfileImageChange = async (index: number) => {
     if (user.data.images[index].isProfilePicture) return;
     try {
-      const data = { profilPicture: user.data.images[index].imageName };
+      const data = { profilePictureName: user.data.images[index].imageName };
       const result = await updateUserMutation.mutateAsync({
         data,
         authorization: user?.authorization || "",
