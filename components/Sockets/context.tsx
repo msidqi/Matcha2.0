@@ -4,6 +4,7 @@ import type { SocketState, SocketProviderActions } from "./types";
 import { IOError } from "./errors";
 import { useUser } from "@/components/auth";
 import { io } from "socket.io-client";
+import config from "config";
 
 const initialSocketState: SocketState = {
   socket: undefined,
@@ -29,7 +30,7 @@ export const SocketsProvider: React.FC = ({ children }): JSX.Element => {
 
   React.useEffect(() => {
     if (user && loggedIn) {
-      const socket = io(":3001", {
+      const socket = io(`:${config.SOCKET_SERVER_PORT}`, {
         auth: { token: user.authorization },
       });
       dispatch({ type: "CREATE_CONNECTION", payload: { socket } });
