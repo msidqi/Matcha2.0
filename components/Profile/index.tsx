@@ -108,12 +108,10 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
   };
   const unlikeUser = async () => {
     try {
-      const liked = profile.userName;
-      const liker = user.data.userName;
+      const likedId = profile.id;
       const result = await deleteLike({
         authorization: user.authorization,
-        liked,
-        liker,
+        likedId,
       });
       if (result.status === 200) {
         console.log("unliked user");
