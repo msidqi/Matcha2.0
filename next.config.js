@@ -3,7 +3,7 @@ const withPlugins = require("next-compose-plugins");
 // const optimizedImages = require("next-optimized-images");
 const withCSS = require("@zeit/next-css");
 
-const apiURL = process.env.API_URL || "http://localhost:3001";
+const apiURL = process.env.API_URL || "http://localhost:5000";
 
 const nextConfig = {
   poweredByHeader: false,

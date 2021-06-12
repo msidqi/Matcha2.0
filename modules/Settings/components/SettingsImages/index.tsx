@@ -54,14 +54,22 @@ const ImageSettings = () => {
         const result = await getProfilePictureNameRequest({
           authorization,
         });
-        if (result.status !== 200)
+        if (result.status === 404) {
+          // make images state an empty array
+          setUser({ images: [] });
+        } else if (result.status === 200) {
+          // delete image from local user state
+          console.log("profile img deleted, update it in state");
+          // images.splice(indexToDelete, 1);
+          // result.data.setUser({ images: [...images] });
+        } else if (result.status !== 200)
           throw new Error("could not get profile image name");
       } else {
         console.log("is not main profile pic");
+        // delete image from local user state
+        images.splice(indexToDelete, 1);
+        setUser({ images: [...images] });
       }
-      // delete image from local user state
-      images.splice(indexToDelete, 1);
-      setUser({ images: [...images] });
     } catch (e) {
       console.error(e);
     }

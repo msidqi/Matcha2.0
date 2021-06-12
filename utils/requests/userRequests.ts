@@ -119,7 +119,7 @@ export const deleteUserImageRequest = ({
 export const getProfilePictureNameRequest = ({
   authorization,
 }: Authorization) => {
-  return apiRequest("get", "/api/getProfilePicture", {
+  return apiRequest("get", "/api/profilePicture", {
     headers: {
       Authorization: authorization,
     },

@@ -28,3 +28,11 @@ const guestRoute = (Component: React.ComponentType<any>) => (
 };
 
 export default guestRoute;
+
+/*
+- like request doesn't remove user from suggestions
+- notifications for received a like, received a message, was matched(aka liked back), unliked
+- activity list request (visits, was liked, was match, was unlike)
+- sockets event checkConnectedUser responseConnectedUser
+
+*/
