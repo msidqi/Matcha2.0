@@ -334,53 +334,37 @@ export type ChatPreview = UserInput & {
   messagePreview: TextMessage | undefined;
 };
 
+type NewMatch = {
+  dateMessage: string | null
+  experience: number;
+  gender: string;
+  id: number;
+  lastMessage: string | null
+  orientation: string;
+  profileImage: string;
+  userName: string;
+}
+
+
+type NewMatchFormatted = Omit<NewMatch, "profileImage"> & {profileImage: Image}
 export const useGetAllMatches = ({ authorization }: Authorization) => {
   return useQuery(
     "matches",
-    async (): Promise<ChatPreview[] | undefined> => {
+    async (): Promise<(NewMatchFormatted )[] | undefined> => {
       // fetch matches
-      const result = await apiRequest<Match[]>("get", "/api/match", {
+      const result = await apiRequest<NewMatch[]>("get", "/api/match", {
         headers: {
           Authorization: authorization,
         },
       })[0];
       if (result.status === 200) {
-        const matches = result.data.filter((match) => match);
-        const userDataPromises = matches.map(({ id }) =>
-          getOtherUserInfosRequest({ authorization, otherUserId: id })
-        );
-        // fetch first message of matches
-        const messagesPreview = await Promise.all(
-          matches.map(({ id }) =>
-            getMessagePreview({ authorization, userId: id })
-          )
-        );
-        // fetch rest of otherUserData (images)
-        return (await Promise.all(userDataPromises))
-          .map((elem, index) => {
-            elem.data.images = elem.data.images.map(
-              (image) => new Image(image)
-            );
-            // inserting message preview
-            if (messagesPreview[index].status === 200) {
-              return {
-                ...elem.data,
-                messagePreview: messagesPreview[index].data[0],
-              };
-            } else {
-              const blankMessage: TextMessage = {
-                sender: -1,
-                receiver: -1,
-                content: "",
-                date: "",
-              };
-              return {
-                ...elem.data,
-                messagePreview: blankMessage,
-              };
-            }
-          })
-          .filter((chatPreview) => chatPreview);
+        return result.data.map(elem => {
+          return {...elem, profileImage: new Image({
+            imageBase64: elem.profileImage,
+            isProfilePicture: 1,
+            imageName: "",
+          })}
+        });
       }
     }
   );

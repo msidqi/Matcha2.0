@@ -2,7 +2,6 @@ import React from "react";
 import { useGetAllMatches } from "@/utils/requests/userRequests";
 import { useUser } from "@/components/auth";
 import { LoadingAnimation } from "@/components/ui/Icons/LoadingIcon";
-import { isArray } from "util";
 import { OtherUser } from "@/interfaces";
 import { useChatUsers } from "@/components/useChat";
 import ChatListSingle from "@/components/ChatListSingle";
@@ -24,7 +23,7 @@ const ChatList = (): JSX.Element => {
     if (newOtherUser.id !== otherUser.id) addOtherUsers(newOtherUser);
     if (listRoom !== "room") toggleListAndRoom("room");
   };
-  console.log("match data", data?.[0]);
+  // console.log("match data", data?.[0]);
   const selectDefaultUser = () => {
     let isUserAlreadySelected = false;
     // select user from query params
@@ -38,7 +37,7 @@ const ChatList = (): JSX.Element => {
           addOtherUsers({
             userName: queryOtherUser.userName,
             id: queryOtherUser.id,
-            image: queryOtherUser.images.find((elem) => elem.isProfilePicture),
+            image: queryOtherUser.profileImage,
           });
         }
       }
@@ -48,7 +47,7 @@ const ChatList = (): JSX.Element => {
       addOtherUsers({
         userName: data[0].userName,
         id: data[0].id,
-        image: data[0].images.find((elem) => elem.isProfilePicture),
+        image: data[0].profileImage,
       });
     }
   };
@@ -65,24 +64,30 @@ const ChatList = (): JSX.Element => {
         <div className="flex justify-center items-center h-full">
           <LoadingAnimation height="30" width="30" />
         </div>
-      ) : !data || (isArray(data) && data.length === 0) ? (
+      ) : !data || (Array.isArray(data) && data.length === 0) ? (
         <div className="flex justify-center items-center h-full">
-          <p>No matches found yet...</p>
+          <p>No matches yet...</p>
         </div>
       ) : (
         data.map((chatPreview, index) => (
-          <ChatListSingle
-            onClick={() =>
-              handlePreviewClick({
-                userName: chatPreview.userName,
-                id: chatPreview.id,
-                image: chatPreview.images.find((elem) => elem.isProfilePicture),
-              })
-            }
-            chatPreview={chatPreview}
-            key={index}
-            isFirst={index === 0}
-          />
+          <>
+            <ChatListSingle
+              onClick={() =>
+                handlePreviewClick({
+                  userName: chatPreview.userName,
+                  id: chatPreview.id,
+                  image: chatPreview.profileImage,
+                })
+              }
+              dateMessage={chatPreview.dateMessage}
+              image={chatPreview.profileImage}
+              userName={chatPreview.userName}
+              lastMessage={chatPreview.lastMessage}
+              key={index}
+              isFirst={index === 0}
+            />
+            {console.log("chatPreview.profileImage", chatPreview)}
+          </>
         ))
       )}
     </div>
