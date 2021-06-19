@@ -160,16 +160,14 @@ export const like = ({
 };
 
 export const deleteLike = ({
-  liker,
-  liked,
+  likedId,
   authorization,
-}: LikeProps & Authorization) => {
-  return fetch("/api/like", {
+}: {likedId: number} & Authorization) => {
+  return fetch(`/api/like/${likedId}`, {
     method: "delete",
     headers: new Headers({
       Authorization: authorization,
     }),
-    body: JSON.stringify({ liker, liked }),
   }).then((res) => res.json());
 };
 
