@@ -11,11 +11,17 @@ import { LoadingAnimation } from "@/components/ui/Icons/LoadingIcon";
 import { useSocketConnection } from "../Sockets";
 import { useChatUsers } from "../useChat";
 import Link from "next/link";
+import { formatDistance } from "date-fns";
 
 type SocketMessageEventPayload = {
   to: string;
   message: string;
 };
+
+type OtherUserStateType =
+  | { isConnected: true; lastSeen: null }
+  | { isConnected: false; lastSeen: string }
+  | null;
 
 const EVENT_KEY_MESSAGE_SEND = "message";
 const EVENT_KEY_MESSAGE_RECIEVE = "message";
@@ -28,10 +34,12 @@ const scrollToBottom = (container: HTMLDivElement) => {
   container.scrollTop = container.scrollHeight;
 };
 
-// connectedUser 260
-// test2 261
 const ChatRoom = (): JSX.Element => {
   const [isAtBottom, setIsAtBottom] = React.useState<boolean>(true);
+  const [
+    otherUserState,
+    setOtherUserState,
+  ] = React.useState<OtherUserStateType>();
   const [message, setMessage] = React.useState<string>("");
   const [state] = useUser();
   const { socket } = useSocketConnection();
@@ -73,13 +81,6 @@ const ChatRoom = (): JSX.Element => {
   React.useEffect(() => {
     chatContainerRef.current && scrollToBottom(chatContainerRef.current);
   }, [messagesHistoryLocal, chatContainerRef]);
-
-  /*React.useEffect(() => {
-    (async () => {
-      fetchNextMessages();
-      console.log("all messages 2", messagesHistory?.pages);
-    })();
-  }, [isLoadingMessages]);*/
 
   /* -- scroll to bottom && set onscroll event -- */
   React.useEffect(() => {
@@ -125,7 +126,6 @@ const ChatRoom = (): JSX.Element => {
         to: otherUser.userName,
         message: message,
       };
-      console.log("emit", newMessage);
       socket?.emit(EVENT_KEY_MESSAGE_SEND, newMessage);
       setMessage("");
       const textMessage: TextMessage = {
@@ -165,8 +165,13 @@ const ChatRoom = (): JSX.Element => {
           addMesageToGlobalUserMessage(prev, messages)
         );
       });
-      socket.on(EVENT_KEY_RESPONSE_CONNECTED_USER, (data: any) =>
-        console.log("EVENT_KEY_RESPONSE_CONNECTED_USER", data)
+      socket.on(
+        EVENT_KEY_RESPONSE_CONNECTED_USER,
+        (data: any) => {
+          const { lastSeen, connected: isConnected } = data?.[0] || {};
+          setOtherUserState({ lastSeen, isConnected });
+        }
+        // console.log("EVENT_KEY_RESPONSE_CONNECTED_USER", data)
       );
       socket.emit(EVENT_KEY_CHECK_CONNECTED_USER, otherUser.id);
     } else if (socket) {
@@ -205,12 +210,18 @@ const ChatRoom = (): JSX.Element => {
         >
           <ArrowBack />
         </button>
-        <div className="rounded-full h-14 w-14 overflow-hidden mx-2">
-          {otherUser.image?.src && (
-            <img
-              src={otherUser.image?.src}
-              className="object-cover object-center h-full w-full"
-            />
+        <div className="relative mx-2">
+          <div className="rounded-full h-14 w-14 overflow-hidden ">
+            {otherUser.image?.src && (
+              <img
+                src={otherUser.image?.src}
+                className="object-cover object-center h-full w-full"
+              />
+            )}
+          </div>
+
+          {otherUserState?.isConnected && (
+            <div className="bg-green-500 w-3 h-3 rounded-full absolute right-0 bottom-1"></div>
           )}
         </div>
         <div className="">
@@ -221,7 +232,14 @@ const ChatRoom = (): JSX.Element => {
               </a>
             </Link>
           </h3>
-          <p className="text-gray-500 text-xs">{currentUser.lastConnected}</p>
+          <p className="text-gray-500 text-xs">
+            {otherUserState &&
+              otherUserState.lastSeen &&
+              formatDistance(new Date(otherUserState.lastSeen), new Date(), {
+                addSuffix: true,
+                includeSeconds: true,
+              })}
+          </p>
         </div>
       </header>
       {/* chat bubbles section --start-- */}

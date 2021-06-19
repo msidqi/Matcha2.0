@@ -23,7 +23,6 @@ const ChatList = (): JSX.Element => {
     if (newOtherUser.id !== otherUser.id) addOtherUsers(newOtherUser);
     if (listRoom !== "room") toggleListAndRoom("room");
   };
-  // console.log("match data", data?.[0]);
   const selectDefaultUser = () => {
     let isUserAlreadySelected = false;
     // select user from query params
@@ -70,24 +69,21 @@ const ChatList = (): JSX.Element => {
         </div>
       ) : (
         data.map((chatPreview, index) => (
-          <>
-            <ChatListSingle
-              onClick={() =>
-                handlePreviewClick({
-                  userName: chatPreview.userName,
-                  id: chatPreview.id,
-                  image: chatPreview.profileImage,
-                })
-              }
-              dateMessage={chatPreview.dateMessage}
-              image={chatPreview.profileImage}
-              userName={chatPreview.userName}
-              lastMessage={chatPreview.lastMessage}
-              key={index}
-              isFirst={index === 0}
-            />
-            {console.log("chatPreview.profileImage", chatPreview)}
-          </>
+          <ChatListSingle
+            onClick={() =>
+              handlePreviewClick({
+                userName: chatPreview.userName,
+                id: chatPreview.id,
+                image: chatPreview.profileImage,
+              })
+            }
+            dateMessage={chatPreview.dateMessage}
+            image={chatPreview.profileImage}
+            userName={chatPreview.userName}
+            lastMessage={chatPreview.lastMessage}
+            key={index}
+            isFirst={index === 0}
+          />
         ))
       )}
     </div>

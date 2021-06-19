@@ -32,7 +32,6 @@ const ChatListSingle = ({
     <div className="pl-4 pr-2">
       <h3 className="text-gray-700 font-bold">{userName}</h3>
       <p className="text-gray-500 text-sm">
-        {console.log({ lastMessage })}
         {lastMessage
           ? lastMessage.length < 20
             ? lastMessage
