@@ -9,7 +9,7 @@ const index = (): JSX.Element => {
   return (
     <Layout>
       <NextSeo
-        title={`Matcha${userName ? `${userName} 's Profile` : ""}`}
+        title={`Matcha - ${userName ? `${userName} 's Profile` : ""}`}
         description=""
       />
       <Profile onUserNameChange={(name: string) => setUserName(name)} />
