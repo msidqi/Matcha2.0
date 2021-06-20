@@ -13,7 +13,7 @@
     "fix:prettier": "prettier --write \"components/**/*.{ts,tsx}\""
   },
   "dependencies": {
-    "@headlessui/react": "^0.2.0",
+    "@headlessui/react": "^1.2.0",
     "@types/color-hash": "^1.0.0",
     "@zeit/next-css": "^1.0.1",
     "axios": "^0.21.0",

@@ -62,7 +62,7 @@ export type OtherUser = {
 };
 
 export type NotificationType =
-  | {
+  {isActive?: boolean} & ({
       date: string;
       notified: {
         id: number;
@@ -91,7 +91,7 @@ export type NotificationType =
       type: "consult" | "match" | "like" | "unlike" | "message";
     }
   | { type: "empty" }
-  | { type: "noNew" };
+  | { type: "noNew" });
 
 export type LikeHistoryItemType = {
   [x: string]: string;

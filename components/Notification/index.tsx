@@ -1,6 +1,6 @@
 import { NotificationType } from "@/interfaces";
 
-const NotificationView = ({ type, notifier }: NotificationType) => {
+const NotificationView = ({ type, notifier, isActive }: NotificationType) => {
   switch (type) {
     case "empty":
       return <p>No new notification</p>;
