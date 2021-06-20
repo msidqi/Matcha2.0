@@ -27,28 +27,27 @@ function Navbar(): JSX.Element {
   const handleNotificationIconClick = () => {
     // makeNotificationsSeen();
   };
-
-  const renderLink = (textSize: "sm" | "base") => (
-    link: { href: string; label: string },
-    index: number
-  ) => {
-    const isCurrentLink = link.href === pathname;
-    return (
-      <Link href={link.href} key={`l-${index}`}>
-        <a
-          className={`${
-            isCurrentLink
-              ? "bg-gray-900 text-white"
-              : "text-gray-300 hover:bg-gray-700 hover:text-white"
-          }  block px-3 py-2 rounded-md ${
-            textSize === "sm" ? "text-sm" : "text-base"
-          } font-medium`}
-        >
-          {link.label}
-        </a>
-      </Link>
-    );
-  };
+  console.log({ newNotificationsNumber });
+  const renderLink =
+    (textSize: "sm" | "base") =>
+    (link: { href: string; label: string }, index: number) => {
+      const isCurrentLink = link.href === pathname;
+      return (
+        <Link href={link.href} key={`l-${index}`}>
+          <a
+            className={`${
+              isCurrentLink
+                ? "bg-gray-900 text-white"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white"
+            }  block px-3 py-2 rounded-md ${
+              textSize === "sm" ? "text-sm" : "text-base"
+            } font-medium`}
+          >
+            {link.label}
+          </a>
+        </Link>
+      );
+    };
 
   return (
     <nav className="bg-gray-800 fixed top-0 w-full z-50">
@@ -88,7 +87,6 @@ function Navbar(): JSX.Element {
                   onClick={handleNotificationIconClick}
                   className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white relative"
                 >
-                  {console.log({ newNotificationsNumber })}
                   {Boolean(newNotificationsNumber) && (
                     <div className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center absolute top-0 left-0">
                       <p className="text-white text-xs m-0">

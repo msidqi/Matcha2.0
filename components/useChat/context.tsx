@@ -2,8 +2,6 @@ import * as React from "react";
 import { chatReducer } from ".";
 import type { ChatState, ChatProviderActions } from "./types";
 import { OtherUser } from "@/interfaces";
-import { useSocketConnection } from "../Sockets";
-
 export const initialChatState: ChatState = {
   otherUser: {
     userName: "",
@@ -12,9 +10,9 @@ export const initialChatState: ChatState = {
   listRoom: "list",
 };
 
-const EVENT_KEY_MESSAGE_SEND = "message";
-const EVENT_KEY_MESSAGE_RECIEVE = "message";
-const EVENT_KEY_CONNECT = "connect";
+// const EVENT_KEY_MESSAGE_SEND = "message";
+// const EVENT_KEY_MESSAGE_RECIEVE = "message";
+// const EVENT_KEY_CONNECT = "connect";
 
 const chatContext = React.createContext<ChatState & ChatProviderActions>({
   ...initialChatState,

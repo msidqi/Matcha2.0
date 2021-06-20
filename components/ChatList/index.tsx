@@ -6,18 +6,15 @@ import { OtherUser } from "@/interfaces";
 import { useChatUsers } from "@/components/useChat";
 import ChatListSingle from "@/components/ChatListSingle";
 import { useRouter } from "next/router";
+import useWhoIsOnline from "../useWhoIsOnline";
 
 const ChatList = (): JSX.Element => {
   const [{ user }] = useUser();
   const { authorization } = user!;
   const { isLoading, data } = useGetAllMatches({ authorization });
   const router = useRouter();
-  const {
-    addOtherUsers,
-    toggleListAndRoom,
-    otherUser,
-    listRoom,
-  } = useChatUsers();
+  const { addOtherUsers, toggleListAndRoom, otherUser, listRoom } =
+    useChatUsers();
 
   const handlePreviewClick = (newOtherUser: OtherUser) => {
     if (newOtherUser.id !== otherUser.id) addOtherUsers(newOtherUser);
@@ -50,6 +47,7 @@ const ChatList = (): JSX.Element => {
       });
     }
   };
+  const { isUserOnline } = useWhoIsOnline();
 
   React.useEffect(selectDefaultUser, [isLoading]);
 
@@ -82,6 +80,7 @@ const ChatList = (): JSX.Element => {
             userName={chatPreview.userName}
             lastMessage={chatPreview.lastMessage}
             key={index}
+            isUserOnline={() => isUserOnline(chatPreview.id)}
             isFirst={index === 0}
           />
         ))
