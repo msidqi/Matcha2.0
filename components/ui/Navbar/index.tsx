@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { Transition } from "@headlessui/react";
+import { Transition, Menu } from "@headlessui/react";
 import Logo from "@/components/ui/Icons/Logo";
 import LogoSm from "@/components/ui/Icons/LogoSm";
 import { useUser } from "@/components/auth";
@@ -15,9 +15,8 @@ import HamburgerCloseIcon from "../Icons/HamburgerCloseIcon";
 
 function Navbar(): JSX.Element {
   const [showMenu, setShowMenu] = React.useState<boolean>(false);
-  const [showNotifications, setShowNotifications] = React.useState<boolean>(
-    false
-  );
+  const [showNotifications, setShowNotifications] =
+    React.useState<boolean>(false);
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
   const router = useRouter();
   const {
@@ -34,27 +33,26 @@ function Navbar(): JSX.Element {
     setShowNotifications(!showNotifications);
   };
 
-  const renderLink = (textSize: "sm" | "base") => (
-    link: { href: string; label: string },
-    index: number
-  ) => {
-    const isCurrentLink = link.href === pathname;
-    return (
-      <Link href={link.href} key={`l-${index}`}>
-        <a
-          className={`${
-            isCurrentLink
-              ? "bg-gray-900 text-white"
-              : "text-gray-300 hover:bg-gray-700 hover:text-white"
-          }  block px-3 py-2 rounded-md ${
-            textSize === "sm" ? "text-sm" : "text-base"
-          } font-medium`}
-        >
-          {link.label}
-        </a>
-      </Link>
-    );
-  };
+  const renderLink =
+    (textSize: "sm" | "base") =>
+    (link: { href: string; label: string }, index: number) => {
+      const isCurrentLink = link.href === pathname;
+      return (
+        <Link href={link.href} key={`l-${index}`}>
+          <a
+            className={`${
+              isCurrentLink
+                ? "bg-gray-900 text-white"
+                : "text-gray-300 hover:bg-gray-700 hover:text-white"
+            }  block px-3 py-2 rounded-md ${
+              textSize === "sm" ? "text-sm" : "text-base"
+            } font-medium`}
+          >
+            {link.label}
+          </a>
+        </Link>
+      );
+    };
 
   return (
     <nav className="bg-gray-800 fixed top-0 w-full z-50">
@@ -87,9 +85,9 @@ function Navbar(): JSX.Element {
               </div>
             </div>
           </div>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 z-40">
+          <Menu as="div" className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 z-40">
             {loggedIn && (
-              <button
+              <Menu.Button
                 onClick={handleNotificationIconClick}
                 className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white relative"
               >
@@ -102,7 +100,7 @@ function Navbar(): JSX.Element {
                   </div>
                 )}
                 <NotificationIcon />
-              </button>
+              </Menu.Button>
             )}
             <Transition
               show={showNotifications}
@@ -113,23 +111,23 @@ function Navbar(): JSX.Element {
               leaveFrom="transform opacity-100 scale-100"
               leaveTo="transform opacity-0 scale-95"
             >
-              <div
+              <Menu.Items
                 className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5"
-                role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="user-menu"
               >
                 {notifications.length === 0 ? (
-                  <Notification type="noNew" key="empty-notification" />
+                    <Menu.Item key="empty-notification">
+                      <Notification type="noNew"  />
+					</Menu.Item>
                 ) : (
                   notifications.map((elem, index) => (
-                    <>
-                      {console.log("elem notif", elem)}
-                      <Notification key={`notification-${index}`} {...elem} />
-                    </>
+                    <Menu.Item key={`notification-${index}`}>
+                      <Notification {...elem} />
+                    </Menu.Item>
                   ))
                 )}
-              </div>
+              </Menu.Items>
             </Transition>
             <div className="ml-3 relative">
               {loggedIn && (
@@ -213,7 +211,7 @@ function Navbar(): JSX.Element {
                 </div>
               </Transition>
             </div>
-          </div>
+          </Menu as="div">
         </div>
       </div>
 
