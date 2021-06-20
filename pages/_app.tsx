@@ -8,13 +8,13 @@ import { SocketsProvider } from "@/components/Sockets";
 const queryClient = new QueryClient();
 
 const App = ({ Component, pageProps }: AppProps): JSX.Element => (
-  <UserProvider>
-    <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
+    <UserProvider>
       <SocketsProvider>
         <Component {...pageProps} />
       </SocketsProvider>
-    </QueryClientProvider>
-  </UserProvider>
+    </UserProvider>
+  </QueryClientProvider>
 );
 
 export default App;

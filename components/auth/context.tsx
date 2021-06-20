@@ -24,6 +24,8 @@ import {
 } from "@/utils/requests/userRequests";
 import { useRouter } from "next/router";
 import guestRoutes from "./guestRoutes.json";
+import { useSocketConnection } from "../Sockets";
+import { useQueryClient } from "react-query";
 
 const initialUserState: UserState = {
   user: undefined,
@@ -55,7 +57,8 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<UserError | null>(null);
   const router = useRouter();
-
+  const { socket } = useSocketConnection();
+  const queryClient = useQueryClient();
   React.useEffect(() => {
     let cancel: Canceler | undefined;
     (async function fetchUserData() {
@@ -63,10 +66,8 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
         setLoading(true);
         setError(null);
         /* -------- get access token ------- */
-        const [
-          accessTokenRequest,
-          cancelAccessTokenReq,
-        ] = generateAccessToken();
+        const [accessTokenRequest, cancelAccessTokenReq] =
+          generateAccessToken();
         cancel = cancelAccessTokenReq;
         const response = await accessTokenRequest;
         if (response.status !== 200)
@@ -138,6 +139,8 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
         userName: state.user?.data.userName || "",
       })[0];
       if (result.status !== 200) throw new UserError(LOGOUT_ERROR_MESSAGE);
+      socket?.emit("disconnect");
+      queryClient.clear();
       dispatch({ type: "LOGOUT" });
     } catch (e) {
       setError(e);
