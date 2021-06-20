@@ -137,12 +137,14 @@ function Navbar(): JSX.Element {
                   >
                     {loading ? (
                       "Loading..."
-                    ) : (
+                    ) : user?.ProfileImageSrc ? (
                       <img
                         className="h-8 w-8 rounded-full object-cover"
-                        src={user?.ProfileImageSrc}
+                        src={user.ProfileImageSrc}
                         alt=""
                       />
+                    ) : (
+                      <div className="h-8 w-8 rounded-full object-cover bg-gray-200" />
                     )}
                   </Menu.Button>
                 </div>

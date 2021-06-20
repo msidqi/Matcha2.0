@@ -38,7 +38,7 @@ const ImageSettings = () => {
     );
 
   const handleImageDelete = async (indexToDelete: number) => {
-    const {
+    let {
       authorization,
       data: { images },
     } = user;
@@ -49,27 +49,18 @@ const ImageSettings = () => {
         authorization,
       });
       if (result.status !== 200) throw new Error("could not delete image");
-      // if deleted image is main profile pic
-      if (images[indexToDelete].isProfilePicture) {
-        const result = await getProfilePictureNameRequest({
-          authorization,
+      images.splice(indexToDelete, 1);
+      if (result.profilePictureName) {
+        images = images.map((elem) => {
+          if (elem.imageName == result.profilePictureName) {
+            elem.isProfilePicture = 1;
+          } else {
+            elem.isProfilePicture = 0;
+          }
+          return elem;
         });
-        if (result.status === 404) {
-          // make images state an empty array
-          setUser({ images: [] });
-        } else if (result.status === 200) {
-          // delete image from local user state
-          console.log("profile img deleted, update it in state");
-          // images.splice(indexToDelete, 1);
-          // result.data.setUser({ images: [...images] });
-        } else if (result.status !== 200)
-          throw new Error("could not get profile image name");
-      } else {
-        console.log("is not main profile pic");
-        // delete image from local user state
-        images.splice(indexToDelete, 1);
-        setUser({ images: [...images] });
       }
+      setUser({ images });
     } catch (e) {
       console.error(e);
     }
@@ -142,11 +133,15 @@ const ImageSettings = () => {
                   media="(min-width:650px)"
                   srcSet={user.data.images[mainPicIndex]?.src}
                 />
-                <img
-                  src={user.data.images[mainPicIndex]?.src}
-                  alt="profile picture"
-                  className="h-full w-full object-cover rounded-2xl"
-                />
+                {user.data.images.length == 0 ? (
+                  <div className="h-full w-full object-cover rounded-2xl bg-gray-200" />
+                ) : (
+                  <img
+                    src={user.data.images[mainPicIndex]?.src}
+                    alt="profile picture"
+                    className="h-full w-full object-cover rounded-2xl"
+                  />
+                )}
               </picture>
             </div>
           }
