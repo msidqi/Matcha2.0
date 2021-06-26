@@ -5,7 +5,7 @@ import {
   Orientation,
   TextMessage,
   OtherUserProfileType,
-  LikeHistoryItemType,
+  ActivityType,
 } from "@/interfaces";
 import { Image } from "@/components/auth/classes";
 import config from "@/config";
@@ -162,7 +162,7 @@ export const like = ({
 export const deleteLike = ({
   likedId,
   authorization,
-}: {likedId: number} & Authorization) => {
+}: { likedId: number } & Authorization) => {
   return fetch(`/api/like/${likedId}`, {
     method: "delete",
     headers: new Headers({
@@ -335,22 +335,23 @@ export type ChatPreview = UserInput & {
 };
 
 type NewMatch = {
-  dateMessage: string | null
+  dateMessage: string | null;
   experience: number;
   gender: string;
   id: number;
-  lastMessage: string | null
+  lastMessage: string | null;
   orientation: string;
   profileImage: string;
   userName: string;
-}
+};
 
-
-type NewMatchFormatted = Omit<NewMatch, "profileImage"> & {profileImage: Image}
+type NewMatchFormatted = Omit<NewMatch, "profileImage"> & {
+  profileImage: Image;
+};
 export const useGetAllMatches = ({ authorization }: Authorization) => {
   return useQuery(
     "matches",
-    async (): Promise<(NewMatchFormatted )[] | undefined> => {
+    async (): Promise<NewMatchFormatted[] | undefined> => {
       // fetch matches
       const result = await apiRequest<NewMatch[]>("get", "/api/match", {
         headers: {
@@ -358,12 +359,15 @@ export const useGetAllMatches = ({ authorization }: Authorization) => {
         },
       })[0];
       if (result.status === 200) {
-        return result.data.map(elem => {
-          return {...elem, profileImage: new Image({
-            imageBase64: elem.profileImage,
-            isProfilePicture: 1,
-            imageName: "",
-          })}
+        return result.data.map((elem) => {
+          return {
+            ...elem,
+            profileImage: new Image({
+              imageBase64: elem.profileImage,
+              isProfilePicture: 1,
+              imageName: "",
+            }),
+          };
         });
       }
     }
@@ -467,14 +471,14 @@ export const mailActivationRequest = (data: MailActivationProps) => {
   return apiRequest("post", "/api/mailActivation", data)[0];
 };
 
-interface useUserHistory {
+interface useActivityLogs {
   userId?: number;
   offset?: number;
   row_count?: number;
   onSuccess?: () => void;
 }
 
-export const useUserHistory = ({
+export const useActivityLogs = ({
   authorization,
   row_count = 12,
   offset,
@@ -482,27 +486,34 @@ export const useUserHistory = ({
   onSuccess,
 }: useMessagesProps & Authorization) => {
   return useInfiniteQuery(
-    ["likesHistory", userId],
-    ({ pageParam = 0 }) =>
-      apiRequest<LikeHistoryItemType[]>(
-        "post",
-        "/api/likesHistory",
-        { userId, offset: pageParam, row_count },
-        {
-          headers: {
-            Authorization: authorization,
-          },
-        }
-      )[0],
+    ["activitylogs", userId],
+    async ({ pageParam = 0 }) => {
+      const result = await apiRequest<
+        (Omit<ActivityType, "profileImage"> & { profileImage: string })[]
+      >("get", "/api/activitylogs", {
+        headers: {
+          Authorization: authorization,
+        },
+      })[0];
+      return result.data.map((elem) => {
+        return {
+          ...elem,
+          profileImage: new Image({
+            imageBase64: elem.profileImage as string,
+            isProfilePicture: 1,
+            imageName: "",
+          }),
+        };
+      });
+    },
     {
       enabled: userId != undefined && userId !== -1,
       keepPreviousData: true,
       onSuccess,
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
       refetchOnReconnect: false,
-      getNextPageParam: (lastPage) =>
-        offset ?? JSON.parse(lastPage.config.data)?.offset + 1,
+      //   getNextPageParam: (lastPage) =>
+      //     offset ?? JSON.parse(lastPage?.config.data)?.offset + 1,
     }
   );
 };

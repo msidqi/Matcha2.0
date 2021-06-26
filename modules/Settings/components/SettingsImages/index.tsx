@@ -8,7 +8,6 @@ import { readImageAsBase64 } from "@/utils/readImageAsBase64";
 import {
   useUpdateUserData,
   deleteUserImageRequest,
-  getProfilePictureNameRequest,
 } from "@/utils/requests/userRequests";
 import LoadingRing from "@/components/ui/Icons/LoadingRing";
 

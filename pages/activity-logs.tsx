@@ -1,13 +1,13 @@
 import React from "react";
 import Layout from "@/components/ui/Layout";
-import History from "@/modules/History/containers/History";
+import ActivityLogs from "@/modules/ActivityLogs/containers/ActivityLogs";
 import withAuth from "@/components/WithAuth";
 import { NextSeo } from "next-seo";
 
 const index = (): JSX.Element => (
   <Layout>
-    <NextSeo title="Matcha - Activities" description="" />
-    <History />
+    <NextSeo title="Matcha - Activity logs" description="" />
+    <ActivityLogs />
   </Layout>
 );
 

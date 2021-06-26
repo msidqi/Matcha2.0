@@ -61,8 +61,8 @@ export type OtherUser = {
   image?: Image;
 };
 
-export type NotificationType =
-  {isActive?: boolean} & ({
+export type NotificationType = { isActive?: boolean } & (
+  | {
       date: string;
       notified: {
         id: number;
@@ -91,8 +91,19 @@ export type NotificationType =
       type: "consult" | "match" | "like" | "unlike" | "message";
     }
   | { type: "empty" }
-  | { type: "noNew" });
+  | { type: "noNew" }
+);
 
-export type LikeHistoryItemType = {
-  [x: string]: string;
+export type ActivityType = {
+  type: "consult" | "match" | "like" | "unlike" | "block";
+  by_user: number;
+  by_userName: string;
+  date: string;
+  to_user: number;
+  to_userName: string;
+  profileImage: Image;
 };
+
+export interface ActivityItemProps {
+  type: "consult" | "block" | "match" | "unlike" | "like";
+}
