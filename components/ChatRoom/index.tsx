@@ -173,14 +173,6 @@ const ChatRoom = (): JSX.Element => {
               </a>
             </Link>
           </h3>
-          {/* <p className="text-gray-500 text-xs">
-            {otherUserState &&
-              otherUserState.lastSeen &&
-              formatDistance(new Date(otherUserState.lastSeen), new Date(), {
-                addSuffix: true,
-                includeSeconds: true,
-              })}
-          </p> */}
         </div>
       </header>
       {/* chat bubbles section --start-- */}

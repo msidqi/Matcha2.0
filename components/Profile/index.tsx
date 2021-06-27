@@ -53,7 +53,7 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
       if (userIDNumber === user?.data.id) setIsMyProfile(true);
     }
   }, [router.query.userID]);
-  console.log({ profile });
+
   React.useEffect(
     function onProfileChange() {
       if (typeof profile?.userName == "string")

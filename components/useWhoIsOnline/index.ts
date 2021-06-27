@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useSocketConnection } from '../Sockets';
 
+const EVENT_KEY_USER_DISCONNECTED = "user-disconnected";
 const EVENT_KEY_RESPONSE_CONNECTED_USER = "responseConnectedUser";
 const EVENT_KEY_CHECK_CONNECTED_USER = "checkConnectedUser";
 
 type OtherUserStateType =
-  | { isConnected: true; lastSeen: null }
-  | { isConnected: false; lastSeen: string }
+  | { connected: true; lastSeen: null, userId: number }
+  | { connected: false; lastSeen: string, userId: number }
   | null;
 
 
@@ -26,7 +27,7 @@ const useWhoIsOnline = () => {
   }
 
   useEffect(() => {
-    const timer = setInterval(updateOnlineState, 5000);
+    const timer = setInterval(updateOnlineState, 10000);
     return () => {
       clearInterval(timer);
     };
@@ -36,15 +37,19 @@ const useWhoIsOnline = () => {
     if (socket) {
       // subscribe to event to check if user is connected
       socket.on(EVENT_KEY_RESPONSE_CONNECTED_USER, (data: any) => {
-        console.log('EVENT_KEY_RESPONSE_CONNECTED_USER', EVENT_KEY_RESPONSE_CONNECTED_USER, data)
-        const result = data?.[0]
-        if (Array.isArray(result)) {
-          result.forEach(({lastSeen, connected: isConnected,userId}) => {
-            whoIsOnline.set(userId, { lastSeen, isConnected })
+        console.log( EVENT_KEY_RESPONSE_CONNECTED_USER, data)
+        if (Array.isArray(data)) {
+          data.forEach((elem) => {
+            console.log('userId', elem)
+            whoIsOnline.set(elem.userId, elem)
           })
           setWhoIsOnline(new Map(whoIsOnline));
         }
       });
+
+      socket.on(EVENT_KEY_USER_DISCONNECTED, (data: any) => {
+        console.log(EVENT_KEY_USER_DISCONNECTED, data)
+      })
     }
 
     return () => {

@@ -139,7 +139,7 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
         userName: state.user?.data.userName || "",
       })[0];
       if (result.status !== 200) throw new UserError(LOGOUT_ERROR_MESSAGE);
-      socket?.emit("disconnect");
+      socket?.close();
       queryClient.clear();
       dispatch({ type: "LOGOUT" });
     } catch (e) {

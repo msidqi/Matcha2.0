@@ -47,8 +47,8 @@ const ChatList = (): JSX.Element => {
       });
     }
   };
-  const { isUserOnline } = useWhoIsOnline();
-
+  const { isUserOnline, whoIsOnline } = useWhoIsOnline();
+console.log({whoIsOnline})
   React.useEffect(selectDefaultUser, [isLoading]);
 
   return (
