@@ -5,7 +5,7 @@ interface CloseIconProps {
   width?: string;
   color?: string;
   className?: string;
-  onClick: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;
+  onClick?: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void;
 }
 
 const CloseIcon = ({

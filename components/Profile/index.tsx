@@ -19,6 +19,7 @@ import LoadingRing from "@/components/ui/Icons/LoadingRing";
 import Carousel from "@/modules/Carousel/components/Carousel";
 import ArrowNext from "@/components/ui/Icons/ArrowNext";
 import ArrowPrev from "@/components/ui/Icons/ArrowPrev";
+import Map from "@/components/Map";
 
 export type ImageType = { src: string; isProfilePicture: 1 | 0 };
 
@@ -28,11 +29,16 @@ interface ProfileDisplayProps {
 
 const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
   const router = useRouter();
+  const [showMap, setShowMap] = React.useState<boolean>(false);
   const [otherUserId, setOtherUserId] = React.useState<number | undefined>();
   const [isMyProfile, setIsMyProfile] = React.useState<boolean>(false);
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
   const [{ user }] = useUser();
-  const { data: profile, isLoading, error } = useOtherUserInfosRequest({
+  const {
+    data: profile,
+    isLoading,
+    error,
+  } = useOtherUserInfosRequest({
     authorization: user?.authorization,
     otherUserId,
   });
@@ -45,7 +51,7 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
       if (userIDNumber === user?.data.id) setIsMyProfile(true);
     }
   }, [router.query.userID]);
-
+  console.log({ profile });
   React.useEffect(
     function onProfileChange() {
       if (typeof profile?.userName == "string")
@@ -82,10 +88,10 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
       if (result.status === 200) {
         console.log("reported user");
       } else {
-        console.log("could not report user");
+        console.error("could not report user");
       }
     } catch (e) {
-      console.log("error reporting user", e);
+      console.error("error reporting user", e);
     }
   };
   const blockUser = async () => {
@@ -98,12 +104,12 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
         blocker,
       });
       if (result.status === 200) {
-        console.log("blocked user");
+        router.push("/dashboard");
       } else {
-        console.log("could not block user");
+        console.error("could not block user");
       }
     } catch (e) {
-      console.log("error blocking user", e);
+      console.error("error blocking user", e);
     }
   };
   const unlikeUser = async () => {
@@ -114,17 +120,17 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
         likedId,
       });
       if (result.status === 200) {
-        console.log("unliked user");
+        router.push("/dashboard");
       } else {
-        console.log("could not unlike user");
+        console.error("could not unlike user");
       }
     } catch (e) {
-      console.log("error unliking user", e);
+      console.error("error unliking user", e);
     }
   };
 
   return (
-    <>
+    <div className="flex flex-wrap sm:flex-nowrap ">
       <article
         style={{ height: "min-content" }}
         className="w-96 max-w-full bg-white sm:shadow-lg pb-6 sm:border sm:rounded m-auto sm:mt-8 sm:mb-8"
@@ -293,8 +299,19 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
             )}
           </div>
         </section>
+
+        <div className="text-center mt-4 mb-2">
+          <button className="m-auto" onClick={() => setShowMap(!showMap)}>
+            {showMap ? "hide" : "see on"} map
+          </button>
+        </div>
       </article>
-    </>
+      {showMap && (
+        <article className="m-auto w-96 max-w-full h-96 sm:mt-8 sm:mb-8 sm:ml-4">
+          <Map className="sm:rounded" />
+        </article>
+      )}
+    </div>
   );
 };
 

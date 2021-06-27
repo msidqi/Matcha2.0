@@ -12,7 +12,7 @@ const Button = ({
 }) => (
   <button
     onClick={onClick}
-    className="w-24 border bg-white text-red-500 border-red-500 hover:border-red-400 text-black p-2 rounded"
+    className="w-24 border bg-white hover:bg-red-50 text-red-500 border-red-500 hover:border-red-400 text-black p-2 rounded"
   >
     {label}
   </button>
@@ -67,9 +67,10 @@ const ActivityItem = ({
       content = (
         <div className="w-full">
           <p>
-            <strong>{to_userName}</strong> viewed your profile, visit their{" "}
-            <Link href={``}>
-              <a>profile</a>
+            <strong>{to_userName}</strong> viewed your profile, your can visit
+            their{" "}
+            <Link href={`/profile/${by_user}`}>
+              <a className="underline">profile</a>
             </Link>
           </p>
         </div>

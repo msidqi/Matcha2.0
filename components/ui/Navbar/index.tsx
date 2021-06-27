@@ -196,14 +196,14 @@ function Navbar(): JSX.Element {
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <Link href="/history">
+                          <Link href="/activity-logs">
                             <a
                               className={`block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 ${
                                 active ? "bg-gray-100" : ""
                               }`}
                               role="menuitem"
                             >
-                              Likes history
+                              Activity logs
                             </a>
                           </Link>
                         )}
