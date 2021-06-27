@@ -12,7 +12,7 @@ const Button = ({
 }) => (
   <button
     onClick={onClick}
-    className="w-24 border bg-white hover:bg-red-50 text-red-500 border-red-500 hover:border-red-400 text-black p-2 rounded"
+    className="w-24 border bg-white hover:bg-red-50 text-red-500 border-red-500 hover:border-red-400 p-2 rounded"
   >
     {label}
   </button>
@@ -22,6 +22,7 @@ type ActivityItemViewProps = {
   to_userName: string;
   by_userName: string;
   by_user: number;
+  to_user: number;
   type: string;
   authorization: string;
 };
@@ -30,19 +31,19 @@ const ActivityItemView = ({
   to_userName,
   by_userName,
   by_user,
+  to_user,
   type,
   authorization,
 }: ActivityItemViewProps) => {
   async function handleUnlike() {
     await deleteLike({
-      likedId: by_user,
+      likedId: to_user,
       authorization: authorization || "",
     });
   }
   async function handleUnBlock() {
     await deleteBlock({
       blocked: to_userName,
-      blocker: by_userName,
       authorization: authorization || "",
     });
   }

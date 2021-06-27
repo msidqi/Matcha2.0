@@ -194,16 +194,14 @@ export const block = ({
 };
 
 export const deleteBlock = ({
-  blocker,
   blocked,
   authorization,
-}: BlockProps & Authorization) => {
-  return fetch("/api/block", {
+}: Omit<BlockProps, "blocker"> & Authorization) => {
+  return fetch(`/api/block/${blocked}`, {
     method: "delete",
     headers: new Headers({
       Authorization: authorization,
     }),
-    body: JSON.stringify({ blocker, blocked }),
   }).then((res) => res.json());
 };
 
