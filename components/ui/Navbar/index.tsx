@@ -16,15 +16,13 @@ import HamburgerCloseIcon from "../Icons/HamburgerCloseIcon";
 function Navbar(): JSX.Element {
   const [showMenu, setShowMenu] = React.useState<boolean>(false);
   const router = useRouter();
-  const {
-    notifications,
-    // makeNotificationsSeen,
-    newNotificationsNumber,
-  } = useNotifications();
+  const { notifications, makeNotificationsSeen, newNotificationsNumber } =
+    useNotifications();
   const [{ loggedIn, user }, { logout, loading }] = useUser();
   const pathname = router.pathname;
 
   const handleNotificationIconClick = () => {
+    console.log("makeNotificationsSeen----");
     // makeNotificationsSeen();
   };
   console.log({ newNotificationsNumber });
@@ -88,7 +86,7 @@ function Navbar(): JSX.Element {
                   className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white relative"
                 >
                   {Boolean(newNotificationsNumber) && (
-                    <div className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center absolute top-0 left-0">
+                    <div className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center absolute top-0 right-0">
                       <p className="text-white text-xs m-0">
                         {newNotificationsNumber}
                       </p>

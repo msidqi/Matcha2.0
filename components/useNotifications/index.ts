@@ -12,7 +12,7 @@ const makeSeen = (notif: NotificationType): NotificationSeenType => ({
 });
 const makeUnSeen = (notif: NotificationType): NotificationSeenType => ({
   ...notif,
-  seen: true,
+  seen: false,
 });
 
 const useNotifications = (): {
@@ -38,7 +38,7 @@ const useNotifications = (): {
 
   const newNotificationsNumber = notifications.reduce(
     (prevValue, currentValue) =>
-      currentValue.seen == false ? prevValue + 1 : prevValue,
+      currentValue.seen === false ? prevValue + 1 : prevValue,
     0
   );
   console.log(notifications);

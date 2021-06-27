@@ -18,53 +18,56 @@ const Button = ({
   </button>
 );
 
-const ActivityItem = ({
-  type,
-  to_userName,
-  by_user,
-  profileImage,
-  by_userName,
-}: ActivityType) => {
-  let content;
-  const [state] = useUser();
+type ActivityItemViewProps = {
+  to_userName: string;
+  by_userName: string;
+  by_user: number;
+  type: string;
+  authorization: string;
+};
 
+const ActivityItemView = ({
+  to_userName,
+  by_userName,
+  by_user,
+  type,
+  authorization,
+}: ActivityItemViewProps) => {
   async function handleUnlike() {
     await deleteLike({
       likedId: by_user,
-      authorization: state.user?.authorization || "",
+      authorization: authorization || "",
     });
   }
   async function handleUnBlock() {
     await deleteBlock({
       blocked: to_userName,
       blocker: by_userName,
-      authorization: state.user?.authorization || "",
+      authorization: authorization || "",
     });
   }
 
   switch (type) {
     case "like": {
-      content = (
+      return (
         <div className="w-full">
           <p>
             You liked <strong>{to_userName}</strong>
           </p>
         </div>
       );
-      break;
     }
     case "unlike": {
-      content = (
+      return (
         <div className="w-full">
           <p>
             You unliked <strong>{to_userName}</strong>
           </p>
         </div>
       );
-      break;
     }
     case "consult": {
-      content = (
+      return (
         <div className="w-full">
           <p>
             <strong>{to_userName}</strong> viewed your profile, your can visit
@@ -75,10 +78,9 @@ const ActivityItem = ({
           </p>
         </div>
       );
-      break;
     }
     case "block": {
-      content = (
+      return (
         <div className="w-full flex justify-between items-center">
           <p>
             You blocked <strong>{to_userName}</strong>
@@ -86,10 +88,9 @@ const ActivityItem = ({
           <Button label="Unblock" onClick={handleUnBlock} />
         </div>
       );
-      break;
     }
     case "match": {
-      content = (
+      return (
         <div className="w-full flex justify-between items-center">
           <p>
             You matched with <strong>{to_userName}</strong>
@@ -97,15 +98,25 @@ const ActivityItem = ({
           <Button label="Unlike" onClick={handleUnlike} />
         </div>
       );
-      break;
+    }
+    default: {
+      return <></>;
     }
   }
+};
+
+const ActivityItem = ({ profileImage, ...rest }: ActivityType) => {
+  const [state] = useUser();
+
   return (
     <div className="flex items-center h-20 w-full border-b border-gray-300 py-4 px-6 hover:bg-gray-50">
       <div className="w-10 h-10 mr-4" style={{ minWidth: "2.5rem" }}>
         <img className="w-full h-full rounded-full" src={profileImage.src} />
       </div>
-      {content}
+      <ActivityItemView
+        {...rest}
+        authorization={state.user?.authorization || ""}
+      />
     </div>
   );
 };

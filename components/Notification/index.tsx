@@ -1,19 +1,48 @@
 import { NotificationType } from "@/interfaces";
+import Link from "next/link";
 
 const NotificationView = ({ type, notifier, isActive }: NotificationType) => {
   switch (type) {
     case "empty":
       return <p>No new notification</p>;
     case "consult":
-      return <p>{`${notifier?.userName || "A user"} viewed your profile`}</p>;
+      return (
+        <p>
+          <strong>{notifier?.userName}</strong>
+          {` viewed your profile`}
+        </p>
+      );
     case "like":
-      return <p>{`${notifier?.userName} liked you`}</p>;
+      return (
+        <p>
+          <strong>{notifier?.userName}</strong>
+          {` liked you`}
+        </p>
+      );
     case "unlike":
-      return <p>{`${notifier?.userName} unliked you`}</p>;
+      return (
+        <p>
+          <strong>{notifier?.userName}</strong>
+          {` unliked you`}
+        </p>
+      );
     case "match":
-      return <p>{`${notifier?.userName} liked you back`}</p>;
+      return (
+        <p>
+          <strong>{notifier?.userName}</strong>
+          {` liked you back`}
+        </p>
+      );
     case "message":
-      return <p>{`${notifier?.userName} sent you a message`}</p>;
+      return (
+        <p>
+          <strong>{notifier?.fromName}</strong>
+          {` sent you a `}
+          <Link href={`/messages?user=${notifier?.fromId}`}>
+            <a className="underline">message</a>
+          </Link>
+        </p>
+      );
     case "noNew":
       return <p>No new notifications</p>;
     default:
@@ -30,11 +59,3 @@ const Notification = (props: NotificationType): JSX.Element => {
 };
 
 export default Notification;
-
-/*
-The user received a “like”.
-///• The user’s profile has been checked.
-• The user received a message.
-• A “liked” user “liked” back.
-• A connected user “unliked” you.
-*/
