@@ -20,6 +20,7 @@ import Carousel from "@/modules/Carousel/components/Carousel";
 import ArrowNext from "@/components/ui/Icons/ArrowNext";
 import ArrowPrev from "@/components/ui/Icons/ArrowPrev";
 import Map from "@/components/Map";
+import { useQueryClient } from "react-query";
 
 export type ImageType = { src: string; isProfilePicture: 1 | 0 };
 
@@ -28,6 +29,7 @@ interface ProfileDisplayProps {
 }
 
 const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const [showMap, setShowMap] = React.useState<boolean>(false);
   const [otherUserId, setOtherUserId] = React.useState<number | undefined>();
@@ -104,6 +106,7 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
         blocker,
       });
       if (result.status === 200) {
+        queryClient.invalidateQueries("matches");
         router.push("/dashboard");
       } else {
         console.error("could not block user");
@@ -120,6 +123,7 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
         likedId,
       });
       if (result.status === 200) {
+        queryClient.invalidateQueries("matches");
         router.push("/dashboard");
       } else {
         console.error("could not unlike user");
