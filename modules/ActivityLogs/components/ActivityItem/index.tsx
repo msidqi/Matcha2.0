@@ -71,7 +71,7 @@ const ActivityItemView = ({
       return (
         <div className="w-full">
           <p>
-            <strong>{to_userName}</strong> viewed your profile, you can see
+            <strong>{by_userName}</strong> viewed your profile, you can see
             their{" "}
             <Link href={`/profile/${by_user}`}>
               <a className="underline">profile here</a>
