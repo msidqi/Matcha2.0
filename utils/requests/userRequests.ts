@@ -443,7 +443,11 @@ export const getPositionAPI = () => {
 };
 
 interface ResetPasswordProps {
-  data: { password: string; retryPassword: string; passwordToken: string };
+  data: {
+    password: string;
+    retryPassword: string;
+    passwordToken: string;
+  };
 }
 
 export const useResetPassword = () => {
@@ -458,7 +462,7 @@ interface ForgotPasswordProps {
 }
 
 export const forgotPasswordRequest = (data: ForgotPasswordProps) => {
-  return apiRequest("post", "/api/forgetPassword", data)[0];
+  return apiRequest("post", "/api/forgotPassword", data)[0];
 };
 
 interface MailActivationProps {

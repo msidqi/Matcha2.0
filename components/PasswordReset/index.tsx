@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Input from "@/components/ui/Input";
 import guestRoute from "@/components/GuestRoute";
@@ -6,40 +6,33 @@ import { useResetPassword } from "@/utils/requests/userRequests";
 import Modal from "../ui/Modal";
 import { useRouter } from "next/router";
 
-const ForgotPassword = (): JSX.Element => {
+const ForgotPassword = ({ token = "" }: { token?: string }): JSX.Element => {
   const router = useRouter();
   const { register, handleSubmit, getValues, errors } = useForm();
-  const [showSuccessMessage, setShowSuccessMessage] = React.useState<boolean>(
-    false
-  );
-  const [passwordToken, setPasswordToken] = React.useState<string>("");
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const resetPasswordMutation = useResetPassword();
-  const onSubmit = async (
-    data: { retryPassword: string; password: string },
-    e?: React.BaseSyntheticEvent
-  ) => {
-    e?.preventDefault();
-    try {
-      const result = await resetPasswordMutation.mutateAsync({
-        data: { ...data, passwordToken },
-      });
-      if (result.status === 200) {
-        setShowSuccessMessage(true);
+  const onSubmit = async (data: { retryPassword: string; password: string }) =>
+    resetPasswordMutation.mutate(
+      {
+        data: { ...data, passwordToken: token },
+      },
+      {
+        onSuccess: () => {
+          setShowSuccessMessage(true);
+        },
+        onError: (e) => {
+          console.error(e);
+        },
       }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  // set passwordToken
-  React.useEffect(() => {
-    if (typeof router.query.t === "string") setPasswordToken(router.query.t);
-  }, []);
+    );
 
   return (
     <div className="bg-white sm:border rounded  max sm:shadow-md px-6 py-10 sm:p-10 max-w-xl m-auto w-full h-full sm:h-auto">
       <Modal
-        onAccept={() => setShowSuccessMessage(false)}
+        onAccept={() => {
+          setShowSuccessMessage(false);
+          router.push("/signin");
+        }}
         doShowModal={showSuccessMessage}
         noButton
         acceptText="Continue"
@@ -55,7 +48,7 @@ const ForgotPassword = (): JSX.Element => {
       >
         <Input
           name="password"
-          label="Password"
+          label="New Password"
           type="password"
           register={register({ required: true })}
           placeholder="Enter your password"

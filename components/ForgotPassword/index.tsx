@@ -7,14 +7,9 @@ import Modal from "../ui/Modal";
 
 const PasswordReset = (): JSX.Element => {
   const { register, handleSubmit } = useForm();
-  const [showSuccessMessage, setShowSuccessMessage] = React.useState<boolean>(
-    false
-  );
-  const onSubmit = async (
-    data: { userName: string; email: string },
-    e?: React.BaseSyntheticEvent
-  ) => {
-    e?.preventDefault();
+  const [showSuccessMessage, setShowSuccessMessage] =
+    React.useState<boolean>(false);
+  const onSubmit = async (data: { userName: string; email: string }) => {
     try {
       const result = await forgotPasswordRequest(data);
       if (result.status === 200) {
