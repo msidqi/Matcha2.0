@@ -50,7 +50,7 @@ export const useSuggestions = ({
   isSearch,
 }: UseSuggestionsProps & Authorization) => {
   return useInfiniteQuery(
-    [isSearch ? "research" : "suggestions", filter, tri],
+    [isSearch ? "research" : "suggestions"],
     ({ pageParam = 0 }) =>
       apiRequest<SuggestedUser[]>(
         "post",

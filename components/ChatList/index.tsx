@@ -93,6 +93,7 @@ const ChatList = (): JSX.Element => {
             key={index}
             isOnline={whoIsOnline.get(chatPreview.id)?.connected}
             isFirst={index === 0}
+            isSelected={otherUser.id == chatPreview.id}
           />
         ))
       )}

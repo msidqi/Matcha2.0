@@ -3,7 +3,7 @@
     { "label": "Age", "value": "age" },
     { "label": "Experience", "value": "experience" },
     { "label": "Distance", "value": "distance" },
-    { "label": "Tags", "value": "tags" }
+    { "label": "Tags", "value": "tag" }
   ],
   "sortOrder": [
     { "label": "DESC", "value": "DESC" },

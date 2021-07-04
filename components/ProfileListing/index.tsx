@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import SwipeImage from "@/components/SwipeImage";
 import type { SwipeDirection } from "@/components/SwipeImage";
 import SettingsIcon from "@/components/ui/Icons/SettingsIcon";
@@ -10,6 +10,7 @@ import Settings from "@/components/ProfileListingSettings";
 import LoadingRing from "@/components/ui/Icons/LoadingRing";
 import SwipeImageHints from "@/components/SwipeImageHints";
 import { useRouter } from "next/router";
+import { debounce } from "debounce";
 
 const ROW_COUNT = 4;
 
@@ -41,33 +42,51 @@ const ProfileListing = () => {
   const [isFilterActive, setIsFilterActive] = React.useState<boolean>(false);
   const [numberOfSwipes, setNumberOfSwipes] = React.useState<number>(0);
   const [{ user }] = useUser();
-  const { data, fetchNextPage, isFetching, error, isLoading } = useSuggestions({
-    authorization: user?.authorization || "",
-    row_count: ROW_COUNT,
-    filter: isFilterActive
-      ? {
-          age: ageRange,
-          distance: distanceRange,
-          experience: experienceRange,
-          tags: [...tagsSet],
-        }
-      : isSearchActive
-      ? {
-          age: ageRangeS,
-          distance: distanceRangeS,
-          experience: experienceRangeS,
-          tags: [...tagsSetS],
-        }
-      : undefined,
-    tri:
-      isFilterActive && triOrder && tri
-        ? { [`${tri}`]: `${triOrder}` }
-        : isSearchActive && triOrderS && triS
-        ? { [`${triS}`]: `${triOrderS}` }
+  const { data, fetchNextPage, isFetching, error, isLoading, refetch } =
+    useSuggestions({
+      authorization: user?.authorization || "",
+      row_count: ROW_COUNT,
+      filter: isFilterActive
+        ? {
+            age: ageRange,
+            distance: distanceRange,
+            experience: experienceRange,
+            tags: [...tagsSet],
+          }
+        : isSearchActive
+        ? {
+            age: ageRangeS,
+            distance: distanceRangeS,
+            experience: experienceRangeS,
+            tags: [...tagsSetS],
+          }
         : undefined,
-    isSearch: isSearchActive,
-  });
+      tri:
+        isFilterActive && triOrder && tri
+          ? { [`${tri}`]: `${triOrder}` }
+          : isSearchActive && triOrderS && triS
+          ? { [`${triS}`]: `${triOrderS}` }
+          : undefined,
+      isSearch: isSearchActive,
+    });
+  const debouncedRefech = useCallback(debounce(refetch, 500), []);
 
+  React.useEffect(() => {
+    debouncedRefech();
+  }, [
+    ageRange,
+    distanceRange,
+    experienceRange,
+    ...tagsSet,
+    ...tagsSetS,
+    experienceRangeS,
+    distanceRangeS,
+    ageRangeS,
+    isSearchActive,
+    isFilterActive,
+    triOrder,
+    tri,
+  ]);
   if (error) return <>suggestions error...</>;
   if (isLoading)
     return (
@@ -76,7 +95,6 @@ const ProfileListing = () => {
       </div>
     );
   const allSuggestedUsers = data?.pages.flatMap((page) => page.data).reverse();
-  // console.log({ allSuggestedUsers }, data?.pageParams);
 
   const toggleFilters = (e: React.MouseEvent) => {
     e.stopPropagation();

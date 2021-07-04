@@ -30,7 +30,7 @@ const NotificationView = ({ type, notifier, isActive }: NotificationType) => {
       return (
         <p>
           <strong>{notifier?.userName}</strong>
-          {` liked you back`}
+          {` matched with you`}
         </p>
       );
     case "message":

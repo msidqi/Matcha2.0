@@ -111,6 +111,7 @@ const ChatRoom = (): JSX.Element => {
   React.useEffect(() => {
     if (socket && otherUser.id !== -1) {
       socket.on(EVENT_KEY_MESSAGE_RECIEVE, (data: MessageRecievedType[][]) => {
+        // console.log("reveiced a message----", data);
         const messages: TextMessage[] = data
           .flat()
           .filter((elem) => {

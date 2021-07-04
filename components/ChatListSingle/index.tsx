@@ -1,7 +1,6 @@
 import { formatDate } from "@/utils/date";
 import { Image } from "@/components/auth/classes";
 import Avatar from "components/ui/Avatar";
-// import { useEffect, useState } from "react";
 
 const ChatListSingle = ({
   isFirst,
@@ -10,34 +9,25 @@ const ChatListSingle = ({
   dateMessage,
   lastMessage,
   userName,
-  // isUserOnline,
   isOnline,
+  isSelected,
 }: {
   image: Image;
   dateMessage: string | null;
   userName: string;
   lastMessage: string | null;
-  // isUserOnline: () => boolean;
   isOnline?: boolean;
+  isSelected?: boolean;
 } & {
   isFirst?: boolean;
   onClick?: () => void;
 }): JSX.Element => {
-  // const [isOnline, setIsOnline] = useState(false);
-
-  // useEffect(() => {
-  //   const timer = setInterval(() => setIsOnline(isUserOnline()), 5000);
-  //   return () => {
-  //     clearInterval(timer);
-  //   };
-  // }, []);
-
   return (
     <div
       onClick={onClick}
-      className={`relative flex justify-start items-center h-24 px-6 hover:bg-gray-50 cursor-pointer ${
-        !isFirst ? "border-t border-gray-200" : ""
-      }`}
+      className={`relative flex justify-start items-center h-24 px-6 ${
+        isSelected ? "bg-gray-100" : "hover:bg-gray-50"
+      }  cursor-pointer ${!isFirst ? "border-t border-gray-200" : ""}`}
     >
       <div className="rounded-lg h-14 w-14 overflow-hidden">
         <Avatar src={image.src ?? ""} isConnected={isOnline} />

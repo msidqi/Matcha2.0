@@ -21,6 +21,7 @@ import ArrowNext from "@/components/ui/Icons/ArrowNext";
 import ArrowPrev from "@/components/ui/Icons/ArrowPrev";
 import Map from "@/components/Map";
 import { useQueryClient } from "react-query";
+import { useChatUsers } from "../useChat";
 
 export type ImageType = { src: string; isProfilePicture: 1 | 0 };
 
@@ -32,6 +33,7 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const [showMap, setShowMap] = React.useState<boolean>(false);
+  const { removeOtherUsers } = useChatUsers();
   const [otherUserId, setOtherUserId] = React.useState<number | undefined>();
   const [isMyProfile, setIsMyProfile] = React.useState<boolean>(false);
   const [showDropDown, setShowDropDown] = React.useState<boolean>(false);
@@ -107,6 +109,9 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
       });
       if (result.status === 200) {
         queryClient.invalidateQueries("matches");
+        queryClient.invalidateQueries("suggestions");
+        queryClient.invalidateQueries("research");
+        removeOtherUsers();
         router.push("/dashboard");
       } else {
         console.error("could not block user");
