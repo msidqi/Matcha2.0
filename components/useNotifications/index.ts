@@ -1,6 +1,7 @@
 import { NotificationType } from "@/interfaces";
 import React from "react";
 import { useSocketConnection } from "@/components/Sockets";
+import { useRouter } from "next/router";
 
 const EVENT_KEY_NOTIFICATION = "notification";
 
@@ -20,6 +21,7 @@ const useNotifications = (): {
   makeNotificationsSeen: () => void;
   newNotificationsNumber: number;
 } => {
+  const router = useRouter()
   const { socket } = useSocketConnection();
   const [notifications, setNotifications] = React.useState<
     NotificationSeenType[]
@@ -27,7 +29,7 @@ const useNotifications = (): {
   React.useEffect(() => {
     if (socket) {
       socket.on(EVENT_KEY_NOTIFICATION, (data: NotificationType[]) => {
-        console.log("event", data);
+        if (router.pathname !='/messages')
         setNotifications((prev) => prev.concat(data.map(makeUnSeen)));
       });
     }

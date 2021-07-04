@@ -57,7 +57,6 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<UserError | null>(null);
   const router = useRouter();
-  const { socket } = useSocketConnection();
   const queryClient = useQueryClient();
   React.useEffect(() => {
     let cancel: Canceler | undefined;
@@ -138,13 +137,13 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
         authorization: state.user?.authorization || "",
         userName: state.user?.data.userName || "",
       })[0];
+      console.log("result.status", result.status);
       if (result.status !== 200) throw new UserError(LOGOUT_ERROR_MESSAGE);
-      socket?.close();
       queryClient.clear();
       dispatch({ type: "LOGOUT" });
     } catch (e) {
       setError(e);
-      console.error(e);
+      console.error("LOGOUT", e);
     } finally {
       setLoading(false);
     }

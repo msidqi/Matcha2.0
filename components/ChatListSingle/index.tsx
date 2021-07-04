@@ -1,7 +1,7 @@
 import { formatDate } from "@/utils/date";
 import { Image } from "@/components/auth/classes";
 import Avatar from "components/ui/Avatar";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 
 const ChatListSingle = ({
   isFirst,
@@ -10,25 +10,27 @@ const ChatListSingle = ({
   dateMessage,
   lastMessage,
   userName,
-  isUserOnline,
+  // isUserOnline,
+  isOnline,
 }: {
   image: Image;
   dateMessage: string | null;
   userName: string;
   lastMessage: string | null;
-  isUserOnline: () => boolean;
+  // isUserOnline: () => boolean;
+  isOnline?: boolean;
 } & {
   isFirst?: boolean;
   onClick?: () => void;
 }): JSX.Element => {
-  const [isOnline, setIsOnline] = useState(false);
+  // const [isOnline, setIsOnline] = useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => setIsOnline(isUserOnline()), 5000);
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const timer = setInterval(() => setIsOnline(isUserOnline()), 5000);
+  //   return () => {
+  //     clearInterval(timer);
+  //   };
+  // }, []);
 
   return (
     <div

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useGetAllMatches } from "@/utils/requests/userRequests";
 import { useUser } from "@/components/auth";
 import { LoadingAnimation } from "@/components/ui/Icons/LoadingIcon";
@@ -8,14 +8,26 @@ import ChatListSingle from "@/components/ChatListSingle";
 import { useRouter } from "next/router";
 import useWhoIsOnline from "../useWhoIsOnline";
 
-const ChatList = (): JSX.Element => {
+const useMatches = () => {
   const [{ user }] = useUser();
   const { authorization } = user!;
-  const { isLoading, data } = useGetAllMatches({ authorization });
+  const matches = useGetAllMatches({ authorization });
+  const { whoIsOnline, updateOnlineState } = useWhoIsOnline();
+
+  let data = matches.data;
+  useEffect(() => {
+    if (data) {
+      updateOnlineState(data.map((elem) => elem.id));
+    }
+  }, [data]);
+  return { data, ...matches, whoIsOnline };
+};
+
+const ChatList = (): JSX.Element => {
   const router = useRouter();
   const { addOtherUsers, toggleListAndRoom, otherUser, listRoom } =
     useChatUsers();
-
+  const { isLoading, data, whoIsOnline } = useMatches();
   const handlePreviewClick = (newOtherUser: OtherUser) => {
     if (newOtherUser.id !== otherUser.id) addOtherUsers(newOtherUser);
     if (listRoom !== "room") toggleListAndRoom("room");
@@ -47,8 +59,7 @@ const ChatList = (): JSX.Element => {
       });
     }
   };
-  const { isUserOnline, whoIsOnline } = useWhoIsOnline();
-console.log({whoIsOnline})
+
   React.useEffect(selectDefaultUser, [isLoading]);
 
   return (
@@ -80,7 +91,7 @@ console.log({whoIsOnline})
             userName={chatPreview.userName}
             lastMessage={chatPreview.lastMessage}
             key={index}
-            isUserOnline={() => isUserOnline(chatPreview.id)}
+            isOnline={whoIsOnline.get(chatPreview.id)?.connected}
             isFirst={index === 0}
           />
         ))

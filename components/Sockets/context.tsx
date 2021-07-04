@@ -37,7 +37,7 @@ export const SocketsProvider: React.FC = ({ children }): JSX.Element => {
     } else if (state.isOnline) {
       dispatch({ type: "CLOSE_CONNECTION" });
     }
-  }, [user]);
+  }, [user, loggedIn]);
 
   if (!loggedIn || !user || !state.isOnline) return <>{children}</>;
 

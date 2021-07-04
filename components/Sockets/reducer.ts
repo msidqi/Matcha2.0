@@ -11,12 +11,15 @@ export const socketsReducer = (
         socket: action.payload.socket,
         isOnline: true,
       };
-    case "CLOSE_CONNECTION":
+    case "CLOSE_CONNECTION": {
+      state.socket?.disconnect();
+      console.log('CLOSE_CONNECTION state.socket?.disconnect();', 'socket', !!state.socket)
       return {
         ...state,
         socket: undefined,
         isOnline: false,
       };
+    }
     default:
       return state;
   }

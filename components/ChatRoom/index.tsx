@@ -128,7 +128,6 @@ const ChatRoom = (): JSX.Element => {
         );
       });
     } else if (socket) {
-      socket.off(EVENT_KEY_CONNECT);
       socket.off(EVENT_KEY_MESSAGE_RECIEVE);
     }
   }, [otherUser.id !== -1]);
