@@ -57,7 +57,8 @@ export class User implements IUser {
     experience: number;
     birthDate: Date | string;
     rankId?: number;
-    tags: string[];
+	tags: string[];
+	isCompleted: 1 | 0;
   };
   private _accessToken?: string;
 

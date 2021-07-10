@@ -2,6 +2,7 @@ import React from "react";
 import ProfileSetup from "@/components/ProfileSetup";
 import Layout from "@/components/ui/Layout";
 import { NextSeo } from "next-seo";
+import withAuth from "@/components/WithAuth";
 
 const index = (): JSX.Element => (
   <Layout>
@@ -10,4 +11,4 @@ const index = (): JSX.Element => (
   </Layout>
 );
 
-export default index;
+export default withAuth(index);
