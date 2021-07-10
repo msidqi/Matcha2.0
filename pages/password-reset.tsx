@@ -15,7 +15,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const index = ({ token }: { token?: string }): JSX.Element => (
   <Layout background>
     <NextSeo title="Matcha - Reset password" description="" />
-    <PasswordReset token={token} />
+    <PasswordReset token={token || ""} />
   </Layout>
 );
 

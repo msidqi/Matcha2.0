@@ -6,7 +6,7 @@ import { useResetPassword } from "@/utils/requests/userRequests";
 import Modal from "../ui/Modal";
 import { useRouter } from "next/router";
 
-const ForgotPassword = ({ token = "" }: { token?: string }): JSX.Element => {
+const PasswordReset = ({ token = "" }: { token?: string }): JSX.Element => {
   const router = useRouter();
   const { register, handleSubmit, getValues, errors } = useForm();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -80,4 +80,4 @@ const ForgotPassword = ({ token = "" }: { token?: string }): JSX.Element => {
   );
 };
 
-export default guestRoute(ForgotPassword);
+export default guestRoute(PasswordReset);
