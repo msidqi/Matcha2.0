@@ -48,15 +48,15 @@ const ProfileSetup = (): JSX.Element => {
       });
       if (result.status == 200) {
         /* -------- get user data ------- */
-        // const [userInfoRequest] = getUserInfoRequest({
-        //   authorization: user.authorization,
-        // });
-        // const result = await userInfoRequest;
-        // if (result.status === 200) {
-        //   /* -------- update global user state ------- */
-        //   setUser(result.data);
-        //   router.push("/dashboard");
-        // }
+        const [userInfoRequest] = getUserInfoRequest({
+          authorization: user?.authorization || "",
+        });
+        const result = await userInfoRequest;
+        if (result.status === 200) {
+          /* -------- update global user state and redirect ------- */
+          setUser(result.data);
+          router.push("/dashboard");
+        }
       }
     } catch (e) {
       console.error("post error", e);
