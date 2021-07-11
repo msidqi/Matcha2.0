@@ -41,7 +41,7 @@ const ProfileSetup = (): JSX.Element => {
       formdata.append("position", pos.latitude.toString());
       console.log("formdata", formdata);
       const result = await axios.post("/api/updateProfile", data, {
-        headers: { Autorization: user?.authorization },
+        headers: { Authorization: user?.authorization },
       });
     } catch (e) {
       console.error("post error", e);
