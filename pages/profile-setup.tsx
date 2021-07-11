@@ -5,7 +5,7 @@ import { NextSeo } from "next-seo";
 import withAuth from "@/components/WithAuth";
 
 const index = (): JSX.Element => (
-  <Layout>
+  <Layout heightScreen={false}>
     <NextSeo title="Matcha - Complete your profile" description="" />
     <ProfileSetup />
   </Layout>

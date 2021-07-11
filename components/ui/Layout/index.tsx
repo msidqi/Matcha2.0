@@ -1,9 +1,10 @@
 import React, { FC } from "react";
 import Navbar from "@/components/ui/Navbar";
 
-const Layout: FC<{ background?: boolean }> = ({
+const Layout: FC<{ background?: boolean; heightScreen?: boolean }> = ({
   children,
   background = false,
+  heightScreen = true,
 }) => (
   <>
     <Navbar />
@@ -14,7 +15,11 @@ const Layout: FC<{ background?: boolean }> = ({
           : ""
       }`}
     >
-      <div className="max-w-7xl mx-auto pt-16 h-screen box-border block sm:flex justify-center">
+      <div
+        className={`${
+          heightScreen ? "h-screen" : ""
+        } max-w-7xl mx-auto pt-16 box-border block sm:flex justify-center`}
+      >
         {children}
       </div>
     </main>

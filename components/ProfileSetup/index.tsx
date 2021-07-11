@@ -11,6 +11,7 @@ import { genders, orientation } from "@/components/data/constants.json";
 import { ImagePreviewProps } from "@/interfaces";
 import { useUser } from "../auth";
 import { useRouter } from "next/router";
+import { getUserInfoRequest } from "@/utils/requests/userRequests";
 
 type DataType = {
   userName: string;
@@ -21,9 +22,9 @@ type DataType = {
 };
 
 const ProfileSetup = (): JSX.Element => {
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit } = useForm();
   const router = useRouter();
-  const [{ user }] = useUser();
+  const [{ user }, { setUser }] = useUser();
   const [tagsSet, setTagsSet] = React.useState<Set<string>>(
     new Set(["Hello", "World", "1337", "42"])
   );
@@ -38,7 +39,6 @@ const ProfileSetup = (): JSX.Element => {
         formdata.append(key, (data as any)[key]);
       }
       const pos = (await getPosition()).coords;
-      console.log(pos.longitude.toString(), pos.latitude.toString());
       formdata.append("position", pos.longitude.toString());
       formdata.append("position", pos.latitude.toString());
       imagePreviews.forEach((elem) => formdata.append("images", elem.file));
@@ -47,7 +47,16 @@ const ProfileSetup = (): JSX.Element => {
         headers: { Authorization: user?.authorization },
       });
       if (result.status == 200) {
-        router.push("/dashboard");
+        /* -------- get user data ------- */
+        // const [userInfoRequest] = getUserInfoRequest({
+        //   authorization: user.authorization,
+        // });
+        // const result = await userInfoRequest;
+        // if (result.status === 200) {
+        //   /* -------- update global user state ------- */
+        //   setUser(result.data);
+        //   router.push("/dashboard");
+        // }
       }
     } catch (e) {
       console.error("post error", e);
