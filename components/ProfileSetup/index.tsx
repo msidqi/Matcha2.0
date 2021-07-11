@@ -10,6 +10,7 @@ import getPosition from "@/utils/getPosition";
 import { genders, orientation } from "@/components/data/constants.json";
 import { ImagePreviewProps } from "@/interfaces";
 import { useUser } from "../auth";
+import { useRouter } from "next/router";
 
 type DataType = {
   userName: string;
@@ -21,6 +22,7 @@ type DataType = {
 
 const ProfileSetup = (): JSX.Element => {
   const { register, handleSubmit, errors } = useForm();
+  const router = useRouter();
   const [{ user }] = useUser();
   const [tagsSet, setTagsSet] = React.useState<Set<string>>(
     new Set(["Hello", "World", "1337", "42"])
@@ -39,9 +41,14 @@ const ProfileSetup = (): JSX.Element => {
       console.log(pos.longitude.toString(), pos.latitude.toString());
       formdata.append("position", pos.longitude.toString());
       formdata.append("position", pos.latitude.toString());
+      imagePreviews.forEach((elem) => formdata.append("images", elem.file));
+      tagsSet.forEach((tag) => formdata.append("tags", tag));
       const result = await axios.post("/api/updateProfile", formdata, {
         headers: { Authorization: user?.authorization },
       });
+      if (result.status == 200) {
+        router.push("/dashboard");
+      }
     } catch (e) {
       console.error("post error", e);
     }
@@ -52,13 +59,6 @@ const ProfileSetup = (): JSX.Element => {
     if (e.code === "Enter") e.preventDefault();
   };
 
-  /*const mySubmitHandler = (e) => {
-    console.log("checkKeyDown", e.code);
-    e.preventDefault();
-    handleSubmit(onSubmit)();
-  };*/
-
-  // console.log("errors", errors);
   return (
     <div className="bg-white sm:border rounded  max shadow-lg p-4 sm:p-10 max-w-3xl m-auto sm:mt-8 mb-8  w-full">
       <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">

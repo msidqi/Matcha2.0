@@ -21,7 +21,6 @@ const ImageUpload = ({
   const [counter, setCounter] = React.useState(0);
   const [isEmpty, setIsEmpty] = React.useState(true);
   const [isDraggedover, setIsDraggedover] = React.useState(false);
-  // const [imagePreviews, setImagePreviews] = React.useState<ImagePreviewProps[]>([])
 
   const handleImagePrevewDelete = (indexToDelete: number) => {
     const elem = imagePreviews[indexToDelete];
@@ -44,7 +43,7 @@ const ImageUpload = ({
       }
       const isImage = fileIsImage(images[key]);
       if (isImage) {
-        allNewImages.push(makeImageData(images[key]));
+        allNewImages.push({ ...makeImageData(images[key]), file: images[key] });
         toAddCounter++;
       }
     }

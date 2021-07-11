@@ -46,6 +46,7 @@ export type ImagePreviewProps = {
   title: string;
   objectURL: string;
   size: string;
+  file: File;
 };
 
 export type TextMessage = {
