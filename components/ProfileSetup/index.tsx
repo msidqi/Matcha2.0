@@ -35,12 +35,11 @@ const ProfileSetup = (): JSX.Element => {
       for (const key in data) {
         formdata.append(key, (data as any)[key]);
       }
-      console.log(user?.authorization);
       const pos = (await getPosition()).coords;
+      console.log(pos.longitude.toString(), pos.latitude.toString());
       formdata.append("position", pos.longitude.toString());
       formdata.append("position", pos.latitude.toString());
-      console.log("formdata", formdata);
-      const result = await axios.post("/api/updateProfile", data, {
+      const result = await axios.post("/api/updateProfile", formdata, {
         headers: { Authorization: user?.authorization },
       });
     } catch (e) {
