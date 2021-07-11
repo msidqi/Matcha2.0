@@ -9,6 +9,7 @@ import DateInput from "@/components/ui/DateInput";
 import getPosition from "@/utils/getPosition";
 import { genders, orientation } from "@/components/data/constants.json";
 import { ImagePreviewProps } from "@/interfaces";
+import { useUser } from "../auth";
 
 type DataType = {
   userName: string;
@@ -20,6 +21,7 @@ type DataType = {
 
 const ProfileSetup = (): JSX.Element => {
   const { register, handleSubmit, errors } = useForm();
+  const [{ user }] = useUser();
   const [tagsSet, setTagsSet] = React.useState<Set<string>>(
     new Set(["Hello", "World", "1337", "42"])
   );
@@ -28,19 +30,19 @@ const ProfileSetup = (): JSX.Element => {
   );
 
   const onSubmit = async (data: DataType) => {
-    console.log("submit errors", errors);
-    console.log({ ...data, images: imagePreviews });
     try {
       const formdata = new FormData();
       for (const key in data) {
         formdata.append(key, (data as any)[key]);
       }
+      console.log(user?.authorization);
       const pos = (await getPosition()).coords;
       formdata.append("position", pos.longitude.toString());
       formdata.append("position", pos.latitude.toString());
       console.log("formdata", formdata);
-      const result = await axios.post("/api/updateProfile", data);
-      console.log("result", result);
+      const result = await axios.post("/api/updateProfile", data, {
+        headers: { Autorization: user?.authorization },
+      });
     } catch (e) {
       console.error("post error", e);
     }
@@ -57,9 +59,9 @@ const ProfileSetup = (): JSX.Element => {
     handleSubmit(onSubmit)();
   };*/
 
-  console.log("errors", errors);
+  // console.log("errors", errors);
   return (
-    <div className="bg-white sm:border rounded  max shadow-lg p-4 sm:p-10 max-w-3xl m-auto sm:mt-8 mb-8">
+    <div className="bg-white sm:border rounded  max shadow-lg p-4 sm:p-10 max-w-3xl m-auto sm:mt-8 mb-8  w-full">
       <h3 className="my-4 text-2xl font-semibold text-gray-700 mt-0">
         Complete your profile
       </h3>
@@ -82,7 +84,7 @@ const ProfileSetup = (): JSX.Element => {
           label="Sexual Preference"
           options={orientation}
         />
-        <DateInput label="Your Birthday" name="birthdate" register={register} />
+        <DateInput label="Your Birthday" name="birthDate" register={register} />
         <Bio
           register={register({ maxLength: 200 })}
           maxLength={200}

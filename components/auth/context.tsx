@@ -90,7 +90,6 @@ export const UserProvider: React.FC = ({ children }): JSX.Element => {
       } catch (e) {
         setError(e);
         dispatch({ type: "LOGOUT" });
-        console.log(router.pathname);
         if (!guestRoutes.includes(router.pathname)) router.push("/signin");
         console.error(e);
       } finally {

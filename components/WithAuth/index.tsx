@@ -12,8 +12,8 @@ const withAuth = (Component: React.ComponentType<any>) => (props: unknown) => {
         <NextSeo title="Matcha" description="" />
         <SplashScreen />
       </>
-	);
-	console.log(Router.pathname)
+    );
+
   if (!user || error) {
     Router.push("/signin");
     return (
@@ -24,25 +24,24 @@ const withAuth = (Component: React.ComponentType<any>) => (props: unknown) => {
     );
   }
 
-  if (user?.data.isCompleted && Router.pathname == '/profile-setup') {
-	Router.push("/dashboard");
-   return (
-	   <>
-		 <NextSeo title="Matcha" description="" />
-		 <SplashScreen />
-	   </>
-	 );
- }
-
-
-  if (!user.data.isCompleted) {
-	 Router.push("/profile-setup");
-	return (
-		<>
-		  <NextSeo title="Matcha" description="" />
-		  <SplashScreen />
-		</>
-	  );
+  if (user?.data.isCompleted && Router.pathname === "/profile-setup") {
+    Router.push("/dashboard");
+    return (
+      <>
+        <NextSeo title="Matcha" description="" />
+        <SplashScreen />
+      </>
+    );
+  }
+  console.log("withAuth");
+  if (!user.data.isCompleted && Router.pathname !== "/profile-setup") {
+    Router.push("/profile-setup");
+    return (
+      <>
+        <NextSeo title="Matcha" description="" />
+        <SplashScreen />
+      </>
+    );
   }
 
   return <Component {...props} />;
