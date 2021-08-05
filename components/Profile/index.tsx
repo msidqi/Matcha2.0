@@ -64,15 +64,7 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
     [profile, onUserNameChange]
   );
 
-  const distance = "1.2 km";
   let isConnected = false;
-  const getLastConnected = React.useCallback(() => {
-    const lastSeenDate = new Date(profile?.lastSeen || "");
-    return isNaN(lastSeenDate.getTime())
-      ? ""
-      : `last seen ${formatRelative(lastSeenDate, new Date())}`;
-  }, [profile?.lastSeen]);
-
   if (isLoading)
     return (
       <div className="flex justify-center items-center">
@@ -268,7 +260,12 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
                       }`}
                     />
                     <p className="text-gray-500 text-xs">
-                      {isConnected ? "connected" : getLastConnected()}
+                      {isConnected
+                        ? "online"
+                        : `last seen ${formatRelative(
+                            new Date(profile.lastSeen),
+                            new Date()
+                          )}`}
                     </p>
                   </>
                 </div>
@@ -285,7 +282,12 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
                   height="12"
                   className="inline-block mr-1"
                 />
-                <p className="text-sm inline-block text-gray-400">{distance}</p>
+                <p className="text-sm inline-block text-gray-400">
+                  {profile.distance > 0
+                    ? profile.distance?.toFixed(0)
+                    : profile.distance?.toFixed(2)}{" "}
+                  km
+                </p>
               </div>
             </div>
             {profile.bio && (
@@ -317,7 +319,11 @@ const ProfileDisplay = ({ onUserNameChange }: ProfileDisplayProps) => {
       </article>
       {showMap && (
         <article className="m-auto w-96 max-w-full h-96 sm:mt-8 sm:mb-8 sm:ml-4">
-          <Map className="sm:rounded" />
+          <Map
+            className="sm:rounded"
+            lat={profile.latitude}
+            long={profile.longitude}
+          />
         </article>
       )}
     </div>

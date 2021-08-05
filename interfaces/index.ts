@@ -25,7 +25,9 @@ export interface OtherUserProfileType {
   rank: string;
   tags: string[];
   userName: string;
-  distance?: string /* maybe */;
+  distance: number;
+  longitude: number;
+  latitude: number;
 }
 
 export type ProfileType = {
