@@ -103,11 +103,15 @@ export class User implements IUser {
     ...rest
   }: Partial<UserInput>) {
     this.data = { ...this.data, ...rest };
-    this.data.bio = bio ?? "";
+    if (typeof bio == "string") {
+      this.data.bio = bio ?? "";
+    }
     if (Array.isArray(images))
       this.data.images = images.map((img) => new Image(img));
-    this.data.birthDate =
-      birthDate instanceof Date ? birthDate : new Date(birthDate || "");
+    if (birthDate) {
+      this.data.birthDate =
+        birthDate instanceof Date ? birthDate : new Date(birthDate);
+    }
     if (typeof accessToken === "string") this.accessToken = accessToken;
 
     return this;

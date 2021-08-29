@@ -30,6 +30,7 @@ const SettingsPersonalInfo = () => {
   /* ------ set fetched user data in the editable fields ------ */
   React.useEffect(() => {
     if (user) {
+      console.log({ user });
       const { data } = user;
       setValue("email", data.email);
       setValue("firstName", data.firstName);
