@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { useUpdateUserData } from "@/utils/requests/userRequests";
 import { genders, orientation } from "@/components/data/constants.json";
 import LoadingRing from "@/components/ui/Icons/LoadingRing";
+import { apiRequest } from "@/utils/API";
 
 type DataType = {
   userName: string;
@@ -52,10 +53,11 @@ const SettingsPersonalInfo = () => {
   const onSubmit = async (submitedData: DataType) => {
     const data = { ...submitedData, tags: [...tagsSet] };
     try {
-      updateUserMutation.mutate({
-        data: data,
-        authorization: user?.authorization || "",
-      });
+      await apiRequest("post", "/api/updateProfile", data, {
+        headers: {
+          Authorization: user?.authorization || "",
+        },
+      })[0];
       setUser(data);
     } catch (e) {
       console.error("onSubmit", e);
